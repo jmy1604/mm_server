@@ -350,50 +350,77 @@ func C2SHeartbeatHandler(p *Player, msg_data []byte) int32 {
 }
 
 func C2SDataSyncHandler(p *Player, msg_data []byte) int32 {
-	/*var req msg_client_message.C2SDataSyncRequest
+	var req msg_client_message.C2SGetInfo
 	err := proto.Unmarshal(msg_data, &req)
 	if err != nil {
-		log.Error("Unmarshal msg failed err(%s)!", err.Error())
+		log.Error("unmarshal msg failed %v", err.Error())
 		return -1
 	}
-	if req.Base {
+
+	if req.GetBase() {
 		p.send_info()
 	}
-	if req.Items {
-		p.send_items()
+
+	if req.GetItem() {
+		m := &msg_client_message.S2CGetItemInfos{}
+		p.db.Items.FillAllMsg(m)
+		p.Send(uint16(msg_client_message.S2CGetItemInfos_ProtoID), m)
 	}
-	if req.Campaigns {
-		p.send_campaigns()
+
+	if req.GetCat() {
+		res2cli := &msg_client_message.S2CGetCatInfos{}
+		p.db.Cats.FillAllMsg(res2cli)
+		cats := res2cli.GetCats()
+		if cats != nil {
+			for i := 0; i < len(cats); i++ {
+				cats[i].State = p.GetCatState(cats[i].GetId())
+			}
+		}
+		p.Send(uint16(msg_client_message.S2CGetCatInfos_ProtoID), res2cli)
 	}
-	if req.Chat {
-		p.pull_chat(CHAT_CHANNEL_WORLD)
-		p.pull_chat(CHAT_CHANNEL_WORLD)
-		p.pull_chat(CHAT_CHANNEL_WORLD)
+
+	if req.GetBuilding() {
+		res2cli := &msg_client_message.S2CGetBuildingInfos{}
+		res2cli.Builds = p.check_and_fill_buildings_msg()
+		p.Send(uint16(msg_client_message.S2CGetBuildingInfos_ProtoID), res2cli)
 	}
-	if req.Explore {
-		p.send_explore_data()
+
+	if req.GetArea() {
+		m := &msg_client_message.S2CGetAreasInfos{}
+		p.db.Areas.FillAllMsg(m)
+		p.Send(uint16(msg_client_message.S2CGetAreasInfos_ProtoID), m)
 	}
-	if req.Friend {
-		p.send_friend_list()
+
+	if req.GetStage() {
+		p.send_stage_info()
 	}
-	if req.GoldHand {
-		p.send_gold_hand()
+
+	if req.GetFormula() {
+		p.get_formulas()
 	}
-	if req.Guide {
-		p.send_guide_data()
+
+	if req.GetDepotBuilding() {
+		m := &msg_client_message.S2CGetDepotBuildingInfos{}
+		p.db.BuildingDepots.FillAllMsg(m)
+		p.Send(uint16(msg_client_message.S2CGetDepotBuildingInfos_ProtoID), m)
 	}
-	if req.Mail {
-		p.GetMailList()
+
+	if req.GetGuide() {
+		p.SyncPlayerGuideData()
 	}
-	if req.SevenDays {
-		p.seven_days_data()
+
+	if req.GetCatHouse() {
+		p.get_cathouses_info()
 	}
-	if req.Sign {
-		p.get_sign_data()
+
+	if req.GetWorkShop() {
+		p.pull_formula_building()
 	}
-	if req.Task {
-		p.send_task(0)
-	}*/
+
+	if req.GetFarm() {
+		p.get_crops()
+	}
+
 	return 1
 }
 

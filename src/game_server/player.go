@@ -942,6 +942,7 @@ func C2SGetInfoHandler(p *Player, msg_data []byte) int32 {
 			}
 		}
 		p.Send(uint16(msg_client_message.S2CGetCatInfos_ProtoID), res2cli)
+		log.Trace("Get cat %v", res2cli)
 	}
 
 	if req.GetBuilding() {
@@ -986,6 +987,8 @@ func C2SGetInfoHandler(p *Player, msg_data []byte) int32 {
 	if req.GetFarm() {
 		p.get_crops()
 	}
+
+	log.Trace("Player %v get info %v", p.Id, req)
 
 	return 1
 }
