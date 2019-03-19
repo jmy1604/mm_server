@@ -107,33 +107,37 @@ func (this *GameConnection) Send(msg_id uint16, msg proto.Message) {
 	}
 
 	var d []byte
-	compress_type := int32(data[len(data)-1])
-	if len(data) == 1 {
-		d = []byte{}
-	} else {
-		d = data[:len(data)-1]
-		if compress_type != 0 {
-			if compress_type == 1 {
-				in := bytes.NewBuffer(d)
-				r, e := zlib.NewReader(in)
-				if e != nil {
-					log.Error("Zlib New Reader err %v", e.Error())
+	if false {
+		compress_type := int32(data[len(data)-1])
+		if len(data) == 1 {
+			d = []byte{}
+		} else {
+			d = data[:len(data)-1]
+			if compress_type != 0 {
+				if compress_type == 1 {
+					in := bytes.NewBuffer(d)
+					r, e := zlib.NewReader(in)
+					if e != nil {
+						log.Error("Zlib New Reader err %v", e.Error())
+						return
+					}
+					var out bytes.Buffer
+					io.Copy(&out, r)
+					d = out.Bytes()
+				} else if compress_type == 2 {
+					d, err = snappy.Decode(nil, d)
+					if err != nil {
+						log.Error("Snappy decode %v err %v", d, err.Error())
+						return
+					}
+				} else {
+					log.Error("Compress type %v not supported", compress_type)
 					return
 				}
-				var out bytes.Buffer
-				io.Copy(&out, r)
-				d = out.Bytes()
-			} else if compress_type == 2 {
-				d, err = snappy.Decode(nil, d)
-				if err != nil {
-					log.Error("Snappy decode %v err %v", d, err.Error())
-					return
-				}
-			} else {
-				log.Error("Compress type %v not supported", compress_type)
-				return
 			}
 		}
+	} else {
+		d = data
 	}
 
 	S2C_MSG := &msg_client_message.S2C_MSG_DATA{}
