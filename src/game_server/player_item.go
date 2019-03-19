@@ -544,12 +544,6 @@ func (this *Player) GetItemResourceValue(other_id int32) int32 {
 	}
 }
 
-func (this *Player) send_items() {
-	//msg := &msg_client_message.S2CItemsSync{}
-	//msg.Items = this.db.Items.BuildMsg()
-	//this.Send(uint16(msg_client_message_id.MSGID_S2C_ITEMS_SYNC), msg)
-}
-
 func (this *Player) get_item(item_id int32) int32 {
 	return 0
 }

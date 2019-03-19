@@ -138,42 +138,165 @@ func (this *PlayerManager) RegMsgHandler() {
 		msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2S_TEST_COMMAND_ProtoID), C2STestCommandHandler)
 	}
 
-	msg_handler_mgr.SetMsgHandler(uint16(msg_client_message.C2SEnterGameRequest_ProtoID), C2SEnterGameRequestHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SLeaveGameRequest_ProtoID), C2SLeaveGameRequestHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SHeartbeat_ProtoID), C2SHeartbeatHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetInfo_ProtoID), C2SDataSyncHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlayerChangeNameRequest_ProtoID), C2SPlayerChangeNameHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlayerChangeHeadRequest_ProtoID), C2SPlayerChangeHeadHandler)
-
 	// 重连
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SReconnectRequest_ProtoID), C2SReconnectHandler)
 
-	reg_player_mail_msg()
-	reg_player_base_info_msg()
-	//reg_player_sign_msg()
-	//reg_player_first_pay_msg()
-	//reg_player_guide_msg()
-	reg_player_friend_msg()
-	//reg_player_stage_msg()
-	reg_player_draw_msg()
-	reg_player_building_msg()
-	reg_player_expedition_msg()
-	reg_player_areaunlock_msg()
-	reg_player_chapter_msg()
-	//reg_player_activity_msg()
-	reg_player_foster_msg()
-	//reg_player_personl_space_msg()
+	msg_handler_mgr.SetMsgHandler(uint16(msg_client_message.C2SEnterGameRequest_ProtoID), C2SEnterGameRequestHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SLeaveGameRequest_ProtoID), C2SLeaveGameRequestHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SHeartbeat_ProtoID), C2SHeartbeatHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlayerChangeNameRequest_ProtoID), C2SPlayerChangeNameHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlayerChangeHeadRequest_ProtoID), C2SPlayerChangeHeadHandler)
+
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetInfo_ProtoID), C2SGetInfoHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetItemInfos_ProtoID), C2SGetItemInfosHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetDepotBuildingInfos_ProtoID), C2SGetDepotBuildingInfosHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetCatInfos_ProtoID), C2SGetCatInfosHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetStageInfos_ProtoID), C2SGetStageInfosHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetOptions_ProtoID), C2SGetOptionsHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSaveOptions_ProtoID), C2SSaveOptionsHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChgName_ProtoID), C2SChgNameHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChangeHead_ProtoID), C2SChangeHeadHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SZanPlayer_ProtoID), C2SZanPlayerHandler)
+
+	// 物品
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SUseItem_ProtoID), C2SUseItemHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSellItem_ProtoID), C2SSellItemHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SComposeCat_ProtoID), C2SComposeCatHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SItemResource_ProtoID), C2SItemResourceHandler)
+
+	// 商店
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SShopItems_ProtoID), C2SShopItemsHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SBuyShopItem_ProtoID), C2SBuyShopItemHandler)
+
+	// 猫
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatFeed_ProtoID), C2SFeedCatHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatUpgradeStar_ProtoID), C2SCatUpgradeStarHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatSkillLevelUp_ProtoID), C2SCatSkillLevelUpHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatRenameNick_ProtoID), C2SCatRenameNickHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatLock_ProtoID), C2SCatLockHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatDecompose_ProtoID), C2SCatDecomposeHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlayerCatInfo_ProtoID), C2SPlayerCatInfoHandler)
+
+	// 配方
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetMakingFormulaBuildings_ProtoID), C2SGetMakingFormulaBuildingsHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SExchangeBuildingFormula_ProtoID), C2SExchangeBuildingFormulaHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMakeFormulaBuilding_ProtoID), C2SMakeFormulaBuildingHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SBuyMakeBuildingSlot_ProtoID), C2SBuyMakeBuildingSlotHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpeedupMakeBuilding_ProtoID), C2SSpeedupMakeBuildingHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetCompletedFormulaBuilding_ProtoID), C2SGetCompletedFormulaBuildingHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCancelMakingFormulaBuilding_ProtoID), C2SCancelMakingFormulaBuildingHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetFormulas_ProtoID), C2SGetFormulasHandler)
+
+	// 农田
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetCrops_ProtoID), C2SGetCropsHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlantCrop_ProtoID), C2SPlantCropHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SHarvestCrops_ProtoID), C2SHarvestCropHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCropSpeedup_ProtoID), C2SSpeedupCropHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SHarvestCrops_ProtoID), C2SHarvestCropsHandler)
+
+	// 猫舍
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetCatHouseInfo_ProtoID), C2SGetCatHousesInfoHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseAddCat_ProtoID), C2SCatHouseAddCatHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseRemoveCat_ProtoID), C2SCatHouseRemoveCatHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseStartLevelup_ProtoID), C2SCatHouseStartLevelupHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseSpeedLevelup_ProtoID), C2SCatHouseSpeedLevelupHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSellCatHouse_ProtoID), C2SCatHouseSellHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseGetGold_ProtoID), C2SCatHouseGetGoldHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseSetDone_ProtoID), C2SCatHouseSetDoneHandler)
+
+	// 任务
+	//msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetDialyTaskInfo_ProtoID), C2SGetDialyTaskInfoHanlder)
+	//msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetAchieve_ProtoID), C2SGetAchieveHandler)
+	//msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetTaskReward_ProtoID), C2SGetTaskRewardHandler)
+	//msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetAchieveReward_ProtoID), C2SGetAchieveRewardHandler)
+
+	// 图鉴
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetHandbook_ProtoID), C2SGetHandbookHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetHead_ProtoID), C2SGetHeadHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetSuitHandbookReward_ProtoID), C2SGetSuitHandbookRewardHandler)
+
+	// 排行榜
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRankListRequest_ProtoID), C2SPullRankingListHandler)
+
+	// 世界聊天
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChatMsgPullRequest_ProtoID), C2SWorldChatMsgPullHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChatRequest_ProtoID), C2SWorldChatSendHandler)
+
+	// 心跳
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SHeartbeat_ProtoID), C2SHeartbeatHandler)
+
+	// 寄养
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPullFosterData_ProtoID), C2SPullFosterDataHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterEquipCard_ProtoID), C2SFosterEquipCardHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterUnequipCard_ProtoID), C2SFosterUnequipCardHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterSetCat_ProtoID), C2SFosterSetCatHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterOutCat_ProtoID), C2SFosterOutCatHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterSetCat2Friend_ProtoID), C2SFosterSetCat2FriendHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetPlayerFosterCats_ProtoID), C2SGetPlayerFosterCatsHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPullFosterCatsWithFriend_ProtoID), C2SPullFosterDataWithFriendHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterCardCompose_ProtoID), C2SFosterCardComposeHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterGetEmptySlotFriends_ProtoID), C2SFosterGetEmptySlotFriendsHandler)
+
+	// 章节
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChapterUnlock_ProtoID), C2SChapterUnlockHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetCurHelpReqPIds_ProtoID), C2SGetCurHelpReqPIdsHandler)
+
+	// 区域
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SUnlockArea_ProtoID), C2SUnlockAreaHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetAreasInfos_ProtoID), C2SGetAreasInfosHandler)
 
 	// 邮件
-	/*msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_MAIL_SEND_REQUEST), C2SMailSendHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_MAIL_LIST_REQUEST), C2SMailListHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_MAIL_DETAIL_REQUEST), C2SMailDetailHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_MAIL_GET_ATTACHED_ITEMS_REQUEST), C2SMailGetAttachedItemsHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_MAIL_DELETE_REQUEST), C2SMailDeleteHandler)*/
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailSendRequest_ProtoID), C2SMailSendHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailListRequest_ProtoID), C2SMailListHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailDetailRequest_ProtoID), C2SMailDetailHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailGetAttachedItemsRequest_ProtoID), C2SMailGetAttachedItemsHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailDeleteRequest_ProtoID), C2SMailDeleteHandler)
+
+	// 好友
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendSearch_ProtoID), C2SFriendSearchHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendSearchById_ProtoID), C2SFriendSearchByIdHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SAddFriendByPId_ProtoID), C2SAddFriendByIdHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SAddFriendByName_ProtoID), C2SAddFriendByNameHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRefuseFriend_ProtoID), C2SRefuseAddFriendHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRemoveFriend_ProtoID), C2SFriendRemoveHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetFriendList_ProtoID), C2SGetFriendListHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGiveFriendPoints_ProtoID), C2SGiveFriendPointsHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetFriendPoints_ProtoID), C2SGetFriendPointsHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendChat_ProtoID), C2SFriendChatHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendGetUnreadMessageNum_ProtoID), C2SFriendGetUnreadMessageNumHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendPullUnreadMessage_ProtoID), C2SFriendPullUnreadMessageHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendConfirmUnreadMessage_ProtoID), C2SFriendConfirmUnreadMessageHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SAgreeFriend_ProtoID), C2SAddFriendAgreeHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SOpenFriendChest_ProtoID), C2SOpenFriendChestHandler)
 
 	// 抽卡
-	/*msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_DRAW_CARD_REQUEST), C2SDrawCardHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_DRAW_DATA_REQUEST), C2SDrawDataHandler)*/
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SDraw_ProtoID), C2SDrawHandler)
+
+	// 关卡
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SStageBegin_ProtoID), C2SStagePassBeginHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SStagePass_ProtoID), C2SStagePassHandler)
+	//msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.), C2SDayBuyTiLiHandler)
+
+	// 建筑
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetBuildingInfos_ProtoID), C2SGetBuildingInfosHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSetBuilding_ProtoID), C2SSetBuildingHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetBackBuilding_ProtoID), C2SGetBackBuildingHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSellBuilding_ProtoID), C2SSellBuildingHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRemoveBlock_ProtoID), C2SRemoveBlockHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SOpenMapChest_ProtoID), C2SOpenMapChestHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMoveBuilding_ProtoID), C2SMoveBuildingHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChgBuildingDir_ProtoID), C2SChgBuildingDirHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SVisitPlayer_ProtoID), C2SVisitPlayerHandler)
+
+	// 探索
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetAllExpedition_ProtoID), C2SGetAllExpeditionHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChgExpedition_ProtoID), C2SChgExpeditionHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SStopExpedition_ProtoID), C2SStopExpeditionHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetExpeditionReward_ProtoID), C2SGetExpeditionRewardHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SStartExpedition_ProtoID), C2SStartExpeditionHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChgExpeditionResult_ProtoID), C2SChgExpeditionResultHandler)
+
+	//reg_player_personl_space_msg()
 
 	// 点金手
 	/*msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_GOLD_HAND_DATA_REQUEST), C2SGoldHandDataHandler)
@@ -297,13 +420,14 @@ func C2SEnterGameRequestHandler(msg_data []byte) (int32, *Player) {
 	p.send_enter_game(req.Acc, p.Id)
 	p.OnLogin()
 	if !is_new {
-		p.send_items()
+		//p.send_items()
 		//p.send_roles()
 	} else {
 		//p.check_and_send_items_change()
 		//p.check_and_send_roles_change()
 	}
-	p.send_info()
+	//p.send_info()
+	p.send_data_on_login()
 	p.notify_enter_complete()
 
 	log.Info("PlayerEnterGameHandler account[%s]", req.GetAcc())
@@ -345,81 +469,6 @@ func C2SHeartbeatHandler(p *Player, msg_data []byte) int32 {
 		SysTime: int32(time.Now().Unix()),
 	}
 	p.Send(uint16(msg_client_message.S2CHeartbeat_ProtoID), response)
-
-	return 1
-}
-
-func C2SDataSyncHandler(p *Player, msg_data []byte) int32 {
-	var req msg_client_message.C2SGetInfo
-	err := proto.Unmarshal(msg_data, &req)
-	if err != nil {
-		log.Error("unmarshal msg failed %v", err.Error())
-		return -1
-	}
-
-	if req.GetBase() {
-		p.send_info()
-	}
-
-	if req.GetItem() {
-		m := &msg_client_message.S2CGetItemInfos{}
-		p.db.Items.FillAllMsg(m)
-		p.Send(uint16(msg_client_message.S2CGetItemInfos_ProtoID), m)
-	}
-
-	if req.GetCat() {
-		res2cli := &msg_client_message.S2CGetCatInfos{}
-		p.db.Cats.FillAllMsg(res2cli)
-		cats := res2cli.GetCats()
-		if cats != nil {
-			for i := 0; i < len(cats); i++ {
-				cats[i].State = p.GetCatState(cats[i].GetId())
-			}
-		}
-		p.Send(uint16(msg_client_message.S2CGetCatInfos_ProtoID), res2cli)
-	}
-
-	if req.GetBuilding() {
-		res2cli := &msg_client_message.S2CGetBuildingInfos{}
-		res2cli.Builds = p.check_and_fill_buildings_msg()
-		p.Send(uint16(msg_client_message.S2CGetBuildingInfos_ProtoID), res2cli)
-	}
-
-	if req.GetArea() {
-		m := &msg_client_message.S2CGetAreasInfos{}
-		p.db.Areas.FillAllMsg(m)
-		p.Send(uint16(msg_client_message.S2CGetAreasInfos_ProtoID), m)
-	}
-
-	if req.GetStage() {
-		p.send_stage_info()
-	}
-
-	if req.GetFormula() {
-		p.get_formulas()
-	}
-
-	if req.GetDepotBuilding() {
-		m := &msg_client_message.S2CGetDepotBuildingInfos{}
-		p.db.BuildingDepots.FillAllMsg(m)
-		p.Send(uint16(msg_client_message.S2CGetDepotBuildingInfos_ProtoID), m)
-	}
-
-	if req.GetGuide() {
-		p.SyncPlayerGuideData()
-	}
-
-	if req.GetCatHouse() {
-		p.get_cathouses_info()
-	}
-
-	if req.GetWorkShop() {
-		p.pull_formula_building()
-	}
-
-	if req.GetFarm() {
-		p.get_crops()
-	}
 
 	return 1
 }

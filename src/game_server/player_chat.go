@@ -23,7 +23,6 @@ type PlayerChatData struct {
 }
 
 var world_chat_mgr ChatMgr
-var recruit_chat_mgr ChatMgr
 var system_chat_mgr ChatMgr
 
 func get_chat_config_data(channel int32) *tables.ChatConfig {
@@ -47,7 +46,7 @@ func (this *Player) get_chat_mgr(channel int32) *ChatMgr {
 		//guild_id := this.db.Guild.GetId()
 		//chat_mgr = guild_manager.GetChatMgr(guild_id)
 	} else if channel == CHAT_CHANNEL_RECRUIT {
-		chat_mgr = &recruit_chat_mgr
+		//chat_mgr = &recruit_chat_mgr
 	} else if channel == CHAT_CHANNEL_SYSTEM {
 		chat_mgr = &system_chat_mgr
 	}
@@ -194,7 +193,7 @@ func (this *Player) has_new_chat_msg(channel int32) bool {
 
 func (this *Player) check_and_pull_chat() {
 	var channel_type_array []int32 = []int32{
-		CHAT_CHANNEL_WORLD, CHAT_CHANNEL_GUILD, CHAT_CHANNEL_RECRUIT, CHAT_CHANNEL_SYSTEM,
+		CHAT_CHANNEL_WORLD, CHAT_CHANNEL_SYSTEM,
 	}
 	now_time := int32(time.Now().Unix())
 	for _, c := range channel_type_array {

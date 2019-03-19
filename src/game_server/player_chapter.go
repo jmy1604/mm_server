@@ -64,14 +64,6 @@ func (this *Player) HelpUnlock(pid, chapter_id int32) int32 {
 
 // -------------------------------------------------------------------------
 
-func reg_player_chapter_msg() {
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChapterUnlock_ProtoID), C2SChapterUnlockHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetCurHelpReqPIds_ProtoID), C2SGetCurHelpReqPIdsHandler)
-
-	//center_conn.SetMessageHandler(msg_server_message.ID_ChapterUnlockHelp, C2HChapterUnlockHelpHandler)
-	//center_conn.SetMessageHandler(msg_client_message.ID_C2SAgreeMailHelpReq, C2HChapterUnlockAgreeHandler)
-}
-
 func C2SChapterUnlockHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SChapterUnlock
 	err := proto.Unmarshal(msg_data, &req)

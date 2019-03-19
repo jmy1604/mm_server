@@ -149,12 +149,6 @@ func (this *Player) InitPlayerArea() {
 }
 
 // ----------------------------------------------------------------------------
-
-func reg_player_areaunlock_msg() {
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SUnlockArea_ProtoID), C2SUnlockAreaHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetAreasInfos_ProtoID), C2SGetAreasInfosHandler)
-}
-
 func C2SGetAreasInfosHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SGetAreasInfos
 	err := proto.Unmarshal(msg_data, &req)

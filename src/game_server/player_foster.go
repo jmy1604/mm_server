@@ -46,16 +46,7 @@ func foster_build_self_cats_msg(cat_ids []int32, cat_exps []int32, cat_items []m
 }
 
 func reg_player_foster_msg() {
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPullFosterData_ProtoID), C2SPullFosterDataHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterEquipCard_ProtoID), C2SFosterEquipCardHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterUnequipCard_ProtoID), C2SFosterUnequipCardHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterSetCat_ProtoID), C2SFosterSetCatHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterOutCat_ProtoID), C2SFosterOutCatHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterSetCat2Friend_ProtoID), C2SFosterSetCat2FriendHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetPlayerFosterCats_ProtoID), C2SGetPlayerFosterCatsHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPullFosterCatsWithFriend_ProtoID), C2SPullFosterDataWithFriendHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterCardCompose_ProtoID), C2SFosterCardComposeHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFosterGetEmptySlotFriends_ProtoID), C2SFosterGetEmptySlotFriendsHandler)
+
 }
 
 func get_foster_card_remain_seconds(card_id int32, card_start_time int32) int32 {

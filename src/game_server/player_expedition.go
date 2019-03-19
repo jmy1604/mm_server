@@ -189,16 +189,6 @@ func (p *Player) CheckUpdateExpedition() {
 
 // ----------------------------------------------------------------------------
 
-func reg_player_expedition_msg() {
-	log.Info("每日探险任务最多次数 %d", global_config.ExpeditionDayStartCount)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetAllExpedition_ProtoID), C2SGetAllExpeditionHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChgExpedition_ProtoID), C2SChgExpeditionHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SStopExpedition_ProtoID), C2SStopExpeditionHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetExpeditionReward_ProtoID), C2SGetExpeditionRewardHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SStartExpedition_ProtoID), C2SStartExpeditionHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChgExpeditionResult_ProtoID), C2SChgExpeditionResultHandler)
-}
-
 func C2SGetAllExpeditionHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SGetAllExpedition
 	err := proto.Unmarshal(msg_data, &req)

@@ -193,24 +193,6 @@ func (this *FriendRecommendMgr) Random(player_id int32) (ids []int32) {
 
 // ----------------------------------------------------------------------------
 
-func reg_player_friend_msg() {
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendSearch_ProtoID), C2SFriendSearchHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendSearchById_ProtoID), C2SFriendSearchByIdHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SAddFriendByPId_ProtoID), C2SAddFriendByIdHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SAddFriendByName_ProtoID), C2SAddFriendByNameHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRefuseFriend_ProtoID), C2SRefuseAddFriendHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRemoveFriend_ProtoID), C2SFriendRemoveHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetFriendList_ProtoID), C2SGetFriendListHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGiveFriendPoints_ProtoID), C2SGiveFriendPointsHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetFriendPoints_ProtoID), C2SGetFriendPointsHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendChat_ProtoID), C2SFriendChatHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendGetUnreadMessageNum_ProtoID), C2SFriendGetUnreadMessageNumHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendPullUnreadMessage_ProtoID), C2SFriendPullUnreadMessageHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendConfirmUnreadMessage_ProtoID), C2SFriendConfirmUnreadMessageHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SAgreeFriend_ProtoID), C2SAddFriendAgreeHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SOpenFriendChest_ProtoID), C2SOpenFriendChestHandler)
-}
-
 func send_search_player_msg(p *Player, players_info []*rpc_proto.H2R_SearchPlayerInfo) {
 	var results []*msg_client_message.FriendInfo
 	if players_info == nil || len(players_info) == 0 {

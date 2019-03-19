@@ -636,11 +636,3 @@ func C2SMailDeleteHandler(p *Player, msg_data []byte) int32 {
 	}
 	return p.DeleteMails(req.GetMailIds())
 }
-
-func reg_player_mail_msg() {
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailSendRequest_ProtoID), C2SMailSendHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailListRequest_ProtoID), C2SMailListHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailDetailRequest_ProtoID), C2SMailDetailHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailGetAttachedItemsRequest_ProtoID), C2SMailGetAttachedItemsHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailDeleteRequest_ProtoID), C2SMailDeleteHandler)
-}

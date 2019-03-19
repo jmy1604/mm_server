@@ -10,10 +10,6 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
-func reg_player_draw_msg() {
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SDraw_ProtoID), C2SDrawHandler)
-}
-
 func (this *Player) drop_item_by_id(id int32, check_same bool) (bool, *msg_client_message.ItemInfo, *msg_client_message.CatInfo, *msg_client_message.DepotBuildingInfo) {
 	drop_lib := drop_card_table_mgr.Map[id]
 	if nil == drop_lib {

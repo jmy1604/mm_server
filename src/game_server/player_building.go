@@ -900,18 +900,6 @@ func (this *Player) check_and_fill_buildings_msg() []*msg_client_message.Buildin
 
 // ----------------------------------------------------------------------------
 
-func reg_player_building_msg() {
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetBuildingInfos_ProtoID), C2SGetBuildingInfosHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSetBuilding_ProtoID), C2SSetBuildingHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetBackBuilding_ProtoID), C2SGetBackBuildingHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSellBuilding_ProtoID), C2SSellBuildingHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRemoveBlock_ProtoID), C2SRemoveBlockHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SOpenMapChest_ProtoID), C2SOpenMapChestHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMoveBuilding_ProtoID), C2SMoveBuildingHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChgBuildingDir_ProtoID), C2SChgBuildingDirHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SVisitPlayer_ProtoID), C2SVisitPlayerHandler)
-}
-
 func C2SGetBuildingInfosHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SGetBuildingInfos
 	err := proto.Unmarshal(msg_data, &req)

@@ -56,7 +56,7 @@ func (this *GameServer) Init() (ok bool) {
 	// 世界频道
 	world_chat_mgr.Init(CHAT_CHANNEL_WORLD)
 	// 招募频道
-	recruit_chat_mgr.Init(CHAT_CHANNEL_RECRUIT)
+	//recruit_chat_mgr.Init(CHAT_CHANNEL_RECRUIT)
 	// 系统频道
 	system_chat_mgr.Init(CHAT_CHANNEL_SYSTEM)
 	// 公告跑马灯
