@@ -5,28 +5,28 @@ package msg.client_message;
 // ================================== 错误码 ==================================
 
 enum E_ERR{
-	NONE    								= 0;
-	INTERNAL								= -1; // 内部错误
-	PLAYER_ACC_OR_PASSWORD_ERROR			= -2; // 账号或密码错误
-	PLAYER_NOT_EXIST						= -3; // 玩家不存在
-	PLAYER_ALREADY_LOGINED					= -4; // 玩家已经登陆
-	PLAYER_OTHER_PLACE_LOGIN				= -5; // 玩家在其他地方登陆
-	PLAYER_TOKEN_ERROR						= -6; // 令牌错误
-	PLAYER_SELECT_SERVER_NOT_FOUND			= -7; // 选择服务器不存在
-	PLAYER_ALREADY_SELECTED_SERVER			= -8; // 玩家已经选择过服务器
-	PLAYER_IS_OFFLINE						= -9; // 玩家已离线
-	PLAYER_SEND_TOO_FREQUENTLY				= -10; // 发送消息太频繁
-	PLAYER_GOLD_NOT_ENOUGH					= -11; // 金币不足
-	PLAYER_DIAMOND_NOT_ENOUGH				= -12; // 钻石不足
-	PLAYER_NAME_TOO_LONG					= -13; // 昵称过长
-	PLAYER_HEAD_TABLE_DATA_NOT_FOUND		= -14; // 头像配置不存在
-	PLAYER_NO_SUCH_HEAD						= -15; // 没有该头像
-	PLAYER_LEVEL_NOT_ENOUGH					= -16; // 等级不够
-	PLAYER_MUST_RECONN_WITH_DISCONN_STATE  	= -17; // 断开状态下必须先重连
-	PLAYER_MSG_ID_INVALID					= -18; // 消息号非法
-	PLAYER_MSG_ID_NOT_FOUND				 	= -19; // 消息号不存在
-	PLAYER_NOT_FOUND_BY_TOKEN				= -20; // 玩家对象不存在
-	PLAYER_TOKEN_NOT_FOUND					= -21; // 玩家令牌找不到
+	NONE    									= 0;
+	INTERNAL									= -1; // 内部错误
+	PLAYER_ACC_OR_PASSWORD_ERROR				= -2; // 账号或密码错误
+	PLAYER_NOT_EXIST							= -3; // 玩家不存在
+	PLAYER_ALREADY_LOGINED						= -4; // 玩家已经登陆
+	PLAYER_OTHER_PLACE_LOGIN					= -5; // 玩家在其他地方登陆
+	PLAYER_TOKEN_ERROR							= -6; // 令牌错误
+	PLAYER_SELECT_SERVER_NOT_FOUND				= -7; // 选择服务器不存在
+	PLAYER_ALREADY_SELECTED_SERVER				= -8; // 玩家已经选择过服务器
+	PLAYER_IS_OFFLINE							= -9; // 玩家已离线
+	PLAYER_SEND_TOO_FREQUENTLY					= -10; // 发送消息太频繁
+	PLAYER_GOLD_NOT_ENOUGH						= -11; // 金币不足
+	PLAYER_DIAMOND_NOT_ENOUGH					= -12; // 钻石不足
+	PLAYER_NAME_TOO_LONG						= -13; // 昵称过长
+	PLAYER_HEAD_TABLE_DATA_NOT_FOUND			= -14; // 头像配置不存在
+	PLAYER_NO_SUCH_HEAD							= -15; // 没有该头像
+	PLAYER_LEVEL_NOT_ENOUGH						= -16; // 等级不够
+	PLAYER_MUST_RECONN_WITH_DISCONN_STATE  		= -17; // 断开状态下必须先重连
+	PLAYER_MSG_ID_INVALID						= -18; // 消息号非法
+	PLAYER_MSG_ID_NOT_FOUND				 		= -19; // 消息号不存在
+	PLAYER_NOT_FOUND_BY_TOKEN					= -20; // 玩家对象不存在
+	PLAYER_TOKEN_NOT_FOUND						= -21; // 玩家令牌找不到
 	
 	// 账号
 	ACCOUNT_ALREADY_REGISTERED					= -100; // 账号已注册
