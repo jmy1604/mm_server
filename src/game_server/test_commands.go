@@ -148,7 +148,7 @@ func add_coin_cmd(p *Player, args []string) int32 {
 		return -1
 	}
 
-	p.AddCoin(int32(coin), "test_add_coin", "test_command")
+	p.AddGold(int32(coin), "test_add_coin", "test_command")
 	return 1
 }
 

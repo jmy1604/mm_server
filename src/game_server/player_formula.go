@@ -258,8 +258,8 @@ func (this *Player) make_formula_building(formula_id /*, slot_id*/ int32) int32 
 	}
 
 	// 需要消耗的货币和材料
-	if this.GetCoin() < f.Cost {
-		log.Error("玩家[%v]货币数量[%v]不足需要[%v]，打造失败", this.Id, this.GetCoin(), f.Cost)
+	if this.GetGold() < f.Cost {
+		log.Error("玩家[%v]货币数量[%v]不足需要[%v]，打造失败", this.Id, this.GetGold(), f.Cost)
 		return int32(msg_client_message.E_ERR_FORMULA_MAKING_NOT_ENOUGH_COIN)
 	}
 
@@ -316,7 +316,7 @@ func (this *Player) make_formula_building(formula_id /*, slot_id*/ int32) int32 
 	making_list = append(making_list, slot_id)
 	this.db.Info.SetMakingBuildingQueue(making_list)
 
-	this.SubCoin(f.Cost, "make_formula_building", "formula")
+	this.SubGold(f.Cost, "make_formula_building", "formula")
 	for i := 0; i < len(f.CostItems); i++ {
 		this.RemoveItem(f.CostItems[i].Id, f.CostItems[i].Num, true)
 	}

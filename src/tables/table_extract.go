@@ -28,7 +28,7 @@ type ExtractTableManager struct {
 
 func (this *ExtractTableManager) Init(table_file string) bool {
 	if table_file == "" {
-		table_file = "extract.xml"
+		table_file = "Extract.xml"
 	}
 	file_path := server_config.GetGameDataPathFile(table_file)
 	data, err := ioutil.ReadFile(file_path)

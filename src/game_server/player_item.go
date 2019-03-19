@@ -578,7 +578,7 @@ func (this *Player) AddItemResource(cid, num int32, reason, mod string) int32 {
 		}
 	case ITEM_RESOURCE_ID_GOLD:
 		{
-			return this.AddCoin(num, reason, mod)
+			return this.AddGold(num, reason, mod)
 		}
 	case ITEM_RESOURCE_ID_DIAMOND:
 		{
@@ -630,7 +630,7 @@ func (this *Player) RemoveItemResource(cid, num int32, reason, mod string) int32
 		}
 	case ITEM_RESOURCE_ID_GOLD:
 		{
-			return this.SubCoin(num, reason, mod)
+			return this.SubGold(num, reason, mod)
 		}
 	case ITEM_RESOURCE_ID_DIAMOND:
 		{
@@ -900,13 +900,13 @@ func (this *Player) AddExp(add_val int32, reason, mod string) (int32, int32) {
 
 // 玩家金币 ====================================
 
-func (this *Player) GetCoin() int32 {
+func (this *Player) GetGold() int32 {
 	return this.db.Info.GetGold()
 }
 
-func (this *Player) AddCoin(val int32, reason, mod string) int32 {
+func (this *Player) AddGold(val int32, reason, mod string) int32 {
 	if val < 0 {
-		log.Error("Player AddCoin %d", val)
+		log.Error("Player AddGold %d", val)
 		return this.db.Info.GetGold()
 	}
 
@@ -920,9 +920,9 @@ func (this *Player) AddCoin(val int32, reason, mod string) int32 {
 	return cur_coin
 }
 
-func (this *Player) SubCoin(val int32, reason, mod string) int32 {
+func (this *Player) SubGold(val int32, reason, mod string) int32 {
 	if val < 0 {
-		log.Error("Player SubCoin %d", val)
+		log.Error("Player SubGold %d", val)
 		return this.db.Info.GetGold()
 	}
 
@@ -1392,7 +1392,7 @@ func (this *Player) sell_item(item_id int32, item_count int32) int32 {
 	// 发送物品变化
 	this.item_cat_building_change_info.send_items_update(this)
 
-	this.AddCoin(item.SaleCoin*item_count, "sell item", "item")
+	this.AddGold(item.SaleCoin*item_count, "sell item", "item")
 
 	msg := &msg_client_message.S2CSellItemResult{}
 	msg.ItemId = item_id

@@ -364,7 +364,7 @@ func (this *Player) send_info() {
 		Exp:      this.db.Info.GetExp(),
 		Gold:     this.db.Info.GetGold(),
 		Diamond:  this.db.Info.GetDiamond(),
-		Icon:     this.db.Info.GetHead(),
+		Head:     this.db.Info.GetHead(),
 		VipLevel: this.db.Info.GetVipLvl(),
 		Name:     this.db.GetName(),
 		SysTime:  int32(time.Now().Unix()),
@@ -423,8 +423,6 @@ func (this *Player) send_red_point_states(modules []int32) int32 {
 // ======================================================================
 
 func reg_player_base_info_msg() {
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2S_TEST_COMMAND_ProtoID), C2STestCommandHandler)
-
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetInfo_ProtoID), C2SGetInfoHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetItemInfos_ProtoID), C2SGetItemInfosHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetDepotBuildingInfos_ProtoID), C2SGetDepotBuildingInfosHandler)

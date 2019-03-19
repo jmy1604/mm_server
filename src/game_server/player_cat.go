@@ -251,8 +251,8 @@ func (this *Player) cat_upstar(cat_id int32, cost_cat_ids []int32) int32 {
 	}
 
 	cost_coin := cat.GetStarCostCoin(curr_star)
-	if cost_coin > this.GetCoin() {
-		log.Error("Player[%v] cat[%v] cost coin[%v] not enough", this.Id, cat_id, this.GetCoin())
+	if cost_coin > this.GetGold() {
+		log.Error("Player[%v] cat[%v] cost coin[%v] not enough", this.Id, cat_id, this.GetGold())
 		return int32(msg_client_message.E_ERR_CAT_UPSTAR_FAILED)
 	}
 
@@ -297,7 +297,7 @@ func (this *Player) cat_upstar(cat_id int32, cost_cat_ids []int32) int32 {
 		}
 	}
 
-	this.SubCoin(cost_coin, "upgrade_cat_star", "cat")
+	this.SubGold(cost_coin, "upgrade_cat_star", "cat")
 
 	// 消耗的猫相同升级技能
 	for i := int32(0); i < same_num; i++ {
@@ -346,8 +346,8 @@ func (this *Player) cat_skill_levelup(cat_id int32, cost_cat_ids []int32) int32 
 	}
 
 	cost_coin := cat.GetSkillLevelCostCoin(skill_level)
-	if cost_coin > this.GetCoin() {
-		log.Error("Player[%v] cat[%v] up skill cost coin[%v] not enough", this.Id, cat_id, this.GetCoin())
+	if cost_coin > this.GetGold() {
+		log.Error("Player[%v] cat[%v] up skill cost coin[%v] not enough", this.Id, cat_id, this.GetGold())
 		return int32(msg_client_message.E_ERR_CAT_UPSKILL_NOT_ENOUGH_COIN)
 	}
 
@@ -416,7 +416,7 @@ func (this *Player) cat_skill_levelup(cat_id int32, cost_cat_ids []int32) int32 
 	}
 
 	if cost_coin > 0 {
-		this.SubCoin(cost_coin, "up_cat_skill_level", "cat")
+		this.SubGold(cost_coin, "up_cat_skill_level", "cat")
 	}
 
 	this.item_cat_building_change_info.cat_update(this, cat_id)

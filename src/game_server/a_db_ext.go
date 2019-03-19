@@ -53,8 +53,8 @@ func (this *dbGlobalRow) GetNextGuildId() int32 {
 	return new_id
 }
 
-func (this *dbPlayerInfoColumn) SubCoin(v int32) int32 {
-	this.m_row.m_lock.UnSafeLock("dbPlayerInfoColumn.SubCoin")
+func (this *dbPlayerInfoColumn) SubGold(v int32) int32 {
+	this.m_row.m_lock.UnSafeLock("dbPlayerInfoColumn.SubGold")
 	defer this.m_row.m_lock.UnSafeUnlock()
 	this.m_data.Gold = this.m_data.Gold - v
 	if this.m_data.Gold < 0 {

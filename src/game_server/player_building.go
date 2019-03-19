@@ -773,7 +773,7 @@ func (this *Player) VisitPlayerBuildings(player_id int32) int32 {
 		player_head = player.db.Info.GetHead()
 		player_level = player.db.Info.GetLvl()
 		player_vip_level = player.db.Info.GetVipLvl()
-		player_gold = player.GetCoin()
+		player_gold = player.GetGold()
 		player_diamond = player.db.Info.GetDiamond()
 		player_charm = player.db.Info.GetCharmVal()
 	} else {
@@ -1107,7 +1107,7 @@ func C2SSellBuildingHandler(p *Player, msg_data []byte) int32 {
 		if build_cfg.Type == PLAYER_BUILDING_TYPE_FARMLAND {
 			p.remove_crop(building_id)
 		}
-		p.AddCoin(build_cfg.SaleCoin, "sell", "building")
+		p.AddGold(build_cfg.SaleCoin, "sell", "building")
 	}
 
 	p.item_cat_building_change_info.building_remove(p, building_id)

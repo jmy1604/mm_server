@@ -439,7 +439,7 @@ func (this *Player) cathouse_collect_gold(building_id int32) int32 {
 
 	gold := this.get_cathouse_curr_gold(building_id)
 	this.db.CatHouses.SetCurrGold(building_id, 0)
-	this.AddCoin(gold, "cathouse_collect_gold", "cathouse")
+	this.AddGold(gold, "cathouse_collect_gold", "cathouse")
 
 	response := &msg_client_message.S2CCatHouseGetGoldResult{}
 	response.CatHouseId = building_id
@@ -502,15 +502,15 @@ func (this *Player) cathouse_start_levelup(building_id int32, send_cathouse_info
 	}
 
 	next_level := level + 1
-	if this.GetCoin() < cathouse[next_level-1].Cost {
-		log.Error("Player[%v] levelup cathouse[%v] failed, coin[%v] not enough, need[%v]", this.Id, building_id, this.GetCoin(), cathouse[next_level-1].Cost)
+	if this.GetGold() < cathouse[next_level-1].Cost {
+		log.Error("Player[%v] levelup cathouse[%v] failed, coin[%v] not enough, need[%v]", this.Id, building_id, this.GetGold(), cathouse[next_level-1].Cost)
 		return int32(msg_client_message.E_ERR_CATHOUSE_LEVELUP_COST_NOT_ENOUGH)
 	}
 
 	//this.db.CatHouses.SetLevel(building_id, next_level)
 	this.db.CatHouses.SetLevelupStartTime(building_id, int32(time.Now().Unix()))
 	this.db.CatHouses.SetIsDone(building_id, 0)
-	this.SubCoin(cathouse[next_level-1].Cost, "cathouse_start_levelup", "cathouse")
+	this.SubGold(cathouse[next_level-1].Cost, "cathouse_start_levelup", "cathouse")
 
 	response := &msg_client_message.S2CCatHouseStartLevelupResult{}
 	response.CatHouseId = building_id
@@ -614,7 +614,7 @@ func (this *Player) cathouse_remove(building_id int32, is_sell bool) int32 {
 	}
 	if is_sell {
 		add_gold := this.get_cathouse_curr_gold(building_id)
-		this.AddCoin(cathouse.SalePrice+add_gold, "cathouse_sell", "cathouse")
+		this.AddGold(cathouse.SalePrice+add_gold, "cathouse_sell", "cathouse")
 	}
 	this.db.CatHouses.Remove(building_id)
 	return 1

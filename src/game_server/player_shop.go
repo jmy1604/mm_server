@@ -122,8 +122,8 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 				return int32(msg_client_message.E_ERR_SHOP_DIAMOND_NOT_ENOUGH)
 			}
 		} else if item.CostResourceId == ITEM_RESOURCE_ID_GOLD {
-			if this.GetCoin() < num*item.CostNum {
-				log.Warn("商品[%v]价格高于所持金币[%v]", item_id, item.CostNum, this.GetCoin())
+			if this.GetGold() < num*item.CostNum {
+				log.Warn("商品[%v]价格高于所持金币[%v]", item_id, item.CostNum, this.GetGold())
 				return int32(msg_client_message.E_ERR_SHOP_COIN_NOT_ENOUGH)
 			}
 		} else if item.CostResourceId == ITEM_RESOURCE_ID_RMB {
@@ -198,7 +198,7 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 
 	// 花费资源
 	if item.CostResourceId == ITEM_RESOURCE_ID_GOLD {
-		this.SubCoin(num*item.CostNum, "buy_shop_item", "shop")
+		this.SubGold(num*item.CostNum, "buy_shop_item", "shop")
 	} else if item.CostResourceId == ITEM_RESOURCE_ID_DIAMOND {
 		this.SubDiamond(num*item.CostNum, "buy_shop_item", "shop")
 	} else if item.CostResourceId == ITEM_RESOURCE_ID_RMB {

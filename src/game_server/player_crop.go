@@ -249,8 +249,8 @@ func (this *Player) plant_crop(crop_id int32, dst_building_id int32) int32 {
 		return int32(msg_client_message.E_ERR_CROP_IS_NO_UNLOCK)
 	}
 
-	if crop.Cost > this.GetCoin() {
-		log.Error("Player[%v] plant crop[%v] need coin[%v] < now coin[%v]", this.Id, crop_id, crop.Cost, this.GetCoin())
+	if crop.Cost > this.GetGold() {
+		log.Error("Player[%v] plant crop[%v] need coin[%v] < now coin[%v]", this.Id, crop_id, crop.Cost, this.GetGold())
 		return int32(msg_client_message.E_ERR_CROP_NEED_COIN_NOT_ENOUGH)
 	}
 
@@ -281,7 +281,7 @@ func (this *Player) plant_crop(crop_id int32, dst_building_id int32) int32 {
 	}
 	this.db.Crops.Add(d)
 
-	this.SubCoin(crop.Cost, "plant_crop", "crop")
+	this.SubGold(crop.Cost, "plant_crop", "crop")
 
 	response := &msg_client_message.S2CPlantCropResult{}
 	response.CropId = crop_id
