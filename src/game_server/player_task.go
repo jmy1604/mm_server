@@ -4,7 +4,6 @@ import (
 	"mm_server/libs/log"
 	//"mm_server/libs/utils"
 	"mm_server/proto/gen_go/client_message"
-	"mm_server/proto/gen_go/client_message_id"
 	"mm_server/src/tables"
 
 	//"time"
@@ -194,14 +193,14 @@ func (this *Player) send_task(task_type int32) int32 {
 		response.TaskType = tables.TASK_TYPE_DAILY
 		response.TaskList = this.fill_task_msg(tables.TASK_TYPE_DAILY)
 		response.DailyTaskRefreshRemainSeconds = remain_seconds
-		this.Send(uint16(msg_client_message_id.MSGID_S2C_TASK_DATA_RESPONSE), &response)
+		this.Send(uint16(msg_client_message.S2CTaskDataResponse_ProtoID), &response)
 		log.Trace("Player[%v] daily tasks %v", this.Id, response)
 	}
 
 	if task_type == 0 || task_type == tables.TASK_TYPE_ACHIEVE {
 		response.TaskType = tables.TASK_TYPE_ACHIEVE
 		response.TaskList = this.fill_task_msg(tables.TASK_TYPE_ACHIEVE)
-		this.Send(uint16(msg_client_message_id.MSGID_S2C_TASK_DATA_RESPONSE), &response)
+		this.Send(uint16(msg_client_message.S2CTaskDataResponse_ProtoID), &response)
 		log.Trace("Player[%v] achive tasks %v", this.Id, response)
 	}
 
@@ -215,7 +214,7 @@ func (this *Player) NotifyTaskValue(notify_task *msg_client_message.S2CTaskValue
 	notify_task.Data.Id = task_id
 	notify_task.Data.Value = value
 	notify_task.Data.State = state
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_TASK_VALUE_NOTIFY), notify_task)
+	this.Send(uint16(msg_client_message.S2CTaskValueNotify_ProtoID), notify_task)
 }
 
 // 任务是否完成
@@ -390,7 +389,7 @@ func (p *Player) task_get_reward(task_id int32) int32 {
 	response := &msg_client_message.S2CTaskRewardResponse{
 		TaskId: task_id,
 	}
-	p.Send(uint16(msg_client_message_id.MSGID_S2C_TASK_REWARD_RESPONSE), response)
+	p.Send(uint16(msg_client_message.S2CTaskRewardResponse_ProtoID), response)
 
 	log.Trace("Player[%v] get task %v reward", p.Id, task_id)
 

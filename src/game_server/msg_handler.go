@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"mm_server/libs/log"
 	"mm_server/proto/gen_go/client_message"
-	"mm_server/proto/gen_go/client_message_id"
 	"mm_server/src/share_data"
 	"net"
 	"net/http"
@@ -192,7 +191,7 @@ func _process_one_client_msg(p *Player, msg_id int32, msg_data []byte, handlerin
 	} else {
 		p.b_base_prop_chg = false
 		p.OnInit()
-		if atomic.LoadInt32(&p.is_login) > 0 || msg_id == int32(msg_client_message_id.MSGID_C2S_RECONNECT_REQUEST) {
+		if atomic.LoadInt32(&p.is_login) > 0 || msg_id == int32(msg_client_message.C2SReconnectRequest_ProtoID) {
 			ret_code = handlerinfo.player_msg_handler(p, msg_data)
 		} else {
 			ret_code = int32(msg_client_message.E_ERR_PLAYER_MUST_RECONN_WITH_DISCONN_STATE)

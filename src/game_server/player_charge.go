@@ -4,7 +4,6 @@ import (
 	"mm_server/libs/log"
 	"mm_server/libs/utils"
 	"mm_server/proto/gen_go/client_message"
-	"mm_server/proto/gen_go/client_message_id"
 	"mm_server/src/tables"
 	"sync/atomic"
 	"time"
@@ -185,7 +184,7 @@ func (this *Player) charge_data() int32 {
 		Datas:            datas,
 		ChargedBundleIds: charged_ids,
 	}
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_CHARGE_DATA_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CChargeDataResponse_ProtoID), response)
 
 	log.Trace("Player[%v] charge data %v", this.Id, response)
 
@@ -278,7 +277,7 @@ func (this *Player) _charge_with_bundle_id(channel int32, bundle_id string, purc
 		this.db.PayCommon.SetFirstPayState(1)
 		// 首充通知
 		notify := &msg_client_message.S2CChargeFirstRewardNotify{}
-		this.Send(uint16(msg_client_message_id.MSGID_S2C_CHARGE_FIRST_REWARD_NOTIFY), notify)
+		this.Send(uint16(msg_client_message.S2CChargeFirstRewardNotify_ProtoID), notify)
 	}
 
 	return 1, !has
@@ -300,7 +299,7 @@ func (this *Player) charge_with_bundle_id(channel int32, bundle_id string, purch
 		IsFirst:     is_first,
 		ClientIndex: index,
 	}
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_CHARGE_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CChargeResponse_ProtoID), response)
 
 	log.Trace("Player[%v] charged bundle %v with channel %v", this.Id, response, channel)
 
@@ -340,7 +339,7 @@ func (this *Player) charge_first_award() int32 {
 	response := &msg_client_message.S2CChargeFirstAwardResponse{
 		Rewards: Map2ItemInfos(rewards),
 	}
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_CHARGE_FIRST_AWARD_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CChargeFirstAwardResponse_ProtoID), response)
 
 	log.Trace("Player[%v] first charge award %v", this.Id, response)
 

@@ -9,7 +9,6 @@ import (
 	"mm_server/libs/timer"
 	"mm_server/libs/utils"
 	"mm_server/proto/gen_go/client_message"
-	"mm_server/proto/gen_go/client_message_id"
 	"mm_server/proto/gen_go/server_message"
 	"mm_server/src/server_config"
 	"mm_server/src/share_data"
@@ -829,7 +828,7 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var err_code, msg_id int32
-	if msg.MsgCode == int32(msg_client_message_id.MSGID_C2S_LOGIN_REQUEST) {
+	if msg.MsgCode == int32(msg_client_message.C2SLoginRequest_ProtoID) {
 		var login_msg msg_client_message.C2SLoginRequest
 		err = proto.Unmarshal(msg.GetData(), &login_msg)
 		if err != nil {
@@ -842,9 +841,9 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 			log.Error("Acc is empty")
 			return
 		}
-		msg_id = int32(msg_client_message_id.MSGID_S2C_LOGIN_RESPONSE)
+		msg_id = int32(msg_client_message.S2CLoginResponse_ProtoID)
 		err_code, data = login_handler(login_msg.GetAcc(), login_msg.GetPassword(), login_msg.GetChannel())
-	} else if msg.MsgCode == int32(msg_client_message_id.MSGID_C2S_REGISTER_REQUEST) {
+	} else if msg.MsgCode == int32(msg_client_message.C2SRegisterRequest_ProtoID) {
 		var register_msg msg_client_message.C2SRegisterRequest
 		err = proto.Unmarshal(msg.GetData(), &register_msg)
 		if err != nil {
@@ -852,9 +851,9 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 			log.Error("Msg C2SRegisterRequest unmarshal err %v", err.Error())
 			return
 		}
-		msg_id = int32(msg_client_message_id.MSGID_S2C_REGISTER_RESPONSE)
+		msg_id = int32(msg_client_message.S2CRegisterResponse_ProtoID)
 		err_code, data = register_handler(register_msg.GetAccount(), register_msg.GetPassword(), register_msg.GetIsGuest())
-	} else if msg.MsgCode == int32(msg_client_message_id.MSGID_C2S_SET_LOGIN_PASSWORD_REQUEST) {
+	} else if msg.MsgCode == int32(msg_client_message.C2SSetLoginPasswordRequest_ProtoID) {
 		var pass_msg msg_client_message.C2SSetLoginPasswordRequest
 		err = proto.Unmarshal(msg.GetData(), &pass_msg)
 		if err != nil {
@@ -862,9 +861,9 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 			log.Error("Msg C2SSetLoginPasswordRequest unmarshal err %v", err.Error())
 			return
 		}
-		msg_id = int32(msg_client_message_id.MSGID_S2C_SET_LOGIN_PASSWORD_RESPONSE)
+		msg_id = int32(msg_client_message.S2CSetLoginPasswordResponse_ProtoID)
 		err_code, data = set_password_handler(pass_msg.GetAccount(), pass_msg.GetPassword(), pass_msg.GetNewPassword())
-	} else if msg.MsgCode == int32(msg_client_message_id.MSGID_C2S_GUEST_BIND_NEW_ACCOUNT_REQUEST) {
+	} else if msg.MsgCode == int32(msg_client_message.C2SGuestBindNewAccountRequest_ProtoID) {
 		var bind_msg msg_client_message.C2SGuestBindNewAccountRequest
 		err = proto.Unmarshal(msg.GetData(), &bind_msg)
 		if err != nil {
@@ -872,7 +871,7 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 			log.Error("Msg C2SGuestBindNewAccountRequest unmarshal err %v", err.Error())
 			return
 		}
-		msg_id = int32(msg_client_message_id.MSGID_S2C_GUEST_BIND_NEW_ACCOUNT_RESPONSE)
+		msg_id = int32(msg_client_message.S2CGuestBindNewAccountResponse_ProtoID)
 		err_code, data = bind_new_account_handler(bind_msg.GetServerId(), bind_msg.GetAccount(), bind_msg.GetPassword(), bind_msg.GetNewAccount(), bind_msg.GetNewPassword(), bind_msg.GetNewChannel())
 	} else {
 		if msg.MsgCode > 0 {

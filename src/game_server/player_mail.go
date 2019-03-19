@@ -3,7 +3,6 @@ package main
 import (
 	"mm_server/libs/log"
 	"mm_server/proto/gen_go/client_message"
-	"mm_server/proto/gen_go/client_message_id"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -422,7 +421,7 @@ func (this *Player) CheckNewMail() int32 {
 	response := &msg_client_message.S2CMailsNewNotify{
 		Mails: mails,
 	}
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_MAILS_NEW_NOTIFY), response)
+	this.Send(uint16(msg_client_message.S2CMailsNewNotify_ProtoID), response)
 
 	log.Trace("Player[%v] get new mails[%v] notify", this.Id, mails)
 
@@ -460,7 +459,7 @@ func (this *Player) GetMailList() int32 {
 	response := &msg_client_message.S2CMailListResponse{
 		Mails: basic,
 	}
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_MAIL_LIST_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CMailListResponse_ProtoID), response)
 
 	log.Debug("Player[%v] mail list: %v", this.Id, response)
 
@@ -500,7 +499,7 @@ func (this *Player) GetMailDetail(mail_ids []int32) int32 {
 		Mails: details,
 	}
 
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_MAIL_DETAIL_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CMailDetailResponse_ProtoID), response)
 
 	log.Trace("Player[%v] mails[%v] detail: %v", this.Id, mail_ids, response)
 
@@ -552,7 +551,7 @@ func (this *Player) GetMailAttachedItems(mail_ids []int32) int32 {
 		MailIds:       mail_ids,
 		AttachedItems: Map2ItemInfos(attached_items),
 	}
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_MAIL_GET_ATTACHED_ITEMS_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CMailGetAttachedItemsResponse_ProtoID), response)
 
 	log.Trace("Player[%v] mails[%v] get attached items: %v", this.Id, mail_ids, attached_items)
 
@@ -576,7 +575,7 @@ func (this *Player) DeleteMails(mail_ids []int32) int32 {
 		MailIds: mail_ids,
 	}
 
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_MAIL_DELETE_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CMailDeleteResponse_ProtoID), response)
 
 	return 1
 }
@@ -593,7 +592,7 @@ func C2SMailSendHandler(p *Player, msg_data []byte) int32 {
 		response := &msg_client_message.S2CMailSendResponse{
 			MailId: mail_id,
 		}
-		p.Send(uint16(msg_client_message_id.MSGID_S2C_MAIL_SEND_RESPONSE), response)
+		p.Send(uint16(msg_client_message.S2CMailSendResponse_ProtoID), response)
 	}
 	return mail_id
 }

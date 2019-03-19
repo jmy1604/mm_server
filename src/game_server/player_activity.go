@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"mm_server/proto/gen_go/client_message"
-	"mm_server/proto/gen_go/client_message_id"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -226,7 +225,7 @@ func (this *Player) activity_data() int32 {
 		}
 	}
 
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_ACTIVITY_DATA_RESPONSE), &msg_client_message.S2CActivityDataResponse{
+	this.Send(uint16(msg_client_message.S2CActivityDataResponse_ProtoID), &msg_client_message.S2CActivityDataResponse{
 		Data: datas,
 	})
 	log.Trace("Player[%v] activity data %v", this.Id, datas)
@@ -324,7 +323,7 @@ func (this *Player) activity_update_one_charge(id int32, sa *tables.XmlSubActivi
 
 	value, _ := this.activity_check_and_add_sub(id, sa.Id, 1)
 
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_ACTIVITY_DATA_NOTIFY), &msg_client_message.S2CActivityDataNotify{
+	this.Send(uint16(msg_client_message.S2CActivityDataNotify_ProtoID), &msg_client_message.S2CActivityDataNotify{
 		Id:    id,
 		SubId: sa.Id,
 		Value: value,
@@ -392,7 +391,7 @@ func (this *Player) activity_update(a *tables.XmlActivityItem, param1, param2, p
 
 		sub_value, _ := this.activity_check_and_add_sub(a.Id, sa_id, param_value)
 
-		this.Send(uint16(msg_client_message_id.MSGID_S2C_ACTIVITY_DATA_NOTIFY), &msg_client_message.S2CActivityDataNotify{
+		this.Send(uint16(msg_client_message.S2CActivityDataNotify_ProtoID), &msg_client_message.S2CActivityDataNotify{
 			Id:    a.Id,
 			SubId: sa_id,
 			Value: sub_value,
@@ -448,7 +447,7 @@ func (this *Player) activity_exchange(id, sub_id int32) int32 {
 		Id:    id,
 		SubId: sub_id,
 	}
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_ACTIVITY_EXCHANGE_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CActivityExchangeResponse_ProtoID), response)
 
 	return 1
 }

@@ -4,7 +4,6 @@ import (
 	"mm_server/libs/log"
 	"mm_server/libs/utils"
 	"mm_server/proto/gen_go/client_message"
-	"mm_server/proto/gen_go/client_message_id"
 	"sync"
 
 	"github.com/golang/protobuf/proto"
@@ -353,7 +352,7 @@ func (this *Player) get_rank_list_items(rank_type, start_rank, num int32) int32 
 		SelfValue:          self_value,
 		SelfValue2:         self_value2,
 	}
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_RANK_LIST_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CRankListResponse_ProtoID), response)
 	log.Debug("Player[%v] get rank type[%v] list response", this.Id, rank_type)
 	return 1
 }

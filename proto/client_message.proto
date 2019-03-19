@@ -523,10 +523,12 @@ message S2CPlayerChangeHeadResponse {
 
 // 重连
 message C2SReconnectRequest {
+	enum EProtocol { None = 0; ProtoID = 1160; }
 }
 
 message S2CReconnectResponse {
 	string NewToken							= 1;
+	enum EProtocol { None = 0; ProtoID = 1161; }
 }
 
 
@@ -2392,46 +2394,46 @@ message C2SFosterSetCat {
 message S2CFosterSetCatResult {
 	int32 BuildingId						= 1;
 	int32 CatId								= 2;
-	enum EProtocol { None = 0; ProtoID = 12101; }
+	enum EProtocol { None = 0; ProtoID = 12111; }
 }
 
 // 猫出寄养所
 message C2SFosterOutCat {
 	int32 BuildingId 						= 1;
 	int32 CatId								= 2;
-	enum EProtocol { None = 0; ProtoID = 12102; }
+	enum EProtocol { None = 0; ProtoID = 12112; }
 }
 message S2CFosterOutCatResult {
 	int32 BuildingId						= 1;
 	int32 CatId								= 2;
-	enum EProtocol { None = 0; ProtoID = 12103; }
+	enum EProtocol { None = 0; ProtoID = 12113; }
 }
 
 // 猫进好友寄养所
 message C2SFosterSetCat2Friend {
 	int32 FriendId							= 1;
 	int32 CatId								= 2;
-	enum EProtocol { None = 0; ProtoID = 12104; }
+	enum EProtocol { None = 0; ProtoID = 12114; }
 }
 message S2CFosterSetCat2FriendResult {
 	int32 FriendId							= 1;
 	int32 CatId								= 2;
-	enum EProtocol { None = 0; ProtoID = 12105; }
+	enum EProtocol { None = 0; ProtoID = 12115; }
 }
 
 // 获取有寄养空位的好友列表
 message C2SFosterGetEmptySlotFriends {
-	enum EProtocol { None = 0; ProtoID = 12106; }	
+	enum EProtocol { None = 0; ProtoID = 12116; }	
 }
 message S2CFosterGetEmptySlotFriendsResult {
 	repeated FriendInfo Friends 			= 1;
-	enum EProtocol { None = 0; ProtoID = 12107; }
+	enum EProtocol { None = 0; ProtoID = 12117; }
 }
 
 // 获取玩家的寄养所
 message C2SGetPlayerFosterCats {
 	int32 PlayerId 							= 1;
-	enum EProtocol { None = 0; ProtoID = 12108; }
+	enum EProtocol { None = 0; ProtoID = 12118; }
 }
 message FosterPlayerCatInfo {
 	int32 CatTableId 						= 1;
@@ -2450,7 +2452,7 @@ message S2CGetPlayerFosterCatsResult {
 	repeated FosterPlayerCatInfo Cats 		= 4; // 玩家寄养所的猫
 	repeated FosteredFriendCatInfo FriendCats = 5; // 玩家好友寄养的猫
 	int32 FosteredSlotNum					= 6; // 寄养槽位数
-	enum EProtocol { None = 0; ProtoID = 12109; }
+	enum EProtocol { None = 0; ProtoID = 12119; }
 }
 
 // ----------------------------------- 排行榜 ---------------------------------

@@ -3,7 +3,6 @@ package main
 import (
 	"mm_server/libs/log"
 	"mm_server/proto/gen_go/client_message"
-	"mm_server/proto/gen_go/client_message_id"
 	"mm_server/src/tables"
 	"time"
 
@@ -126,7 +125,7 @@ func (this *Player) chat(channel int32, content []byte, evalue int32) int32 {
 		Channel: channel,
 		Content: content,
 	}
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_CHAT_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CChatResponse_ProtoID), response)
 
 	log.Trace("Player[%v] chat content[%v] in channel[%v]", this.Id, content, channel)
 
@@ -153,7 +152,7 @@ func (this *Player) _pull_chat(chat_mgr *ChatMgr, channel, now_time int32, empty
 		Channel: channel,
 		Items:   msgs,
 	}
-	this.Send(uint16(msg_client_message_id.MSGID_S2C_CHAT_MSG_PULL_RESPONSE), response)
+	this.Send(uint16(msg_client_message.S2CChatMsgPullResponse_ProtoID), response)
 
 	log.Trace("Player[%v] pulled chat channel %v msgs %v", this.Id, channel, response)
 

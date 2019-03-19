@@ -3,7 +3,6 @@ package main
 import (
 	"mm_server/libs/log"
 	"mm_server/proto/gen_go/client_message"
-	"mm_server/proto/gen_go/client_message_id"
 	"mm_server/src/share_data"
 	"sync"
 	"sync/atomic"
@@ -136,18 +135,18 @@ func (this *PlayerManager) OnTick() {
 //==============================================================================
 func (this *PlayerManager) RegMsgHandler() {
 	if !config.DisableTestCommand {
-		msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_TEST_COMMAND), C2STestCommandHandler)
+		msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2S_TEST_COMMAND_ProtoID), C2STestCommandHandler)
 	}
 
-	msg_handler_mgr.SetMsgHandler(uint16(msg_client_message_id.MSGID_C2S_ENTER_GAME_REQUEST), C2SEnterGameRequestHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_LEAVE_GAME_REQUEST), C2SLeaveGameRequestHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_HEARTBEAT), C2SHeartbeatHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_DATA_SYNC_REQUEST), C2SDataSyncHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_PLAYER_CHANGE_NAME_REQUEST), C2SPlayerChangeNameHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_PLAYER_CHANGE_HEAD_REQUEST), C2SPlayerChangeHeadHandler)
+	msg_handler_mgr.SetMsgHandler(uint16(msg_client_message.C2SEnterGameRequest_ProtoID), C2SEnterGameRequestHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SLeaveGameRequest_ProtoID), C2SLeaveGameRequestHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SHeartbeat_ProtoID), C2SHeartbeatHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetInfo_ProtoID), C2SDataSyncHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlayerChangeNameRequest_ProtoID), C2SPlayerChangeNameHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlayerChangeHeadRequest_ProtoID), C2SPlayerChangeHeadHandler)
 
 	// 重连
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_RECONNECT_REQUEST), C2SReconnectHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SReconnectRequest_ProtoID), C2SReconnectHandler)
 
 	reg_player_mail_msg()
 	reg_player_base_info_msg()
@@ -221,8 +220,8 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_EXPLORE_CANCEL_REQUEST), C2SExploreCancelHandler)*/
 
 	// 聊天
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_CHAT_REQUEST), C2SChatHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_CHAT_MSG_PULL_REQUEST), C2SChatPullMsgHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChatRequest_ProtoID), C2SChatHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChatMsgPullRequest_ProtoID), C2SChatPullMsgHandler)
 
 	// 签到
 	/*msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_SIGN_DATA_REQUEST), C2SSignDataHandler)
@@ -238,13 +237,13 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChargeFirstAwardRequest_ProtoID), C2SChargeFirstAwardHandler)
 
 	// 红点提示
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_RED_POINT_STATES_REQUEST), C2SRedPointStatesHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRedPointStatesRequest_ProtoID), C2SRedPointStatesHandler)
 
 	// 引导
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_GUIDE_DATA_SAVE_REQUEST), C2SGuideDataSaveHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGuideDataSaveRequest_ProtoID), C2SGuideDataSaveHandler)
 
 	// 活动
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_ACTIVITY_DATA_REQUEST), C2SActivityDataHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SActivityDataRequest_ProtoID), C2SActivityDataHandler)
 }
 
 func C2SEnterGameRequestHandler(msg_data []byte) (int32, *Player) {
@@ -350,7 +349,7 @@ func C2SHeartbeatHandler(p *Player, msg_data []byte) int32 {
 	response := &msg_client_message.S2CHeartbeat{
 		SysTime: int32(time.Now().Unix()),
 	}
-	p.Send(uint16(msg_client_message_id.MSGID_S2C_HEARTBEAT), response)
+	p.Send(uint16(msg_client_message.S2CHeartbeat_ProtoID), response)
 
 	return 1
 }
@@ -423,7 +422,7 @@ func C2SPlayerChangeNameHandler(p *Player, msg_data []byte) int32 {
 		}
 	}
 	p.db.SetName(req.GetNewName())
-	p.Send(uint16(msg_client_message_id.MSGID_S2C_PLAYER_CHANGE_NAME_RESPONSE), &msg_client_message.S2CPlayerChangeNameResponse{
+	p.Send(uint16(msg_client_message.S2CPlayerChangeNameResponse_ProtoID), &msg_client_message.S2CPlayerChangeNameResponse{
 		NewName: req.GetNewName(),
 	})
 
@@ -461,7 +460,7 @@ func C2SGuideDataSaveHandler(p *Player, msg_data []byte) int32 {
 	response := &msg_client_message.S2CGuideDataSaveResponse{
 		Data: req.GetData(),
 	}
-	p.Send(uint16(msg_client_message_id.MSGID_S2C_GUIDE_DATA_SAVE_RESPONSE), response)
+	p.Send(uint16(msg_client_message.S2CGuideDataSaveResponse_ProtoID), response)
 	log.Debug("Player[%v] guide save %v", p.Id, req.GetData())
 	return 1
 }
@@ -482,7 +481,7 @@ func (p *Player) reconnect() int32 {
 	response := &msg_client_message.S2CReconnectResponse{
 		NewToken: new_token,
 	}
-	p.Send(uint16(msg_client_message_id.MSGID_S2C_RECONNECT_RESPONSE), response)
+	p.Send(uint16(msg_client_message.S2CReconnectResponse_ProtoID), response)
 
 	p.send_items()
 

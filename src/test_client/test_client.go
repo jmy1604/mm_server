@@ -8,7 +8,6 @@ import (
 	"mm_server/libs/log"
 	"mm_server/libs/timer"
 	"mm_server/proto/gen_go/client_message"
-	"mm_server/proto/gen_go/client_message_id"
 	"net/http"
 	"strconv"
 	"strings"
@@ -181,12 +180,12 @@ func register_func(account, password string, is_guest int32) {
 		return
 	}
 
-	resp_msg := _send_func(int32(msg_client_message_id.MSGID_C2S_REGISTER_REQUEST), data)
+	resp_msg := _send_func(int32(msg_client_message.C2SRegisterRequest_ProtoID), data)
 	if resp_msg.GetErrorCode() < 0 {
 		return
 	}
 
-	if resp_msg.GetMsgCode() != int32(msg_client_message_id.MSGID_S2C_REGISTER_RESPONSE) {
+	if resp_msg.GetMsgCode() != int32(msg_client_message.S2CRegisterResponse_ProtoID) {
 		log.Warn("returned msg_id[%v] is not correct")
 		return
 	}
@@ -216,12 +215,12 @@ func bind_new_account_func(server_id int32, account, password, new_account, new_
 		return
 	}
 
-	resp_msg := _send_func(int32(msg_client_message_id.MSGID_C2S_GUEST_BIND_NEW_ACCOUNT_REQUEST), data)
+	resp_msg := _send_func(int32(msg_client_message.C2SGuestBindNewAccountRequest_ProtoID), data)
 	if resp_msg.GetErrorCode() < 0 {
 		return
 	}
 
-	if resp_msg.GetMsgCode() != int32(msg_client_message_id.MSGID_S2C_GUEST_BIND_NEW_ACCOUNT_RESPONSE) {
+	if resp_msg.GetMsgCode() != int32(msg_client_message.S2CGuestBindNewAccountResponse_ProtoID) {
 		log.Warn("returned msg_id[%v] is not correct")
 		return
 	}
@@ -248,12 +247,12 @@ func login_func(account, password, channel, client_os string) {
 		return
 	}
 
-	resp_msg := _send_func(int32(msg_client_message_id.MSGID_C2S_LOGIN_REQUEST), data)
+	resp_msg := _send_func(int32(msg_client_message.C2SLoginRequest_ProtoID), data)
 	if resp_msg.GetErrorCode() < 0 {
 		return
 	}
 
-	if resp_msg.GetMsgCode() != int32(msg_client_message_id.MSGID_S2C_LOGIN_RESPONSE) {
+	if resp_msg.GetMsgCode() != int32(msg_client_message.S2CLoginResponse_ProtoID) {
 		log.Warn("returned msg_id[%v] is not correct")
 		return
 	}
@@ -286,7 +285,7 @@ func select_server_func(account, token, game_ip string, server_id int32) {
 	game_conn_mgr.AddGameConn(cur_game_conn)
 	req2s := &msg_client_message.C2SEnterGameRequest{}
 	req2s.Acc = account
-	cur_game_conn.Send(uint16(msg_client_message_id.MSGID_C2S_ENTER_GAME_REQUEST), req2s)
+	cur_game_conn.Send(uint16(msg_client_message.C2SEnterGameRequest_ProtoID), req2s)
 }
 
 func set_password_func(account, password, new_password string) {
@@ -301,12 +300,12 @@ func set_password_func(account, password, new_password string) {
 		return
 	}
 
-	resp_msg := _send_func(int32(msg_client_message_id.MSGID_C2S_SET_LOGIN_PASSWORD_REQUEST), data)
+	resp_msg := _send_func(int32(msg_client_message.C2SSetLoginPasswordRequest_ProtoID), data)
 	if resp_msg.GetErrorCode() < 0 {
 		return
 	}
 
-	if resp_msg.GetMsgCode() != int32(msg_client_message_id.MSGID_S2C_SET_LOGIN_PASSWORD_RESPONSE) {
+	if resp_msg.GetMsgCode() != int32(msg_client_message.S2CSetLoginPasswordResponse_ProtoID) {
 		log.Warn("returned msg_id[%v] is not correct")
 		return
 	}
@@ -526,12 +525,12 @@ func (this *TestClient) _heartbeat() {
 				}
 				c := game_conn_mgr.acc_arr[i]
 				if c != nil {
-					c.Send(uint16(msg_client_message_id.MSGID_C2S_HEARTBEAT), &heartbeat)
+					c.Send(uint16(msg_client_message.C2SHeartbeat_ProtoID), &heartbeat)
 				}
 			}
 		} else {
 			if cur_game_conn != nil {
-				cur_game_conn.Send(uint16(msg_client_message_id.MSGID_C2S_HEARTBEAT), &heartbeat)
+				cur_game_conn.Send(uint16(msg_client_message.C2SHeartbeat_ProtoID), &heartbeat)
 			}
 		}
 		this.last_heartbeat = now_time
@@ -554,7 +553,7 @@ func (this *TestClient) _cmd(cmd *msg_client_message.C2S_TEST_COMMAND) {
 
 					this.shutdown_completed = true
 				}()
-				conn.Send(uint16(msg_client_message_id.MSGID_C2S_TEST_COMMAND), cmd)
+				conn.Send(uint16(msg_client_message.C2S_TEST_COMMAND_ProtoID), cmd)
 			}(c)
 		}
 	} else {
@@ -562,7 +561,7 @@ func (this *TestClient) _cmd(cmd *msg_client_message.C2S_TEST_COMMAND) {
 			log.Error("hall connection is not estabulished")
 			return
 		}
-		cur_game_conn.Send(uint16(msg_client_message_id.MSGID_C2S_TEST_COMMAND), cmd)
+		cur_game_conn.Send(uint16(msg_client_message.C2S_TEST_COMMAND_ProtoID), cmd)
 	}
 }
 
