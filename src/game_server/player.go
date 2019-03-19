@@ -160,35 +160,9 @@ func (this *Player) add_msg_data(msg_code uint16, data []byte) {
 	return
 }
 
-func (this *Player) SendBaseInfo() {
-	var msg msg_client_message.S2CRetBaseInfo
-	msg.Nick = this.db.GetName()
-	msg.Coins = this.db.Info.GetGold()
-	msg.Diamonds = this.db.Info.GetDiamond()
-	msg.Lvl = this.db.Info.GetLvl()
-	msg.Exp = this.db.Info.GetExp()
-	msg.Head = this.db.Info.GetHead()
-	msg.CurMaxStage = this.db.Info.GetCurMaxStage()
-	msg.CurUnlockMaxStage = this.db.Info.GetMaxUnlockStage()
-	msg.CharmVal = this.db.Info.GetCharmVal()
-	msg.CatFood = this.db.Info.GetCatFood()
-	msg.Zan = this.db.Info.GetZan()
-	msg.FriendPoints = this.db.Info.GetFriendPoints()
-	msg.SoulStone = this.db.Info.GetSoulStone()
-	msg.Star = this.db.Info.GetTotalStars()
-	msg.Spirit = this.CalcSpirit()
-	msg.CharmMetal = this.db.Info.GetCharmMedal()
-	//msg.HistoricalMaxStar = this.db.Stages.GetTotalTopStar()
-	msg.ChangeNameNum = this.db.Info.GetChangeNameCount()
-	msg.ChangeNameCostDiamond = global_config.ChangeNameCostDiamond
-	msg.ChangeNameFreeNum = global_config.ChangeNameFreeNum
-
-	this.Send(uint16(msg_client_message.S2CRetBaseInfo_ProtoID), &msg)
-}
-
 func (this *Player) PopCurMsgData() []byte {
 	if this.b_base_prop_chg {
-		this.SendBaseInfo()
+		this.send_info()
 	}
 
 	if this.ChkMapBlock() > 0 {
@@ -452,7 +426,6 @@ func reg_player_base_info_msg() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2S_TEST_COMMAND_ProtoID), C2STestCommandHandler)
 
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetInfo_ProtoID), C2SGetInfoHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetBaseInfo_ProtoID), C2SGetBaseInfoHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetItemInfos_ProtoID), C2SGetItemInfosHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetDepotBuildingInfos_ProtoID), C2SGetDepotBuildingInfosHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetCatInfos_ProtoID), C2SGetCatInfosHandler)
@@ -529,19 +502,6 @@ func reg_player_base_info_msg() {
 
 	// 心跳
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SHeartbeat_ProtoID), C2SHeartbeatHandler)
-}
-
-func C2SGetBaseInfoHandler(p *Player, msg_data []byte) int32 {
-	var req msg_client_message.C2SGetBaseInfo
-	err := proto.Unmarshal(msg_data, &req)
-	if err != nil {
-		log.Error("unmarshal msg failed err(%s) !", err.Error())
-		return -1
-	}
-
-	p.SendBaseInfo()
-
-	return 1
 }
 
 func C2SGetItemInfosHandler(p *Player, msg_data []byte) int32 {
@@ -965,7 +925,7 @@ func C2SGetInfoHandler(p *Player, msg_data []byte) int32 {
 	}
 
 	if req.GetBase() {
-		p.SendBaseInfo()
+		p.send_info()
 	}
 
 	if req.GetItem() {

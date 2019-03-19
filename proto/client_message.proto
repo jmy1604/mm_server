@@ -496,6 +496,21 @@ message S2CPlayerInfoResponse {
 	int32 VipLevel							= 6; // VIP等级
 	string Name								= 7; // 昵称
 	int32 SysTime							= 8; // 系统时间
+	int32 CurMaxStage 						= 9; // 当前通关关卡数目
+	int32 CurUnlockMaxStage 				= 10; // 最大可通关关卡
+	int32 CharmVal 							= 11; // 魅力值
+	int32 Star 								= 12; // 星数
+	int32 Zan 								= 13; // 点赞数
+	int32 CatFood 							= 14; // 猫粮
+	int32 Spirit 							= 15; // 体力
+	int32 FriendPoints 						= 16; // 友情点
+	int32 SoulStone							= 17; // 魂石
+	int32 CharmMetal						= 18; // 魅力勋章
+	int32 HistoricalMaxStar					= 19; // 历史最大星星数
+	int32 ChangeNameNum						= 20; // 改名次数
+	int32 ChangeNameFreeNum					= 21; // 已用免费次数
+	int32 ChangeNameCostDiamond				= 22; // 改名价格
+	
 	enum EProtocol { None = 0; ProtoID = 1151; }
 }
 
@@ -673,37 +688,6 @@ message C2SGetInfo {
 	bool Farm								= 12; // 农田
 
 	enum EProtocol { None = 0; ProtoID = 10004; }
-}
-
-// 拉基础信息
-message C2SGetBaseInfo {
-	enum EProtocol { None = 0; ProtoID = 10005; }
-}
-
-message S2CRetBaseInfo {
-	int32 Coins 							= 1; // 玩家金币
-	int32 Diamonds 							= 2; // 玩家钻石
-	int32 Lvl 								= 3; // 等级
-	int32 Exp 								= 4; // 经验
-	int32 CurMaxStage 						= 5; // 当前通关关卡数目
-	int32 CurUnlockMaxStage 				= 6; // 最大可通关关卡
-	int32 CharmVal 							= 7; // 魅力值
-	string Nick 							= 8; // 昵称
-	int32 Head 								= 9; // 头像
-	int32 Star 								= 10; // 星数
-	int32 Zan 								= 11; // 点赞数
-	int32 CatFood 							= 12; // 猫粮
-	int32 Spirit 							= 13; // 体力
-	int32 FriendPoints 						= 14; // 友情点
-	int32 SoulStone							= 15; // 魂石
-	int32 CharmMetal						= 16; // 魅力勋章
-	int32 HistoricalMaxStar					= 17; // 历史最大星星数
-	int32 ChangeNameNum						= 18; // 改名次数
-	int32 ChangeNameFreeNum					= 19; // 已用免费次数
-	int32 ChangeNameCostDiamond				= 20; // 改名价格
-	int32 DayBuyTiLiCount      				= 21; // 今天购买体力次数
-
-	enum EProtocol { None = 0; ProtoID = 10006; }
 }
 
 /// 拉物品信息

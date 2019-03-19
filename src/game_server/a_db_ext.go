@@ -53,15 +53,6 @@ func (this *dbGlobalRow) GetNextGuildId() int32 {
 	return new_id
 }
 
-func (this *dbPlayerInfoColumn) FillBaseInfo(bi *msg_client_message.S2CRetBaseInfo) {
-	this.m_row.m_lock.UnSafeRLock("dbPlayerInfoColumn.FillBaseInfo")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	tmp_data := this.m_data
-	bi.Coins = tmp_data.Gold
-	bi.Diamonds = tmp_data.Diamond
-	return
-}
-
 func (this *dbPlayerInfoColumn) SubCoin(v int32) int32 {
 	this.m_row.m_lock.UnSafeLock("dbPlayerInfoColumn.SubCoin")
 	defer this.m_row.m_lock.UnSafeUnlock()

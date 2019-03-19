@@ -326,32 +326,36 @@ func client_msg_handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var ct int32
-	if len(final_data) > 500 {
-		if g_compress_type == COMPRESS_TYPE_ZLIB {
-			var in bytes.Buffer
-			wr, err := zlib.NewWriterLevel(&in, zlib.BestSpeed)
-			if err != nil {
-				log.Error("New zlib writer with level %v err %v", zlib.DefaultCompression, err.Error())
-				return
+	if false {
+		var ct int32
+		if len(final_data) > 500 {
+			if g_compress_type == COMPRESS_TYPE_ZLIB {
+				var in bytes.Buffer
+				wr, err := zlib.NewWriterLevel(&in, zlib.BestSpeed)
+				if err != nil {
+					log.Error("New zlib writer with level %v err %v", zlib.DefaultCompression, err.Error())
+					return
+				}
+				wr.Write(final_data)
+				wr.Close()
+				data = in.Bytes()
+			} else if g_compress_type == COMPRESS_TYPE_SNAPPY {
+				data = snappy.Encode(nil, final_data)
+				if data == nil {
+					log.Error("Snappy encode %v nil", final_data)
+					return
+				}
 			}
-			wr.Write(final_data)
-			wr.Close()
-			data = in.Bytes()
-		} else if g_compress_type == COMPRESS_TYPE_SNAPPY {
-			data = snappy.Encode(nil, final_data)
-			if data == nil {
-				log.Error("Snappy encode %v nil", final_data)
-				return
-			}
+			ct = g_compress_type
+			log.Debug("Compressed Data len %v from len %v", len(data), len(final_data))
+		} else {
+			data = final_data
 		}
-		ct = g_compress_type
-		log.Debug("Compressed Data len %v from len %v", len(data), len(final_data))
+
+		data = append(data, byte(ct))
 	} else {
 		data = final_data
 	}
-
-	data = append(data, byte(ct))
 
 	iret, err := w.Write(data)
 	if nil != err {
