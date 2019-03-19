@@ -1,0 +1,33 @@
+{
+	"CommonIP": "192.168.1.250",
+	"Servers" : [
+		{
+			"Id":1,
+			"Name":"server1",
+			"IP":":30100",
+			"Weight": 100
+		},
+		{
+			"Id":2,
+			"Name":"server2",
+			"IP":":30200",
+			"Weight": 100,
+		},
+		{
+			"Id":3,
+			"Name":"server3",
+			"IP":"30300",
+			"Weight": 100,
+		}
+	],
+	"CrossList" : [
+		{
+			"Id": 1,
+			"ServerIds": [1,2]
+		},
+		{
+			"Id": 2,
+			"ServerIds": [3,4]
+		}
+	]
+}

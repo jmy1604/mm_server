@@ -1,0 +1,8 @@
+{
+	"LoginServerIP":"192.168.1.250:35000",
+	"LogConfigFile":"test_client_tracer.json",
+	"AccountPrefix":"test",
+	"AccountStartIndex":1,
+	"AccountNum":1,
+	"UseHttps":true
+}

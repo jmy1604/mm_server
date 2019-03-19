@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Day="2" Rewards="[3,100,201,5,51,5]" />
+	<item Day="5" Rewards="[3,200,202,1,52,5]" />
+	<item Day="7" Rewards="[3,300,53,5,54,5]" />
+	<item Day="15" Rewards="[3,500,201,10]" />
+	<item Day="25" Rewards="[3,900,202,2]" />
+</Config>

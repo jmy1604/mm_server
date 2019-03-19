@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item ChapterId="40001" Range="[41001,41010]" UnlockStarNum="0" UnlockChapter="40002" UnlockTime="0" Icon="chapter_01" Description="0" Position="[0,0]" ModelName="ChapterMap_1" />
+	<item ChapterId="40002" Range="[41011,41020]" UnlockStarNum="15" UnlockChapter="40003" UnlockTime="14400" Icon="chapter_02" Description="0" Position="[0,0]" ModelName="ChapterMap_2" />
+	<item ChapterId="40003" Range="[41021,41030]" UnlockStarNum="31" UnlockChapter="40004" UnlockTime="21600" Icon="chapter_03" Description="0" Position="[0,0]" ModelName="ChapterMap_3" />
+	<item ChapterId="40004" Range="[41031,41040]" UnlockStarNum="48" UnlockChapter="40005" UnlockTime="28800" Icon="chapter_04" Description="0" Position="[0,0]" ModelName="ChapterMap_1" />
+	<item ChapterId="40005" Range="[41041,41050]" UnlockStarNum="66" UnlockChapter="40006" UnlockTime="36000" Icon="chapter_05" Description="0" Position="[0,0]" ModelName="ChapterMap_2" />
+	<item ChapterId="40006" Range="[41051,41060]" UnlockStarNum="84" UnlockChapter="40007" UnlockTime="43200" Icon="chapter_06" Description="0" Position="[0,0]" ModelName="ChapterMap_3" />
+	<item ChapterId="40007" Range="[41061,41070]" UnlockStarNum="103" UnlockChapter="40008" UnlockTime="50400" Icon="chapter_07" Description="0" Position="[0,0]" ModelName="ChapterMap_1" />
+	<item ChapterId="40008" Range="[41071,41080]" UnlockStarNum="123" UnlockChapter="40009" UnlockTime="57600" Icon="chapter_08" Description="0" Position="[0,0]" ModelName="ChapterMap_2" />
+	<item ChapterId="40009" Range="[41081,41090]" UnlockStarNum="144" UnlockChapter="40010" UnlockTime="64800" Icon="chapter_09" Description="0" Position="[0,0]" ModelName="ChapterMap_3" />
+	<item ChapterId="40010" Range="[41091,41100]" UnlockStarNum="166" UnlockChapter="40011" UnlockTime="72000" Icon="chapter_10" Description="0" Position="[0,0]" ModelName="ChapterMap_1" />
+</Config>

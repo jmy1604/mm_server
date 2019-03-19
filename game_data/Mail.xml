@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Config>
+     <item MailID="1101" MailType="1" MailTitleID="5002820" MailContentID="5002821" />
+     <item MailID="1102" MailType="1" MailTitleID="5002822" MailContentID="5002823" />
+     <item MailID="1103" MailType="1" MailTitleID="5002824" MailContentID="5002825" />
+     <item MailID="1104" MailType="1" MailTitleID="5002826" MailContentID="5002827" />
+     <item MailID="1105" MailType="1" MailTitleID="5002828" MailContentID="5002829" />
+     <item MailID="1106" MailType="1" MailTitleID="5002830" MailContentID="5002831" />
+     <item MailID="1109" MailType="1" MailTitleID="5002836" MailContentID="5002837" />
+     <item MailID="1107" MailType="1" MailTitleID="5002832" MailContentID="5002833" />
+     <item MailID="1108" MailType="1" MailTitleID="5002834" MailContentID="5002835" />
+     <item MailID="1110" MailType="1" MailTitleID="5002838" MailContentID="5002839" />
+     <item MailID="1111" MailType="1" MailTitleID="5002840" MailContentID="5002841" />
+     <item MailID="1112" MailType="1" MailTitleID="5002842" MailContentID="5002843" />
+     <item MailID="1113" MailType="1" MailTitleID="5002844" MailContentID="5002845" />
+     <item MailID="1114" MailType="1" MailTitleID="5002846" MailContentID="5002847" />
+     <item MailID="1115" MailType="1" MailTitleID="5002848" MailContentID="5002849" />
+     <item MailID="1201" MailType="2" MailTitleID="5002880" MailContentID="" />
+     <item MailID="1202" MailType="2" MailTitleID="5002881" MailContentID="" />
+     <item MailID="1301" MailType="1" MailTitleID="5002882" MailContentID="5002850" />
+     <item MailID="1302" MailType="1" MailTitleID="5002882" MailContentID="5002851" />
+     <item MailID="1303" MailType="1" MailTitleID="5002882" MailContentID="5002852" />
+     <item MailID="1304" MailType="1" MailTitleID="5002882" MailContentID="5002853" />
+     <item MailID="1305" MailType="1" MailTitleID="5002854" MailContentID="5002855" />
+</Config>

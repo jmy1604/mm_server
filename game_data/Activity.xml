@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="1001" Type="1" ActivityParam="[]" Rewards="[201,5,202,1,2,10000]" Title="53100" Description="[]" StartTime="[1,0]" EndTime="[1,0]" RewardWay="1" MallTitle="[]" MallDescription="[]" />
+	<item Id="2001" Type="2" ActivityParam="[]" Rewards="[]" Title="53200" Description="53201" StartTime="[1,0]" EndTime="[1,0]" RewardWay="1" MallTitle="[]" MallDescription="[]" />
+	<item Id="3001" Type="3" ActivityParam="[]" Rewards="[]" Title="53300" Description="[]" StartTime="[1,0]" EndTime="[1,0]" RewardWay="1" MallTitle="[]" MallDescription="[]" />
+	<item Id="4001" Type="4" ActivityParam="[]" Rewards="[3,100]" Title="53400" Description="53401" StartTime="[1,0]" EndTime="[1,0]" RewardWay="2" MallTitle="53200" MallDescription="53201" />
+	<item Id="5001" Type="5" ActivityParam="[]" Rewards="0" Title="[]" Description="[]" StartTime="[1,0]" EndTime="[1,0]" RewardWay="2" MallTitle="53400" MallDescription="53401" />
+</Config>

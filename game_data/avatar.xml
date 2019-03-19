@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="70901" Icon="Icon_Touxiang1_01" Type="1" />
+	<item Id="70902" Icon="Icon_Touxiang1_02" Type="1" />
+	<item Id="70101" Icon="Icon_Touxiang1_1001" Type="2" />
+	<item Id="70102" Icon="Icon_Touxiang1_1002" Type="2" />
+	<item Id="70103" Icon="Icon_Touxiang1_1003" Type="2" />
+	<item Id="70104" Icon="Icon_Touxiang1_1004" Type="2" />
+	<item Id="70105" Icon="Icon_Touxiang1_1005" Type="2" />
+	<item Id="70106" Icon="Icon_Touxiang1_1006" Type="2" />
+	<item Id="70201" Icon="Icon_Touxiang1_2001" Type="2" />
+	<item Id="70202" Icon="Icon_Touxiang1_2002" Type="2" />
+	<item Id="70203" Icon="Icon_Touxiang1_2003" Type="2" />
+	<item Id="70204" Icon="Icon_Touxiang1_2004" Type="2" />
+	<item Id="70205" Icon="Icon_Touxiang1_2005" Type="2" />
+	<item Id="70206" Icon="Icon_Touxiang1_2006" Type="2" />
+	<item Id="70301" Icon="Icon_Touxiang1_3001" Type="2" />
+	<item Id="70302" Icon="Icon_Touxiang1_3002" Type="2" />
+	<item Id="70303" Icon="Icon_Touxiang1_3003" Type="2" />
+	<item Id="70304" Icon="Icon_Touxiang1_3004" Type="2" />
+	<item Id="70305" Icon="Icon_Touxiang1_3005" Type="2" />
+	<item Id="70306" Icon="Icon_Touxiang1_3006" Type="2" />
+	<item Id="70401" Icon="Icon_Touxiang1_4001" Type="2" />
+	<item Id="70402" Icon="Icon_Touxiang1_4002" Type="2" />
+	<item Id="70403" Icon="Icon_Touxiang1_4003" Type="2" />
+	<item Id="70404" Icon="Icon_Touxiang1_4004" Type="2" />
+	<item Id="70405" Icon="Icon_Touxiang1_4005" Type="2" />
+	<item Id="70406" Icon="Icon_Touxiang1_4006" Type="2" />
+	<item Id="70407" Icon="Icon_Touxiang1_4007" Type="2" />
+	<item Id="70408" Icon="Icon_Touxiang1_4008" Type="2" />
+	<item Id="70409" Icon="Icon_Touxiang1_4009" Type="2" />
+	<item Id="70410" Icon="Icon_Touxiang1_4010" Type="2" />
+	<item Id="70411" Icon="Icon_Touxiang1_5001" Type="2" />
+	<item Id="70412" Icon="Icon_Touxiang1_5002" Type="2" />
+</Config>

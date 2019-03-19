@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="1" CatId="4001" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="2" CatId="4002" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="3" CatId="4003" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="4" CatId="4004" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="5" CatId="4005" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="6" CatId="4006" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="7" CatId="4007" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="8" CatId="4008" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="9" CatId="4009" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="10" CatId="4010" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="11" CatId="5001" Level="1" Star="1" Cost="100" LimitedType="0" LimitedTime="7" LimitedNumber="0" />
+	<item Id="12" CatId="5001" Level="1" Star="2" Cost="500" LimitedType="0" LimitedTime="7" LimitedNumber="0" />
+	<item Id="13" CatId="5001" Level="1" Star="3" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="10" />
+	<item Id="14" CatId="5001" Level="1" Star="4" Cost="2000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="15" CatId="5002" Level="1" Star="1" Cost="1000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="16" CatId="5002" Level="1" Star="2" Cost="1200" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="17" CatId="5002" Level="1" Star="3" Cost="1500" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+	<item Id="18" CatId="5002" Level="1" Star="4" Cost="2000" LimitedType="2" LimitedTime="7" LimitedNumber="1" />
+</Config>

@@ -1,0 +1,422 @@
+package main
+
+import (
+	"mm_server/libs/log"
+	"mm_server/proto/gen_go/client_message"
+
+	//"mm_server/proto/gen_go/server_message"
+
+	"time"
+
+	"github.com/golang/protobuf/proto"
+)
+
+const (
+	PLAYER_MAIL_SENDER_ID_SYSTEM = 1 // 系统邮件
+
+	PLAYER_MAIL_SENDER_NAME_SYSYTEM = "System" // 系统邮件发送名称
+
+	PLAYER_MAIL_TYPE_NORMAL   = 0 // 普通邮件
+	PLAYER_MAIL_TYPE_REQ_HELP = 1 // 求助邮件
+
+	PLAYER_MAIL_OP_TYPE_SYNC   = 0 // 邮件同步
+	PLAYER_MAIL_OP_TYPE_ADD    = 1 // 邮件增加
+	PLAYER_MAIL_OP_TYPE_REMOVE = 2 // 邮件删除
+	PLAYER_MAIL_OP_TYPE_UPDATE = 3 // 邮件同步
+
+	PLAYER_MAIL_STATE_INIT     = 0 // 邮件初始状态
+	PLAYER_MAIL_STATE_READED   = 1 // 邮件已经读状态
+	PLAYER_MAIL_STATE_HAVEDONE = 2 // 邮件已经领取附件或者确认帮助
+)
+
+/*func (this *Player) AddMail(msg *msg_server_message.MailAdd) {
+	if nil == msg {
+		log.Error("Player AddSystemMail msg nil")
+		return
+	}
+
+	new_mail_id := this.db.Mails.GetAviMailId()
+
+	new_mail := &dbPlayerMailData{}
+	new_mail.MailId = new_mail_id
+	new_mail.MailType = int8(msg.GetMailType())
+	new_mail.SenderId = PLAYER_MAIL_SENDER_ID_SYSTEM
+	new_mail.SenderName = msg.GetSenderName()
+	new_mail.Content = msg.GetContent()
+	new_mail.MailTitle = msg.GetTitle()
+	new_mail.ObjIds = msg.GetObjIds()
+	new_mail.ObjNums = msg.GetObjNums()
+	new_mail.SendUnix = msg.GetSendUnix()
+	new_mail.OverUnix = msg.GetOverUnix()
+
+	this.db.Mails.Add(new_mail)
+
+	return
+}*/
+
+func (this *Player) SendTestMail(mail_type, sender_id int32, sender_name string, objids, nums []int32) {
+	new_mail := &dbPlayerMailData{}
+	new_mail.MailId = this.db.Mails.GetAviMailId()
+	new_mail.MailType = int8(mail_type)
+	new_mail.MailTitle = "test_title"
+	new_mail.Content = "dadadadadadadasdsadsadasdsadsadsadasdsadsa"
+	new_mail.SenderId = sender_id
+	new_mail.SenderName = sender_name
+	new_mail.ObjIds = objids
+	new_mail.ObjNums = nums
+	new_mail.SendUnix = int32(time.Now().Unix())
+	new_mail.OverUnix = int32(time.Now().Unix()) + global_config.NormalMailLastSec
+
+	log.Info("SendTestMail cur_unix[%d] over_unix[%d] cfg_over_sec[%d]", new_mail.SendUnix, new_mail.OverUnix, global_config.NormalMailLastSec)
+	log.Info("SendTestMail mail_id[%d] sender_id[%d] sender_name[%s] objids%v objnums", new_mail.MailId, sender_id, sender_name, objids, nums)
+
+	this.db.Mails.Add(new_mail)
+
+	return
+}
+
+func (this *Player) SendHelpMail(sender_id int32, sender_name string, chapter_id int32) {
+	new_mail := &dbPlayerMailData{}
+	new_mail.MailId = this.db.Mails.GetAviMailId()
+	new_mail.MailType = PLAYER_MAIL_TYPE_REQ_HELP
+	new_mail.SenderId = sender_id
+	new_mail.SenderName = sender_name
+	new_mail.ExtraDatas = make([]int32, 1)
+	new_mail.ExtraDatas[0] = chapter_id
+	new_mail.SendUnix = int32(time.Now().Unix())
+	new_mail.OverUnix = int32(time.Now().Unix()) + global_config.ReqHelpMailLastSec
+	this.db.Mails.Add(new_mail)
+
+	return
+}
+
+func (this *Player) SendRewardMail(title_id, content_id string, rewards []int32, bslience bool) {
+	new_mail := &dbPlayerMailData{}
+	new_mail.MailId = this.db.Mails.GetAviMailId()
+	new_mail.MailType = PLAYER_MAIL_TYPE_NORMAL
+	new_mail.MailTitle = title_id
+	new_mail.Content = content_id
+	tmp_len := int32(len(rewards))
+	new_mail.ObjIds = make([]int32, 0, tmp_len/2)
+	new_mail.ObjNums = make([]int32, 0, tmp_len/2)
+	var tmp_mail_add *msg_client_message.MailInfo
+
+	log.Info("SendRewardMail", title_id, content_id, rewards, bslience)
+
+	for idx := int32(0); idx+1 < tmp_len; idx += 2 {
+		new_mail.ObjIds = append(new_mail.ObjIds, rewards[idx])
+		new_mail.ObjNums = append(new_mail.ObjNums, rewards[idx+1])
+
+	}
+
+	new_mail.SendUnix = int32(time.Now().Unix())
+	new_mail.OverUnix = int32(time.Now().Unix()) + global_config.ReqHelpMailLastSec
+	this.db.Mails.Add(new_mail)
+
+	if !bslience {
+		res2cli := &msg_client_message.S2CMailList{}
+		res2cli.MailList = make([]*msg_client_message.MailInfo, 1)
+		tmp_mail_add = &msg_client_message.MailInfo{}
+		tmp_mail_add.MailId = new_mail.MailId
+		tmp_mail_add.MailType = PLAYER_MAIL_TYPE_NORMAL
+		tmp_mail_add.Title = new_mail.MailTitle
+		tmp_mail_add.Content = new_mail.Content
+		tmp_mail_add.LeftSec = global_config.ReqHelpMailLastSec
+		tmp_mail_add.OpType = PLAYER_MAIL_OP_TYPE_SYNC
+		tmp_mail_add.ObjIds = new_mail.ObjIds
+		tmp_mail_add.ObjNums = new_mail.ObjNums
+
+		res2cli.MailList[0] = tmp_mail_add
+		this.Send(uint16(msg_client_message.S2CMailList_ProtoID), res2cli)
+
+	}
+
+	return
+}
+
+func (this *Player) SendGmItemMail(content_id string, item_infos []*ItemInfo, last_sec int32, bslience bool) {
+	new_mail := &dbPlayerMailData{}
+	new_mail.MailId = this.db.Mails.GetAviMailId()
+	new_mail.MailType = PLAYER_MAIL_TYPE_NORMAL
+	new_mail.MailTitle = ""
+	new_mail.Content = content_id
+
+	log.Info("Player SendGmItemMail ", content_id, item_infos, bslience)
+
+	tmp_len := int32(len(item_infos))
+	new_mail.ObjIds = make([]int32, 0, tmp_len)
+	new_mail.ObjNums = make([]int32, 0, tmp_len)
+	var tmp_mail_add *msg_client_message.MailInfo
+
+	for idx := int32(0); idx < tmp_len; idx++ {
+		new_mail.ObjIds = append(new_mail.ObjIds, item_infos[idx].Id)
+		new_mail.ObjNums = append(new_mail.ObjNums, item_infos[idx].Num)
+
+	}
+
+	new_mail.SendUnix = int32(time.Now().Unix())
+	new_mail.OverUnix = int32(time.Now().Unix()) + last_sec
+	this.db.Mails.Add(new_mail)
+
+	if bslience {
+		res2cli := &msg_client_message.S2CMailList{}
+		res2cli.MailList = make([]*msg_client_message.MailInfo, 1)
+		tmp_mail_add = &msg_client_message.MailInfo{}
+		tmp_mail_add.MailId = new_mail.MailId
+		tmp_mail_add.MailType = PLAYER_MAIL_TYPE_NORMAL
+		tmp_mail_add.Title = new_mail.MailTitle
+		tmp_mail_add.Content = new_mail.Content
+		tmp_mail_add.LeftSec = last_sec
+		tmp_mail_add.OpType = PLAYER_MAIL_OP_TYPE_SYNC
+		tmp_mail_add.ObjIds = new_mail.ObjIds
+		tmp_mail_add.ObjNums = new_mail.ObjNums
+
+		res2cli.MailList[0] = tmp_mail_add
+
+		this.Send(uint16(msg_client_message.S2CMailList_ProtoID), res2cli)
+	}
+
+	return
+}
+
+// ===============================================================
+
+func reg_player_mail_msg() {
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetMailList_ProtoID), C2SGetMailListHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetMailAttach_ProtoID), C2SGetMailAttachHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSetMailRead_ProtoID), C2SSetMailReadHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMailRemove_ProtoID), C2SMailRemoveHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SAgreeMailHelpReq_ProtoID), C2SAgreeMailHelpReqHandler)
+
+	//center_conn.SetMessageHandler(msg_server_message.ID_MailAdd, C2HMailAddHandler)
+}
+
+func C2SGetMailListHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SGetMailList
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed %v", err.Error())
+		return -1
+	}
+
+	msg := p.db.Mails.FillMsgList()
+	if nil != msg {
+		p.Send(uint16(msg_client_message.C2SGetMailList_ProtoID), msg)
+		return 1
+	}
+
+	return 0
+}
+
+func C2SGetMailAttachHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SGetMailAttach
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed %v", err.Error())
+		return -1
+	}
+
+	mail_id := req.GetMailId()
+	var db_mail *dbPlayerMailData
+	var tmp_len int
+	var obj_id, obj_num int32
+	res2cli := &msg_client_message.S2CMailList{}
+	if mail_id == -1 {
+		all_mail_ids := p.db.Mails.GetAllIndex()
+		res2cli.MailList = make([]*msg_client_message.MailInfo, 0, len(all_mail_ids))
+		for _, mail_id := range all_mail_ids {
+			db_mail = p.db.Mails.Get(mail_id)
+			if nil == db_mail {
+				log.Error("C2SGetMailListHandler failed to get mail[%d]", mail_id)
+				return int32(msg_client_message.E_ERR_MAIL_FAILED_TO_FIND_MAIL)
+			}
+
+			tmp_len = len(db_mail.ObjIds)
+			if tmp_len != len(db_mail.ObjNums) {
+				return int32(msg_client_message.E_ERR_MAIL_ATTACH_ERROR)
+			}
+
+			for idx := 0; idx < tmp_len; idx++ {
+				obj_id = db_mail.ObjIds[idx]
+				obj_num = db_mail.ObjNums[idx]
+
+				if nil != item_table_mgr.Map[obj_id] {
+					p.AddItem(obj_id, obj_num, "expedition_finish", "expedition", true)
+				} else if nil != building_table_mgr.Map[obj_id] {
+					p.AddDepotBuilding(obj_id, obj_num, "expedition_finish", "expedition", true)
+				} else if nil != cat_table_mgr.Map[obj_id] {
+					p.AddCat(obj_id, "expedition_finish", "expedition", true)
+				} else {
+					p.AddItemResource(obj_id, obj_num, "expedition_finish", "expedition")
+				}
+			}
+
+			p.db.Mails.SetState(mail_id, PLAYER_MAIL_STATE_HAVEDONE)
+
+			tmp_info := &msg_client_message.MailInfo{}
+			tmp_info.OpType = PLAYER_MAIL_OP_TYPE_UPDATE
+			tmp_info.MailId = db_mail.MailId
+			tmp_info.MailType = int32(db_mail.MailType)
+			tmp_info.Title = db_mail.MailTitle
+			tmp_info.SenderId = db_mail.SenderId
+			tmp_info.SenderName = db_mail.SenderName
+			tmp_info.Content = db_mail.Content
+			tmp_info.ObjIds = db_mail.ObjIds
+			tmp_info.ObjNums = db_mail.ObjNums
+			tmp_info.SendUnix = db_mail.SendUnix
+			tmp_info.LeftSec = db_mail.OverUnix - int32(time.Now().Unix())
+			tmp_info.State = PLAYER_MAIL_STATE_HAVEDONE
+
+			res2cli.MailList = append(res2cli.MailList, tmp_info)
+
+			p.Send(uint16(msg_client_message.S2CMailList_ProtoID), res2cli)
+		}
+	} else {
+		res2cli.MailList = make([]*msg_client_message.MailInfo, 1)
+		db_mail = p.db.Mails.Get(mail_id)
+		if nil == db_mail {
+			log.Error("C2SGetMailListHandler failed to get mail[%d]", mail_id)
+			return int32(msg_client_message.E_ERR_MAIL_FAILED_TO_FIND_MAIL)
+		}
+
+		tmp_len = len(db_mail.ObjIds)
+		if tmp_len != len(db_mail.ObjNums) {
+			return int32(msg_client_message.E_ERR_MAIL_ATTACH_ERROR)
+		}
+
+		for idx := 0; idx < tmp_len; idx++ {
+			obj_id = db_mail.ObjIds[idx]
+			obj_num = db_mail.ObjNums[idx]
+
+			if nil != item_table_mgr.Map[obj_id] {
+				p.AddItem(obj_id, obj_num, "expedition_finish", "expedition", true)
+			} else if nil != building_table_mgr.Map[obj_id] {
+				p.AddDepotBuilding(obj_id, obj_num, "expedition_finish", "expedition", true)
+			} else if nil != cat_table_mgr.Map[obj_id] {
+				p.AddCat(obj_id, "expedition_finish", "expedition", true)
+			} else {
+				p.AddItemResource(obj_id, obj_num, "expedition_finish", "expedition")
+			}
+		}
+
+		p.db.Mails.SetState(mail_id, PLAYER_MAIL_STATE_HAVEDONE)
+
+		tmp_info := &msg_client_message.MailInfo{}
+		tmp_info.OpType = PLAYER_MAIL_OP_TYPE_UPDATE
+		tmp_info.MailId = db_mail.MailId
+		tmp_info.MailType = int32(db_mail.MailType)
+		tmp_info.Title = db_mail.MailTitle
+		tmp_info.SenderId = db_mail.SenderId
+		tmp_info.SenderName = db_mail.SenderName
+		tmp_info.Content = db_mail.Content
+		tmp_info.ObjIds = db_mail.ObjIds
+		tmp_info.ObjNums = db_mail.ObjNums
+		tmp_info.SendUnix = db_mail.SendUnix
+		tmp_info.LeftSec = db_mail.OverUnix - int32(time.Now().Unix())
+		tmp_info.State = PLAYER_MAIL_STATE_HAVEDONE
+		res2cli := &msg_client_message.S2CMailList{}
+		res2cli.MailList = make([]*msg_client_message.MailInfo, 1)
+		res2cli.MailList[0] = tmp_info
+
+		p.Send(uint16(msg_client_message.S2CMailList_ProtoID), res2cli)
+	}
+
+	p.SendItemsUpdate()
+	p.SendDepotBuildingUpdate()
+	p.SendCatsUpdate()
+
+	return 1
+}
+
+func C2SSetMailReadHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SSetMailRead
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed %v", err.Error())
+		return -1
+	}
+
+	mail_id := req.GetMailId()
+	db_mail := p.db.Mails.Get(mail_id)
+	if nil == db_mail {
+		return int32(msg_client_message.E_ERR_MAIL_FAILED_TO_FIND_MAIL)
+	}
+
+	tmp_info := &msg_client_message.MailInfo{}
+	tmp_info.OpType = PLAYER_MAIL_OP_TYPE_UPDATE
+	tmp_info.MailId = db_mail.MailId
+	tmp_info.MailType = int32(db_mail.MailType)
+	tmp_info.Title = db_mail.MailTitle
+	tmp_info.SenderId = db_mail.SenderId
+	tmp_info.SenderName = db_mail.SenderName
+	tmp_info.Content = db_mail.Content
+	tmp_info.ObjIds = db_mail.ObjIds
+	tmp_info.ObjNums = db_mail.ObjNums
+	tmp_info.SendUnix = db_mail.SendUnix
+	tmp_info.LeftSec = db_mail.OverUnix - int32(time.Now().Unix())
+	tmp_info.State = PLAYER_MAIL_STATE_READED
+
+	res2cli := &msg_client_message.S2CMailList{}
+	res2cli.MailList = make([]*msg_client_message.MailInfo, 1)
+	res2cli.MailList[0] = tmp_info
+
+	p.db.Mails.SetState(mail_id, PLAYER_MAIL_STATE_READED)
+
+	p.Send(uint16(msg_client_message.S2CMailList_ProtoID), res2cli)
+
+	return 1
+}
+
+func C2SMailRemoveHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SMailRemove
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed %v", err.Error())
+		return -1
+	}
+
+	mail_id := req.GetMailId()
+	tmp_info := &msg_client_message.MailInfo{}
+	tmp_info.OpType = PLAYER_MAIL_OP_TYPE_REMOVE
+	tmp_info.MailId = mail_id
+	res2cli := &msg_client_message.S2CMailList{}
+	res2cli.MailList = make([]*msg_client_message.MailInfo, 1)
+	res2cli.MailList[0] = tmp_info
+	p.db.Mails.Remove(mail_id)
+
+	p.Send(uint16(msg_client_message.S2CMailList_ProtoID), res2cli)
+
+	log.Info("玩家[%d] 删除邮件[%d]", p.Id, mail_id)
+	return 1
+}
+
+func C2SAgreeMailHelpReqHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SAgreeMailHelpReq
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed %v", err.Error())
+		return -1
+	}
+
+	return 0
+}
+
+// -----------------------------------------------------
+
+/*func C2HMailAddHandler(c *CenterConnection, msg proto.Message) {
+	req := msg.(*msg_server_message.MailAdd)
+	if nil == c || nil == req {
+		log.Error("C2HMailAddHandler c or req nil [%v]", nil == req)
+		return
+	}
+
+	p := player_mgr.GetPlayerById(req.GetPlayerId())
+	if nil == p {
+		log.Error("C2HMailAddHandler failed to get player(%d)", req.GetPlayerId())
+		return
+	}
+
+	//p.AddMail(req)
+
+	return
+}*/

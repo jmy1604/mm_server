@@ -1,0 +1,1 @@
+dbc.exe "go" "gamesvr_db_def.json" "proto_prefix.txt" "..\proto\db_gamesvr.proto" "code_prefix_gamesvr.txt" "..\src\game_server\a_db_tables.go"

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="90001" Reward="[5,100]" FosterTime="43200" ItemId="0" />
+	<item Id="90011" Reward="[5,200]" FosterTime="43200" ItemId="11391" />
+	<item Id="90012" Reward="[5,300]" FosterTime="43200" ItemId="11392" />
+</Config>

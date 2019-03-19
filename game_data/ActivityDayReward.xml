@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Date="1" Rewards="[2,10000]" />
+	<item Date="2" Rewards="[4,5000]" />
+	<item Date="3" Rewards="[301,10]" />
+	<item Date="4" Rewards="[302,6]" />
+	<item Date="5" Rewards="[303,4]" />
+	<item Date="6" Rewards="[306,2]" />
+	<item Date="7" Rewards="[3,10]" />
+	<item Date="8" Rewards="[2,10000]" />
+	<item Date="9" Rewards="[4,5000]" />
+	<item Date="10" Rewards="[305,10]" />
+	<item Date="11" Rewards="[306,6]" />
+	<item Date="12" Rewards="[307,4]" />
+	<item Date="13" Rewards="[308,2]" />
+	<item Date="14" Rewards="[3,10]" />
+	<item Date="15" Rewards="[2,10000]" />
+	<item Date="16" Rewards="[4,5000]" />
+	<item Date="17" Rewards="[301,10]" />
+	<item Date="18" Rewards="[302,6]" />
+	<item Date="19" Rewards="[303,4]" />
+	<item Date="20" Rewards="[306,2]" />
+	<item Date="21" Rewards="[3,10]" />
+	<item Date="22" Rewards="[2,10000]" />
+	<item Date="23" Rewards="[4,5000]" />
+	<item Date="24" Rewards="[305,10]" />
+	<item Date="25" Rewards="[306,6]" />
+	<item Date="26" Rewards="[307,4]" />
+	<item Date="27" Rewards="[308,2]" />
+	<item Date="28" Rewards="[3,10]" />
+	<item Date="29" Rewards="[2,10000]" />
+	<item Date="30" Rewards="[4,5000]" />
+	<item Date="31" Rewards="[3,10]" />
+</Config>

@@ -1,0 +1,1 @@
+D:\work\go_projects\src\ih_server\Server\src\db\dbc.exe.config

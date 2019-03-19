@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="1201" Name="小石头" Weight="5" Remove="[101,1]" Exp="200" DropID="[10012,1]" />
+	<item Id="1202" Name="大石头" Weight="2" Remove="[101,1]" Exp="500" DropID="[10022,1]" />
+	<item Id="1203" Name="小树木" Weight="5" Remove="[102,1]" Exp="200" DropID="[10011,1]" />
+	<item Id="1204" Name="大树木" Weight="2" Remove="[102,1]" Exp="500" DropID="[10021,1]" />
+	<item Id="1205" Name="礁石" Weight="5" Remove="[103,1]" Exp="200" DropID="[10013,1]" />
+	<item Id="1206" Name="破木船" Weight="2" Remove="[103,1]" Exp="500" DropID="[10023,1]" />
+</Config>

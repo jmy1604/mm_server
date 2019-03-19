@@ -1,0 +1,2933 @@
+syntax = "proto3";
+
+package msg.client_message;
+
+// ================================== 错误码 ==================================
+
+enum E_ERR{
+	NONE    								= 0;
+	INTERNAL								= -1; // 内部错误
+	PLAYER_ACC_OR_PASSWORD_ERROR			= -2; // 账号或密码错误
+	PLAYER_NOT_EXIST						= -3; // 玩家不存在
+	PLAYER_ALREADY_LOGINED					= -4; // 玩家已经登陆
+	PLAYER_OTHER_PLACE_LOGIN				= -5; // 玩家在其他地方登陆
+	PLAYER_TOKEN_ERROR						= -6; // 令牌错误
+	PLAYER_SELECT_SERVER_NOT_FOUND			= -7; // 选择服务器不存在
+	PLAYER_ALREADY_SELECTED_SERVER			= -8; // 玩家已经选择过服务器
+	PLAYER_IS_OFFLINE						= -9; // 玩家已离线
+	PLAYER_SEND_TOO_FREQUENTLY				= -10; // 发送消息太频繁
+	PLAYER_GOLD_NOT_ENOUGH					= -11; // 金币不足
+	PLAYER_DIAMOND_NOT_ENOUGH				= -12; // 钻石不足
+	PLAYER_NAME_TOO_LONG					= -13; // 昵称过长
+	PLAYER_HEAD_TABLE_DATA_NOT_FOUND		= -14; // 头像配置不存在
+	PLAYER_NO_SUCH_HEAD						= -15; // 没有该头像
+	PLAYER_LEVEL_NOT_ENOUGH					= -16; // 等级不够
+	PLAYER_MUST_RECONN_WITH_DISCONN_STATE  	= -17; // 断开状态下必须先重连
+	PLAYER_MSG_ID_INVALID					= -18; // 消息号非法
+	PLAYER_MSG_ID_NOT_FOUND				 	= -19; // 消息号不存在
+	PLAYER_NOT_FOUND_BY_TOKEN				= -20; // 玩家对象不存在
+	PLAYER_TOKEN_NOT_FOUND					= -21; // 玩家令牌找不到
+	
+	// 账号
+	ACCOUNT_ALREADY_REGISTERED					= -100; // 账号已注册
+	ACCOUNT_IS_INVALID							= -101; // 账号名不合法
+	ACCOUNT_PASSWORD_INVALID					= -102; // 密码不合法
+	ACCOUNT_NOT_REGISTERED						= -103; // 账号未注册
+	ACCOUNT_NOT_GUEST							= -104; // 不是游客账号
+	ACCOUNT_NEW_BIND_ALREADY_EXISTS				= -105; // 新绑定账号已存在
+	ACCOUNT_NAME_MUST_DIFFRENT_TO_OLD			= -106; // 游客新绑定账号不能跟原来相同
+	ACCOUNT_ALREADY_BIND				    	= -107; // 账号已绑定过
+	ACCOUNT_BE_BANNED							= -108; // 账号被封禁
+	
+	// 远程调用
+	REMOTE_FUNC_CALL_ERROR						= -20000; // 远程调用失败
+	
+	// 玩家
+	PLAYER_ALREADY_ZAN_TODAY 				    = -100000; // 今天已经赞过
+	PLAYER_RENAME_NEW_CANT_SAME_TO_OLD 			= -100001; // 昵称不能与原来相同
+	PLAYER_RENAME_NEW_CANT_EMPTY				= -100002; // 新昵称不能为空
+	PLAYER_RENAME_REMOVE_OLD_FAILED 			= -100003; // 旧昵称删除失败
+	PLAYER_RENAME_TOO_LONG_NAME					= -100004; // 新昵称太长
+	PLAYER_RENAME_NOT_ENOUGH_DIAMOND			= -100005; // 改昵称钻石不足
+	
+	// 签到错误骂
+	DAYSIGN_ALRADY_SUM_SIGN 					= -100100; // 累计签到已经领取过了
+	
+	// 建筑错误码
+	BUILDING_NOT_FIND_ITEM 						= -100200; // 背包中缺少物品
+	BUILDING_POS_FORBIDEN 						= -100201; // 当前位置已经有建筑或者不能放置
+	BUILDING_NOT_EXIST 							= -100202; // 建筑不存在
+	BUILDING_NOT_CFG 							= -100203; // 建筑的配置
+	BUILDING_NOT_FOR_SELL 						= -100204; // 建筑不能出售
+	BUILDING_FAILED_TO_SET_BUILDING 			= -100205; // 设置建筑失败
+	BUILDING_NO_ENOUGH_COIN 					= -100206; // 金币不够不能设置建筑
+	BUILDING_NO_DEPOT_BUILDING 					= -100207; // 建筑库里面没有相应建筑
+	BUILDING_REMOVE_LESS_ITEM 					= -100208; // 道具不够不能清除障碍
+	BUILDING_OPEN_MAP_CHEST_LESS_RES 			= -100209; // 资源不足不能清除障碍
+	BUILDING_SET_CANNOT_BUY 					= -100210; // 不能直接购买设置
+	BUILDING_BUYSET_LESS_P_LVL 					= -100211; // 玩家等级不足不能直接购买
+	BUILDING_BUYSET_LESS_VIP_LVL 				= -100212; // 玩家VIP等级不足不能直接购买
+	BUILDING_BUYSET_LESS_FROMULA 				= -100213; // 玩家缺少配方不能直接购买
+	BUILDING_SET_MAX_COUNT 						= -100214; // 达到最大放置数目
+	BUILDING_MOVE_FAILED 						= -100215; // 移动建筑失败
+	BUILDING_AREA_TYPE_NOT_MATCH 				= -100216; // 地面类型不匹配
+	BUILDING_AREA_TYPE_NO_POS 					= -100217; // 没有在开发区域中找到放置位置
+	
+	// 抽奖错误码
+	DRAW_WRONG_DRAW_TYPE 						= -100300; // 错误的抽取类型
+	
+	// 探险错误码
+	EXPEDITION_NO_TASK 							= -100400; // 不存在的任务Id
+	EXPEDITION_LESS_CAT 						= -100401; // 数量不够
+	EXPEDITION_CAT_WORKING 						= -100402; // 猫正在做其他工作
+	EXPEDITION_TASK_DOING 						= -100403; // 任务正在进行中
+	EXPEDITION_LESS_LEVEL 						= -100404; // 猫等级不够
+	EXPEDITION_LESS_QUA 						= -100405; // 猫品质不够
+	EXPEDITION_LESS_STAR 						= -100406; // 猫星级不够
+	EXPEDITION_WRONG_COLOR 						= -100407; // 猫颜色不对
+	EXPEDITION_NOT_CAT_CFG 						= -100408; // 猫配置找不到
+	EXPEDITION_CANT_RM_LIMIT_TASK 				= -100409; // 不能删除限时任务
+	EXPEDITION_NOT_TASK_CFG 					= -100410; // 不存在任务配置
+	EXPEDITION_LESS_DIAMOND 					= -100411; // 钻石不够
+	EXPEDITION_STOP_NOT_DOING 					= -100412; // 不在探索状态不能结束
+	EXPEDITION_WRONG_STATE 						= -100413; // 不在探索状态不能结束
+	EXPEDITION_LESS_RES 						= -100414; // 缺少资源
+	EXPEDITION_START_LESS_COUNT 				= -100415; // 缺少次数不能开始
+	
+	// 区域解锁错误码
+	BUILDING_AREA_ALERADY_UNLOCKED 				= -100500; // 区域已经解锁
+	BUILDING_AREA_NO_CFG 						= -100501; // 区域配置不存在
+	BUILDING_AREA_NO_UNLOCK_CFG 				= -100502; // 区域解锁配置不存在
+	BUILDING_AREA_LESS_UNLOCK_RES 				= -100503; // 区域解锁资源不足
+	BUILDING_AREA_LESS_UNLOCK_LVL 				= -100504; // 区域解锁等级不足
+	BUILDING_AREA_LESS_UNLOCK_STAR 				= -100505; // 区域解锁星星不足
+	BUILDING_AREA_CANNOT_QUICK_UNLOCK 			= -100506; // 该区域不能快速解锁
+	BUILDING_AREA_NEED_PRE 						= -100507; // 前置区域未解锁
+
+	// 邮件错误码
+	//MAIL_FAILED_TO_FIND_MAIL 					= -100600; // 找不到邮件
+	//MAIL_ATTACH_ERROR 						= -100601; // 邮件附件错误
+	PLAYER_MAIL_OVER_MAX_COUNT					= -100600; // 超出邮件最大数量
+	PLAYER_MAIL_NOT_FOUND						= -100601; // 邮件不存在
+	PLAYER_MAIL_NO_ATTACHED_ITEM				= -100602; // 邮件没有附加物品
+	PLAYER_MAIL_SEND_FAILED						= -100603; // 发送邮件失败
+	PLAYER_MAIL_RECEIVER_NOT_FOUND				= -100604; // 邮件接受者不存在
+	PLAYER_MAIL_PLAYER_IS_COOLDOWN				= -100605; // 个人邮件发送冷却中
+	PLAYER_MAIL_TITLE_TOO_LONG					= -100606; // 邮件标题太长
+	PLAYER_MAIL_CONTENT_TOO_LONG				= -100607; // 邮件内容太长
+	PLAYER_MAIL_SUBTYPE_UNKNOWN					= -100608; // 系统邮件子类型未知
+	
+	// 物品错误码
+	ITEM_TABLE_DATA_NOT_FOUND 					= -101000; // 物品配置不存在
+	ITEM_NOT_FOUND								= -101001; // 物品不存在
+	ITEM_NUM_NOT_ENOUGH							= -101002; // 物品数量不足
+	
+	// 猫错误码
+	CAT_TABLE_DATA_NOT_FOUND  					= -101100; // 猫配置不存在
+	CAT_NOT_FOUND								= -101101; // 猫不存在
+	CAT_IN_CATHOUSE								= -101102; // 猫正在猫舍中
+	CAT_IN_EXPEDITION							= -101103; // 猫正在探索中
+	CAT_IN_FOSTER								= -101104; // 猫正在寄养所
+	CAT_LEVELUP_FAILED							= -101105; // 猫升级失败
+	CAT_UPSTAR_FAILED							= -101106; // 猫升星失败
+	CAT_UPGRADE_SKILL_FAILED					= -101107; // 猫升级技能失败
+	CAT_LOCKED 									= -101108; // 猫已被锁
+	CAT_UNLOCKED								= -101109; // 猫已解锁
+	CAT_FOOD_NOT_ENOUGH							= -101110; // 猫粮不够
+	CAT_STAR_IS_MAX								= -101111; // 猫的星级已达最大
+	CAT_UPSTAR_COST_CAT_NOT_ENOUGH 				= -101112; // 升星需要消耗的猫不够
+	CAT_UPSTAR_COST_CAT_NOT_FOUND 				= -101113; // 升星需要消耗的猫找不到
+	CAT_UPSTAR_COST_CAT_NOT_UNLOCK 				= -101114; // 升星需要消耗的猫未解锁
+	CAT_UPSTAR_COST_CAT_IS_USING  				= -101115; // 升星需要消耗的猫正在使用
+	CAT_UPSTAR_COST_CAT_STAR_DIFF 				= -101116; // 升星需要消耗的猫星级不相等
+	CAT_SKILL_LEVEL_IS_MAX						= -101117; // 猫的技能等级已是最大
+	CAT_UPSKILL_COST_CAT_CANT_EMPTY 			= -101118; // 猫升技能需要消耗的猫不能为空
+	CAT_UPSKILL_COST_CAT_CANT_SELF 				= -101119; // 猫升技能消耗的猫不能为该猫自己
+	CAT_UPSKILL_COST_CAT_NOT_FOUND 				= -101120; // 猫升技能消耗的猫不存在
+	CAT_UPSKILL_COST_CAT_IS_USING 				= -101121; // 猫升技能消耗的猫正在使用
+	CAT_UPSKILL_COST_CAT_LOCKED 				= -101122; // 猫升技能消耗的猫已被锁
+	CAT_UPSKILL_NO_VALID_COST_CAT 				= -101123; // 猫升技能没有符合配置可消耗的猫
+	CAT_RENAME_CANT_USE_OLD						= -101124; // 猫重命名不能相同
+	CAT_IS_BUSY									= -101125; // 猫忙
+	CAT_UPSTAR_LEVEL_NOT_ENOUGH					= -101126; // 星级受等级限制
+	CAT_UPLEVL_NEED_UPSTAR						= -101127; // 升级需要升星
+	CAT_UPSKILL_NOT_ENOUGH_COIN					= -101128; // 升技能金币不够
+	
+	// 作坊建筑配方错误码
+	FORMULA_TABLE_DATA_NOT_FOUND 				= -101200; // 配方配置不存在
+	FORMULA_NOT_EXCHANGED						= -101201; // 还未兑换配方
+	FORMULA_EXCHANGE_NEED_UNLOCK_CHAPTER 		= -101202; // 兑换建筑配方需要解锁章节
+	FORMULA_EXCHANGE_NOT_ENOUGH_STAR 			= -101203; // 兑换建筑配方星星数不足
+	FORMULA_MAKING_NOT_ENOUGH_COIN 				= -101204; // 打造需要的金币不足
+	FORMULA_MAKING_NOT_ENOUGH_RESOURCE 			= -101205; // 打造需要的资源不足
+	FORMULA_MAKING_SLOT_ID_INVALID 				= -101206; // 打造的槽位ID错误
+	FORMULA_MAKING_SLOT_IS_USING				= -101207; // 打造的槽位不能使用
+	FORMULA_MAKING_SPEEDUP_SLOT_EMPTY 			= -101208; // 加速槽位为空
+	FORMULA_NOT_MAKING							= -101209; // 还未开始打造
+	FORMULA_MAKING_SPEEDUP_ALREAY_COMPLETED 	= -101210; // 加速打造已经完成
+	FORMULA_NO_MAKING_BUILDING					= -101211; // 没有正在建造的配方建筑
+	FORMULA_MAKING_ALREADY_COMPLETED  			= -101212; // 打造已经完成
+	FORMULA_NO_SLOT_TO_MAKING 					= -101213; // 没有空余的槽位可供打造
+	
+	// 农田错误码
+	CROP_TABLE_DATA_NOT_FOUND					= -101300; // 农田配置不存在
+	CROP_NOT_FOUND								= -101301; // 农田建筑不存在
+	CROP_IS_NO_UNLOCK							= -101302; // 作物未解锁
+	CROP_NEED_COIN_NOT_ENOUGH					= -101303; // 作物需要的金币不足
+	CROP_BUILDING_NOT_FOUND						= -101304; // 农田建筑物不存在
+	CROP_BUILDING_IS_NOT_CROP					= -101305; // 种植的建筑物不是农田
+	CROP_SPEEDUP_DIAMOND_NOT_ENOUGH 			= -101306; // 加速需要的钻石不够
+	CROP_NO_MATURITY_DONT_HARVEST 				= -101307; // 作物未成熟不能收割
+	CROP_ALREADY_PLANT							= -101308; // 已经种植上了
+	CROP_ALREAY_MATURITY_NO_NEED_SPEEDUP 		= -101309; // 已成熟无需加速
+	
+	// 猫舍错误码
+	CATHOUSE_TABLE_DATA_NOT_FOUND 				= -101400; // 猫舍配置不存在
+	CATHOUSE_NOT_FOUND							= -101401; // 猫舍不存在
+	CATHOUSE_CAT_ALREADY_IN_HOUSE				= -101402; // 猫已在猫舍中
+	CATHOUSE_IS_FULL							= -101403; // 猫舍已满
+	CATHOUSE_CAT_NOT_IN_THE_HOUSE 				= -101404; // 猫不在该猫舍中
+	CATHOUSE_NOT_FOUND_CAT_IN_HOUSE 			= -101405; // 猫舍中没有发现该猫
+	CATHOUSE_IS_DOING_LEVEL_UP					= -101406; // 猫舍已在升级中
+	CATHOUSE_LEVEL_IS_MAX						= -101407; // 猫舍已达最大等级
+	CATHOUSE_LEVELUP_COST_NOT_ENOUGH 			= -101408; // 猫舍升级费用不够
+	CATHOUSE_NOT_DOING_LEVELUP					= -101409; // 猫舍不在升级
+	CATHOUSE_SPEEDUP_LEVELUP_NOT_ENOUGH_DIAMOND = -101410; // 猫舍加速升级钻石不足
+	CATHOUSE_CANT_SELL							= -101411; // 不能出售猫舍
+	CATHOUSE_CAT_MUST_SAME_COLOR				= -101412; // 猫的颜色不符
+	
+	// 商店错误码
+	SHOP_NOT_FOUND								= -101501; // 商店不存在
+	SHOP_LIMITED_TYPE_INVALID					= -101502; // 商店限定类型非法
+	SHOP_DIAMOND_NOT_ENOUGH						= -101503; // 钻石不足
+	SHOP_COIN_NOT_ENOUGH						= -101504; // 金币不足
+	SHOP_CHARM_NOT_ENOUGH						= -101505; // 魅力值不足
+	SHOP_FRIEND_POINT_NOT_ENOUGH  				= -101506; // 友情点不足
+	SHOP_SOUL_STONE_NOT_ENOUGH					= -101507; // 魂石不足
+	SHOP_CHARM_MEDAL_NOT_ENOUGH					= -101508; // 魅力勋章不足
+	SHOP_PURCHASE_TYPE_INVALID					= -101509; // 支付类型非法
+	SHOP_PURCHASED_FAILED						= -101510; // 未买到
+	SHOP_ITEM_NOT_FOUND							= -101511; // 商品不存在
+	SHOP_ITEM_NOT_ENOUGH						= -101512; // 商品数不足
+	SHOP_AFTER_PURCHASE_FAILED					= -101513; // 购买后添加物品失败
+	
+	// 任务
+	TASK_NOT_FOUND								= -101600; // 任务不存在
+	TASK_NOT_COMPLETE							= -101601; // 任务未完成
+	TASK_NOT_REWARD								= -101602; // 任务未领奖
+	TASK_ALREADY_REWARDED						= -101603; // 任务已领奖
+	TASK_PREV_NOT_COMPLETE						= -101604; // 前置任务未完成
+	
+	// 章节解锁
+	CHAPTER_UNLOCK_WRONG_CHAPTER_ID 			= -101700; // 章节Id不能解锁
+	CHAPTER_UNLOCK_LESS_STAR 					= -101701; // 星星不够不能解锁
+	CHAPTER_UNLOCK_LESS_DIAMOND 				= -101702; // 钻石不够不能解锁
+	CHAPTER_UNLOCK_NO_UNLOCK_CFG 				= -101703; // 缺少解锁配置
+	CHAPTER_UNLOCK_NO_CUR_UNLOCK_CFG 			= -101704; // 当前章节的解锁配置不存在
+	CHAPTER_UNLOCK_NO_ENOUGH_TIME 				= -101705; // 时间未到不能解锁
+	CHAPTER_UNLOCK_NO_FRIEND_IDS				= -101706; // 请求的好友列表未空
+	CHAPTER_UNLOCK_NEED_PASS_STAGE 				= -101707; // 未通过当前章节的最后一关
+	CHAPTER_HELP_UNLOCK_LESS_NUM 				= -101708; // 达到今天最大帮助次数
+	
+	// 章节通关
+	STAGE_PASS_NOT_UNLOCK 						= -101800; // 超过最大解锁关卡
+	STAGE_PASS_OVER_NEXT_STATE 					= -101801; // 超过下一关卡
+	STAGE_TABLE_DATA_NOT_FOUND 					= -101802; // 找不到配置数据
+	STAGE_NO_MATCH_WITH_END	 					= -101803; // 关卡ID结束与开始不匹配
+	STAGE_ALREADY_FINISHED	 					= -101804; // 关卡已结束
+	STAGE_ALREADY_BEGAN		 					= -101805; // 关卡已开始
+	STAGE_NO_BEGIN				 				= -101806; // 关卡未开始
+	
+	// 好友
+	FRIEND_NOT_FOUND_PLAYER	 					= -101900; // 找不到玩家
+	FRIEND_OFFLINE								= -101901; // 好友不在线
+	FRIEND_GIVE_POINTS_FREQUENTLY				= -101902; // 赠送友情点过于频繁
+	FRIEND_TOO_MANY_FRIEND_GIVE_POINTS 			= -101903; // 一次赠送好友过多
+	FRIEND_POINTS_NOT_ENOUGH_TO_GIVE 			= -101904; // 友情点不够赠送
+	FRIEND_VISIT_FRIEND_FAILED					= -101905; // 访问好友失败
+	FRIEND_NO_THE_FRIEND						= -101906; // 没有该好友
+	FRIEND_CHAT_FAILED							= -101907; // 聊天失败
+	FRIEND_NO_UNREAD_MESSAGE	 				= -101908; // 没有未读消息
+	FRIEND_MESSAGE_NUM_MAX						= -101909; // 消息数量最大
+	FRIEND_MESSAGE_TOO_LONG						= -101910; // 消息过长
+	FRIEND_REMOVE_FRIEND_FAILED 				= -101911; // 删除好友失败
+	FRIEND_LAST_POINTS_NOT_GET					= -101912; // 上次赠送的友情点还未收取
+	FRIEND_THE_PLAYER_ALREADY_FRIEND 			= -101913; // 该玩家已是好友
+	FRIEND_THE_PLAYER_REQUESTED					= -101914; // 该玩家已申请过
+	FRIEND_GIVE_POINTS_MAX_NUM_LIMIT 			= -101915; // 赠送次数已达上限
+	FRIEND_ALREDY_GIVED_POINTS_TO_PLAYER 		= -101916; // 已赠送过友情点给该玩家
+	
+	// 活动配置
+	ACTIVITY_NO_CFG 							= -102000; // 找不到活动配置
+	ACTIVITY_HAVE_REWARDED 						= -102001; // 已经领取过奖励
+	ACTIVITY_NOT_FINISHED 						= -102002; // 不满足领奖条件
+	ACTIVITY_NO_REWARDED 						= -102003; // 未配置奖励
+	ACTIVITY_GET_REWARD_REQ_ERROR 				= -102004; // 请求参数错误或者不全
+	ACTIVITY_LVL_REWARD_NO_CFG 					= -102005; // 没有对应等级的成长奖励
+	ACTIVITY_LVL_REWARD_LESS_LVL 				= -102006; // 等级未到不能领取奖励
+	ACTIVITY_VIPCARD_NOT_OPEN 					= -102007; // 等级未到不能领取奖励
+	ACTIVITY_DAY_REWARD_NO_CFG 					= -102008; // 没有对应的每日奖励配置
+	ACTIVITY_SUM_DAYREWARD_NO_CFG 				= -102009; // 没有对应的累计奖励配置
+	ACTIVITY_NOT_OPEN 							= -102010; // 活动未开启
+	
+	// 寄养所
+	FOSTER_COMPOSE_NOT_ENOUGH_CARD 				= -102100; // 合成没有足够的寄养卡
+	FOSTER_COMPOSE_CARD_INVALID	 				= -102101; // 合成的源卡非法
+	FOSTER_COMPOSE_TYPE_INVALID	 				= -102102; // 寄养卡类型错误
+	FOSTER_BUILDING_IS_DISMATCH	 				= -102103; // 寄养所建筑不匹配
+	FOSTER_NOT_ENOUGH_SPACE_TO_SET_CAT 			= -102104; // 没有足够的位置放猫
+	FOSTER_NO_SUCH_CAT_IN_FOSTER	 			= -102105; // 寄养所没有该猫
+	FOSTER_REACH_SELF_MAX_FOSTER_NUM			= -102106; // 已达自己寄存数量上限
+	FOSTER_FRIEND_NO_SPACE_TO_FOSTER 			= -102107; // 好友寄存位置不足
+	FOSTER_ALREADY_CAT_IN_THE_FRIEND 			= -102108; // 已经在该玩家寄养了一只猫
+	FOSTER_EQUIP_NEW_CARD_MUST_UNEQUIP_OLD 		= -102109; // 必须卸载已有的寄养卡才能装备新寄养卡
+	FOSTER_UNEQUIP_NO_EQUIP_CARD				= -102110; // 没有寄养卡寄养
+	FOSTER_SET_CAT_TO_FRIEND_FAILED				= -102111; // 寄养到好友失败
+	FOSTER_NO_EQUIP_CARD_CANT_ACTIVE			= -102112; // 没有装备寄养卡不能激活
+	FOSTER_CARD_ALREADY_ACTIVED					= -102113; // 寄养卡已激活
+	FOSTER_MAX_FRIEND_NUM_TO_FOSTER				= -102114; // 可寄养的好友数量已达上限
+	
+	// 排行榜
+	RANK_GET_ITEMS_NUM_OVER_MAX					= -102200; // 排行榜一次拉取的数量超出限制
+	
+	// 聊天
+	CHAT_SEND_MSG_COOLING_DOWN   				= -102350; // 聊天发送消息还在冷却中
+	CHAT_SEND_MSG_BYTES_TOO_LONG 				= -102351; // 聊天消息超长
+	CHAT_CANT_SEND_WITH_NO_FREE					= -102352; // 聊天内部错误没有空闲的节点
+	CHAT_PULL_COOLING_DOWN       				= -102353; // 聊天拉取消息还在冷却中
+	CHAT_CHANNEL_CANT_GET						= -102354; // 无法获得聊天频道
+	
+	// 个人空间
+	PERSONAL_SPACE_GET_FAILED					= -102400; // 获取个人空间失败
+	PERSONAL_SPACE_NOT_GET_YET					= -102401; // 还未获取个人空间
+	PERSONAL_SPACE_ALREADY_EXISTS				= -102402; // 个人空间已存在
+	PERSONAL_SPACE_EXISTS_THE_LEAVE_MSG 		= -102403; // 内部错误，空间已有该留言
+	PERSONAL_SPACE_NOT_FOUND_THE_LEAVE_MSG 		= -102404; // 空间不存在该留言
+	PERSONAL_SPACE_NO_COMMENT_WITH_LEAVE_MSG 	= -102405; // 留言中没有评论
+	PERSONAL_SPACE_PIC_ID_INVALID				= -102406; // 空间图片ID非法
+	PERSONAL_SPACE_PIC_ALREADY_ZANED  			= -102407; // 空间图片已赞过
+	
+	// 充值
+	CHARGE_ORDER_DATA_EMPTY						= -102500; // 订单数据为空
+	CHARGE_ORDER_DATA_INVALID 					= -102501; // 订单数据非法
+	CHARGE_ORDER_SIGNATURE_INVALID 				= -102502; // 订单签名数据非法
+	CHARGE_ORDER_SN_EMPTY						= -102503; // 订单号为空
+	CHARGE_ORDER_SN_ALREDY_USED					= -102504; // 订单已使用过 
+	CHARGE_ORDER_VERIFY_FAILED					= -102505; // 订单验证失败
+	
+	// 充值
+	CHARGE_TABLE_DATA_NOT_FOUND					= -102510; // 充值配置找不到
+	CHARGE_MONTH_CARD_ALREADY_PAYED				= -102511; // 月卡已买
+	CHARGE_FIRST_NO_DONE						= -102512; // 还未首充
+	CHARGE_FIRST_ALREADY_AWARD					= -102513; // 首充已领过奖
+	CHARGE_GOOGLE_SIGNATURE_INVALID				= -102514; // google签名验证失败
+	CHARGE_GOOGLE_PURCHASE_TOKEN_INVALID		= -102515; // google支付令牌验证失败
+	CHARGE_GOOGLE_ORDER_ALREADY_EXIST			= -102516; // google订单已存在
+	CHARGE_APPLE_PURCHASE_DATA_EMPTY			= -102517; // apple支付数据为空
+	CHARGE_APPLE_PURCHASE_DATA_INVALID			= -102518; // apple支付数据非法
+	CHARGE_APPLE_PAY_NEW_REQUEST_FAILED			= -102519; // apple支付验证请求创建失败
+	CHARGE_APPLE_PAY_REQUEST_FAILED				= -102520; // apple支付验证请求失败
+	CHARGE_APPLE_PAY_RESULT_UNMARSHAL_FAILED	= -102521; // apple支付验证结果反序列化失败
+	CHARGE_APPLE_PAY_VERIFY_NO_PASS				= -102522; // apple支付验证未通过
+	CHARGE_APPLE_ORDER_ALREADY_EXIST        	= -102523; // apple支付订单已存在
+	CHARGE_CHANNEL_INVALID						= -102524; // 充值渠道非法
+	CHARGE_PAY_REPEATED_VERIFY					= -102525; // 充值支付重复验证
+	CHARGE_NO_ACTIVITY_ON_THIS_TIME				= -102526; // 无充值活动可用
+	
+	// 排行榜
+	RANK_LIST_TYPE_INVALID						= -102600; // 排行榜类型错误
+}
+
+// =================================== end ====================================
+
+// 测试用消息
+message C2S_TEST_COMMAND {
+	string cmd 								= 1;
+	repeated string args 					= 2;
+	enum EProtocol { None = 0; ProtoID = 1; }
+}
+
+// 心跳
+message C2SHeartbeat {
+	enum EProtocol { None = 0; ProtoID = 2; }
+}
+
+message S2CHeartbeat {
+	int32 SysTime							= 1; // 系统标准时间
+	enum EProtocol { None = 0; ProtoID = 3; }
+}
+
+// 物品
+/*message ItemInfo {
+	int32 Id 								= 1; // 配置物品
+	int32 Value 							= 2; // 物品数目
+}*/
+
+// ----------------------------------- 账号 ----------------------------------
+// 协议ID从1000开始
+
+// 注册
+message C2SRegisterRequest {
+	string Account							= 1; // 账号
+	string Password							= 2; // 密码
+	bool IsGuest							= 3; // 是否游客
+	enum EProtocol { None = 0; ProtoID = 1000; }
+}
+
+message S2CRegisterResponse {
+	string Account							= 1; // 账号
+	string Password							= 2; // 密码
+	bool IsGuest							= 3; // 是否游客
+	enum EProtocol { None = 0; ProtoID = 1001; }
+}
+
+// 游客绑定新账号
+message C2SGuestBindNewAccountRequest {
+	int32 ServerId							= 1; // 服务器ID
+	string Account							= 2; // 旧帐号
+	string Password							= 3; // 旧密码
+	string NewAccount						= 4; // 新账号
+	string NewPassword						= 5; // 新密码
+	string NewChannel						= 6; // 渠道
+	enum EProtocol { None = 0; ProtoID = 1003; }
+}
+
+message S2CGuestBindNewAccountResponse {
+	int32 ServerId							= 1; // 服务器ID
+	string Account							= 2; // 旧帐号
+	string NewAccount						= 3; // 新账号
+	string NewPassword						= 4; // 新密码
+	string NewChannel						= 5; // 渠道
+	enum EProtocol { None = 0; ProtoID = 1004; }
+}
+
+// 修改密码
+message C2SSetLoginPasswordRequest {
+	string Account							= 1;
+	string Password							= 2;
+	string NewPassword						= 3;
+	enum EProtocol { None = 0; ProtoID = 1005; }
+}
+
+message S2CSetLoginPasswordResponse {
+	string Account							= 1;
+	string Password							= 2;
+	string NewPassword						= 3;
+	enum EProtocol { None = 0; ProtoID = 1006; }
+}
+
+// 协议号从1100开始
+
+// 登陆
+message C2SLoginRequest {
+	string Acc 								= 1; // 账号
+	string Password							= 2; // 密码
+	string Channel 							= 3; // 渠道    目前三种情况，跟服务器设置是否验证账号有关  1. 空表示不需要渠道   2. "guest"表示游客登陆   3. "facebook" 表示facebook账号登陆
+	enum EProtocol { None = 0; ProtoID = 1100; }
+}
+// 服务器信息
+message ServerInfo {
+	int32 Id 								= 1;
+	string Name								= 2;
+	string IP								= 3;
+}
+
+// 玩家信息
+message AccountPlayerInfo {
+	int32 ServerId							= 1; // 服务器ID
+	string PlayerName						= 2; // 昵称
+	int32 PlayerLevel						= 3; // 等级
+	int32 PlayerHead						= 4; // 头像
+}
+
+// 登陆返回
+message S2CLoginResponse {
+	string Acc 								= 1; // 账号
+	string Token 							= 2; // 令牌
+	string Channel							= 3; // 渠道
+	AccountPlayerInfo PlayerInfo			= 4; // 账号玩家列表
+	string GameIP							= 5; // 游戏服地址
+	string BoundAccount						= 6; // 已绑定账号，游客模式下
+	enum EProtocol { None = 0; ProtoID = 1102; }
+}
+
+/// 其它地方登录
+message S2COtherPlaceLogin {
+	enum EProtocol { None = 0; ProtoID = 1103; }
+}
+
+// 进入游戏服务器
+message C2SEnterGameRequest {
+	string Acc								= 1;
+	enum EProtocol { None = 0; ProtoID = 1110; }
+}
+// 返回
+message S2CEnterGameResponse {
+	string Acc								= 1;
+	int32 PlayerId							= 2;
+	enum EProtocol { None = 0; ProtoID = 1111; }
+}
+// 通知客户端进入游戏服务器完成
+message S2CEnterGameCompleteNotify {
+	enum EProtocol { None = 0; ProtoID = 1112; }
+}
+
+// 离开游戏服务器
+message C2SLeaveGameRequest {
+	enum EProtocol { None = 0; ProtoID = 1113; }
+}
+// 返回
+message S2CLeaveGameResponse {
+	enum EProtocol { None = 0; ProtoID = 1114; }
+}
+
+// 请求玩家信息
+message C2SPlayerInfoRequest {
+	enum EProtocol { None = 0; ProtoID = 1150; }
+}
+
+// 玩家信息
+message S2CPlayerInfoResponse {
+	int32 Level 							= 1; // 等级
+	int32 Exp								= 2; // 经验
+	int32 Gold								= 3; // 金币
+	int32 Diamond							= 4; // 钻石
+	int32 Icon								= 5; // 头像
+	int32 VipLevel							= 6; // VIP等级
+	string Name								= 7; // 昵称
+	int32 SysTime							= 8; // 系统时间
+	enum EProtocol { None = 0; ProtoID = 1151; }
+}
+
+// 改名
+message C2SPlayerChangeNameRequest {
+	string NewName							= 1;
+	enum EProtocol { None = 0; ProtoID = 1152; }
+}
+
+message S2CPlayerChangeNameResponse {
+	string NewName							= 1;
+	enum EProtocol { None = 0; ProtoID = 1153; }
+}
+
+// 换头像
+message C2SPlayerChangeHeadRequest {
+	int32 NewHead							= 1;
+	enum EProtocol { None = 0; ProtoID = 1154; }
+}
+
+message S2CPlayerChangeHeadResponse {
+	int32 NewHead							= 1;
+	enum EProtocol { None = 0; ProtoID = 1155; }
+}
+
+// 重连
+message C2SReconnectRequest {
+}
+
+message S2CReconnectResponse {
+	string NewToken							= 1;
+}
+
+
+///////////////////////////////////start///////////////////////////////////////
+
+message C2S_ONE_MSG {
+	int32 MsgCode 							= 1; // 消息ID
+	bytes Data 								= 2; // 消息数据
+}
+
+message C2S_MSG_DATA {
+	string Token 							= 1; // 令牌
+	repeated C2S_ONE_MSG MsgList			= 2; // 消息队列
+}
+
+message S2C_ONE_MSG {
+	int32 MsgCode							= 1; // 消息ID
+	int32 ErrorCode 						= 2; // 错误码
+	bytes Data 								= 3; // 数据
+}
+
+message S2C_MSG_DATA {
+	repeated S2C_ONE_MSG MsgList            = 1; // 返回的消息数据队列
+}
+
+//////////////////////////////// 结构 ///////////////////////////////////
+
+// Id Num 结构
+message IdNum {
+	int32 Id = 1;
+	int32 Num = 2;
+}
+
+// 物品
+message ItemInfo {
+	int32 ItemCfgId 						= 1; // 配置物品
+	int32 ItemNum 							= 2; // 物品数目
+	int32 RemainSeconds 					= 3; // 物品剩余时间
+	enum EProtocol { None = 0; ProtoID = 1200; }
+}
+
+/*enum CatState {
+	CatStateIdle 							= 0; // 空闲
+	CatStateInCatHouse 						= 1; // 猫舍
+	CatStateInExpedition 					= 2; // 探索
+	CatStateInFoster 						= 3; // 寄养所
+}*/
+
+// 猫
+message CatInfo {
+	int32 Id 								= 1; // 猫唯一Id
+	int32 CatCfgId 							= 2; // 猫配置Id
+	int32 Exp 								= 3; // 经验
+	int32 Level    							= 4; // 等级
+	int32 Star     							= 5; // 星级
+	string Nick   	 						= 6; // 昵称
+	int32 SkillLevel 						= 7; // 技能等级
+	bool Locked	 							= 8; // 是否锁住
+	int32 CoinAbility  						= 9; // 产金能力
+	int32 ExploreAbility 					= 10; // 探索能力
+	int32 MatchAbility 						= 11; // 消除能力
+	int32 State								= 12; // 猫的状态 (0 空闲  1 猫舍  2 探索  3 寄养所)
+	enum EProtocol { None = 0; ProtoID = 1201; }
+}
+
+// 地图上的建筑物
+message BuildingInfo {
+	int32 Id 								= 1; // 建筑唯一Id
+	int32 CfgId 							= 2; // 建筑配置Id
+	int32 X 								= 3; // 建筑x坐标
+	int32 Y 								= 4; // 建筑y左边
+	int32 Dir								= 5; // 方向
+}
+
+// 仓库建筑物，没有实例ID
+message DepotBuildingInfo {
+	int32 CfgId 							= 1; // 配置ID
+	int32 Num 								= 2; // 数量
+	enum EProtocol { None = 0; ProtoID = 1202; }
+}
+
+// 消耗的资源物品类型数量(Other表里配置的属性，像金币，钻石，体力，魅力值，猫粮等)
+message ResourceInfo {
+	int32 ResourceType 						= 1; // 类型
+	int32 ResourceValue						= 2; // 数值
+	enum EProtocol { None = 0; ProtoID = 1203; }
+}
+
+message AreaInfo {
+	int32 CfgId 							= 1; // 配置Id
+}
+
+message StageInfo {
+	int32 StageId							= 1; // 关卡ID
+	int32 Star 								= 2; // 通关星数
+	int32 TopScore							= 3; // 最高分
+}
+
+/////////////////////////////////////////////////////////////////////////
+// 物品变化
+message S2CItemsInfoUpdate {
+	repeated ItemInfo Items 				= 1;
+	enum EProtocol { None = 0; ProtoID = 10000; }
+}
+
+// 猫实例的变化
+message S2CCatsInfoUpdate {
+	repeated CatInfo AddCats 				= 1; // 增加
+	repeated CatInfo UpdateCats 			= 2; // 更新
+	repeated int32 RemoveCats 				= 3; // 删除
+	enum EProtocol { None = 0; ProtoID = 10001; }
+}
+
+// 建筑物变化
+message S2CBuildingsInfoUpdate {
+	repeated BuildingInfo AddBuildings 		= 1; // 增加
+	repeated BuildingInfo UpdateBuildings 	= 2; // 更新
+	repeated int32 RemoveBuildings 			= 3; // 删除
+	enum EProtocol { None = 0; ProtoID = 10002; }
+}
+
+// 仓库建筑物变化
+message S2CDepotBuildingInfoUpdate {
+	repeated DepotBuildingInfo Buildings 	= 1;
+	enum EProtocol { None = 0; ProtoID = 10003; }
+}
+
+/////////////////////////////////////////////////////////////////////////
+// 拉取数据（基础数据，物品，猫，建筑，区域等）
+message C2SGetInfo {
+	bool Base 								= 1; // 基础信息
+	bool Item 								= 2; // 物品信息
+	bool Cat 								= 3; // 猫信息
+	bool Building 							= 4; // 建筑信息
+	bool Area 								= 5; // 区域信息
+	bool Stage  							= 6; // 关卡信息
+	bool DepotBuilding 						= 7; // 仓库建筑信息
+	bool Formula							= 8; // 配方信息
+	bool Guide								= 9; // 新手引导
+	bool CatHouse  							= 10; // 猫舍
+	bool WorkShop  							= 11; // 手工作坊
+	bool Farm								= 12; // 农田
+
+	enum EProtocol { None = 0; ProtoID = 10004; }
+}
+
+// 拉基础信息
+message C2SGetBaseInfo {
+	enum EProtocol { None = 0; ProtoID = 10005; }
+}
+
+message S2CRetBaseInfo {
+	int32 Coins 							= 1; // 玩家金币
+	int32 Diamonds 							= 2; // 玩家钻石
+	int32 Lvl 								= 3; // 等级
+	int32 Exp 								= 4; // 经验
+	int32 CurMaxStage 						= 5; // 当前通关关卡数目
+	int32 CurUnlockMaxStage 				= 6; // 最大可通关关卡
+	int32 CharmVal 							= 7; // 魅力值
+	string Nick 							= 8; // 昵称
+	int32 Head 								= 9; // 头像
+	int32 Star 								= 10; // 星数
+	int32 Zan 								= 11; // 点赞数
+	int32 CatFood 							= 12; // 猫粮
+	int32 Spirit 							= 13; // 体力
+	int32 FriendPoints 						= 14; // 友情点
+	int32 SoulStone							= 15; // 魂石
+	int32 CharmMetal						= 16; // 魅力勋章
+	int32 HistoricalMaxStar					= 17; // 历史最大星星数
+	int32 ChangeNameNum						= 18; // 改名次数
+	int32 ChangeNameFreeNum					= 19; // 已用免费次数
+	int32 ChangeNameCostDiamond				= 20; // 改名价格
+	int32 DayBuyTiLiCount      				= 21; // 今天购买体力次数
+
+	enum EProtocol { None = 0; ProtoID = 10006; }
+}
+
+/// 拉物品信息
+message C2SGetItemInfos {
+	enum EProtocol { None = 0; ProtoID = 10007; }
+}
+// 物品同步结果
+message S2CGetItemInfos {
+	repeated ItemInfo Items					= 1;
+	enum EProtocol { None = 0; ProtoID = 10008; }
+}
+
+// 拉建筑信息
+message C2SGetBuildingInfos {
+	enum EProtocol { None = 0; ProtoID = 10009; }
+}
+message S2CGetBuildingInfos {
+	repeated BuildingInfo Builds 			= 1; // 地图建筑物
+	enum EProtocol { None = 0; ProtoID = 10010; }
+}
+
+// 拉取仓库建筑信息
+message C2SGetDepotBuildingInfos {
+	enum EProtocol { None = 0; ProtoID = 10011; }
+}
+message S2CGetDepotBuildingInfos {
+	repeated DepotBuildingInfo DepotBuilds 	= 1; // 仓库建筑物
+	enum EProtocol { None = 0; ProtoID = 10012; }
+}
+
+// 拉猫信息
+message C2SGetCatInfos {
+	enum EProtocol { None = 0; ProtoID = 10013; }
+}
+message S2CGetCatInfos {
+	repeated CatInfo Cats 					= 1; // 猫信息
+	enum EProtocol { None = 0; ProtoID = 10014; }
+}
+
+// 拉取区域信息
+message C2SGetAreasInfos {
+	enum EProtocol { None = 0; ProtoID = 10015; }
+}
+message S2CGetAreasInfos {
+	repeated AreaInfo Areas 				= 1; // 区域信息
+	enum EProtocol { None = 0; ProtoID = 10016; }
+}
+
+// 拉取关卡信息
+message C2SGetStageInfos {
+	enum EProtocol { None = 0; ProtoID = 10017; }
+}
+message S2CGetStageInfos {
+	repeated StageInfo Stages 				= 1; // 关卡信息
+	int32 CurMaxStage 						= 2; // 当前通关关卡数目
+	int32 CurUnlockMaxStage 				= 3; // 最大可通关关卡
+	int32 UnlockLeftSec 					= 4; // 解锁剩余时间
+	int32 CurUnlockStageId     				= 5; // 当前正在解锁的关卡Id
+	enum EProtocol { None = 0; ProtoID = 10018; }
+}
+
+// 金币
+message C2SGetCoin {
+	enum EProtocol { None = 0; ProtoID = 10019; }
+}
+message S2CGetCoin {
+	int32 Coin								= 1;
+	enum EProtocol { None = 0; ProtoID = 10020; }
+}
+
+// 钻石
+message C2SGetDiamond {
+	enum EProtocol { None = 0; ProtoID = 10021; }
+}
+message S2CGetDiamond {
+	int32 Diamond 							= 1;
+	enum EProtocol { None = 0; ProtoID = 10022; }
+}
+
+// 魅力值
+message C2SGetCharmVal {
+	enum EProtocol { None = 0; ProtoID = 10023; }
+}
+message S2CGetCharmVal {
+	int32 CharmVal 							= 1;
+	enum EProtocol { None = 0; ProtoID = 10024; }
+}
+
+// 点赞数
+message C2SGetZan {	
+	enum EProtocol { None = 0; ProtoID = 10025; }
+}
+message S2CGetZan {
+	int32 Zan 								= 1;
+	enum EProtocol { None = 0; ProtoID = 10026; }
+}
+
+// 猫粮
+message C2SGetCatFood {
+	enum EProtocol { None = 0; ProtoID = 10027; }
+}
+message S2CGetCatFood {
+	int32 CatFood 							= 1;
+	enum EProtocol { None = 0; ProtoID = 10028; }
+}
+
+// 体力
+message C2SGetSpirit {
+	enum EProtocol { None = 0; ProtoID = 10029; }
+}
+message S2CGetSpirit {
+	int32 Spirit = 1;
+	enum EProtocol { None = 0; ProtoID = 10030; }
+}
+// =================================== 关卡 ===================================
+
+message C2SStagePass {
+	int32 StageId 							= 1; // 关卡Id
+	int32 Stars 							= 2; // 通关星星
+	int32 Score 							= 3; // 通关积分
+	repeated ItemInfo Items 				= 4; // 使用的物品
+	int32 Result 							= 5; // 通关结果  1 过关  0 失败
+	enum EProtocol { None = 0; ProtoID = 10100; }
+}
+
+message PlayerStageInfo {
+	int32 PlayerId 							= 1; // 玩家Id
+	int32 Score 							= 2; // 我的积分
+	string Name 							= 3; // 玩家名称
+	int32 Lvl 								= 4; // 玩家等级
+	string Icon 							= 5; // 玩家图标
+	string CustomIcon 						= 6; // 玩家自定义图标
+}
+
+message S2CStagePass {
+	int32 StageId 							= 1; // 关卡Id
+	int32 Stars 							= 2; // 通关星星
+	int32 Score 							= 3; // 通关积分
+	int32 TopScore 							= 4; // 最高积分
+	repeated ItemInfo UseItems 				= 5; // 使用的物品
+	int32 GetCoin 							= 6; // 获取的金币 
+	repeated ItemInfo Getitems 				= 7; // 获得的物品
+	repeated PlayerStageInfo RankItems 		= 8; // 排行榜信息
+	repeated PlayerStageInfo FriendItems 	= 9; // 好友信息
+	repeated CatInfo GetCats 				= 10; // 猫
+	repeated DepotBuildingInfo GetBuildings = 11; // 建筑
+	int32 Result 							= 12; // 通关结果  0 失败  1 过关
+	repeated ItemInfo GetitemsFirst 		= 13; // 获得的首通奖励
+	repeated ItemInfo Getitems3Star 		= 14; // 获得的首次3星奖励
+	int32 CatExtraAddCoin					= 15; // 消除能力额外获得的金币
+	enum EProtocol { None = 0; ProtoID = 10101; }
+}
+
+message C2SChapterUnlock {
+	int32 UnLockType 						= 1; // 解锁方式 0时间解锁 1星星解锁 2钻石解锁 3请求好友
+	int32 ChapterId 						= 2; // 章节Id
+	repeated int32 FriendIds 				= 3; // 好友Id
+	enum EProtocol { None = 0; ProtoID = 10102; }
+}
+
+message S2CChapterUnlock {
+	int32 ChapterId 						= 1; // 章节Id
+	int32 MaxUnlockStageId 					= 2; // 最大场景Id
+	enum EProtocol { None = 0; ProtoID = 10103; }
+}
+
+message C2SGetCurHelpReqPIds {
+	enum EProtocol { None = 0; ProtoID = 10104; }
+}
+
+message S2CRetCurHelpReqPIds {
+	repeated int32 PIds 					= 1; // 当前请求过的玩家Id
+	enum EProtocol { None = 0; ProtoID = 10105; }
+}
+
+message S2CRetDayHelpUnlockCount {
+	int32 HelpOtherNum 						= 1; // 今天剩余帮助别人的次数
+	enum EProtocol { None = 0; ProtoID = 10106; }
+}
+
+// 关卡开始
+message C2SStageBegin {
+	int32 StageId 							= 1;
+	int32 CatId   							= 2;
+	repeated int32 ItemIds					= 3;
+	enum EProtocol { None = 0; ProtoID = 10107; }
+}
+message S2CStageBeginResult {
+	int32 StageId 							= 1;
+	enum EProtocol { None = 0; ProtoID = 10108; }
+}
+
+// =================================== 物品 ===================================
+message S2COpenChest {
+	int32 ChestId 							= 1; // 宝箱Id
+	int32 CurCoins 							= 2; // 当前金币数
+	int32 CurDiamond 						= 3; // 当前钻石
+	repeated ItemInfo NewItems 				= 4; // 新增的物品
+	int32 CostDiamond 						= 5; // 消耗的钻石
+	enum EProtocol { None = 0; ProtoID = 10200; }
+}
+
+message C2SBuyChest {
+	int32 ChestId 							= 1; // 宝箱配置Id
+	enum EProtocol { None = 0; ProtoID = 10201; }
+}
+
+message S2CBuyChest {
+	S2COpenChest ChestOpen 					= 1; // 宝箱打开结果
+	enum EProtocol { None = 0; ProtoID = 10202; }
+}
+
+// 客户端请求使用物品
+message C2SUseItem {
+	int32 ItemCfgId 						= 1;
+	int32 ItemNum 							= 2;
+	enum EProtocol { None = 0; ProtoID = 10203; }
+}
+
+// 服务器返回使用物品结果
+message S2CUseItem {
+	ItemInfo CostItem 						= 1;  // 消耗物品
+	enum EProtocol { None = 0; ProtoID = 10204; }
+}
+
+// 出售物品
+message C2SSellItem {
+	int32 ItemId       						= 1;
+	int32 ItemNum							= 2;
+	enum EProtocol { None = 0; ProtoID = 10205; }
+}
+message S2CSellItemResult {
+	int32 ItemId							= 1;
+	int32 ItemNum							= 2;
+	enum EProtocol { None = 0; ProtoID = 10206; }
+}
+
+// ----------------------------------- 邮件 -----------------------------------
+// 发送邮件
+message C2SMailSendRequest {
+	int32 ReceiverId						= 1; // 接收者ID
+	int32 MailType							= 2; // 邮件类型
+	int32 MailSubtype						= 3; // 子类型
+	string MailTitle						= 4; // 邮件标题
+	string MailContent						= 5; // 邮件内容
+	repeated ItemInfo AttachedItems			= 6; // 附加物品
+	enum EProtocol { None = 0; ProtoID = 10300; }
+}
+message S2CMailSendResponse {
+	int32 MailId							= 1; // 邮件ID
+	enum EProtocol { None = 0; ProtoID = 10301; }
+}
+
+// 获取邮件列表
+message C2SMailListRequest {
+	enum EProtocol { None = 0; ProtoID = 10302; }
+}
+message MailBasicData {
+	int32 Id								= 1; // 邮件ID
+	int32 Type								= 2; // 邮件类型   1 系统  2 个人  3 公会群发
+	int32 Subtype							= 3; // 子类型
+	string Title							= 4; // 邮件标题
+	string SenderName						= 5; // 发送者
+	int32 SenderId							= 6; // 发送者ID
+	int32 SendTime							= 7; // 发送时间
+	bool IsRead								= 8; // 是否已读
+	bool IsGetAttached						= 9; // 是否已领取附件
+	bool HasAttached						= 10; // 是否有附件
+	int32 Value								= 11; // 额外数据
+}
+message S2CMailListResponse {
+	repeated MailBasicData Mails            = 1; //
+	enum EProtocol { None = 0; ProtoID = 10303; }
+}
+
+// 请求邮件具体内容
+message C2SMailDetailRequest {
+	repeated int32 Ids                  	= 1; // 邮件ID
+	enum EProtocol { None = 0; ProtoID = 10304; }
+}
+message MailDetail {
+	int32 Id								= 1; // 邮件ID
+	string Content							= 2; // 邮件内容
+	repeated ItemInfo AttachedItems			= 3; // 附加物品
+}
+message S2CMailDetailResponse {
+	repeated MailDetail Mails               = 1; // 邮件细节
+	enum EProtocol { None = 0; ProtoID = 10305; }
+}
+
+// 获取邮件附加物品
+message C2SMailGetAttachedItemsRequest {
+	repeated int32 MailIds					= 1; // 邮件ID
+	enum EProtocol { None = 0; ProtoID = 10306; }
+}
+message S2CMailGetAttachedItemsResponse {
+	repeated int32 MailIds					= 1; // 邮件ID
+	repeated ItemInfo AttachedItems			= 2; // 获得的附加物品   key: item_id  value: item_num
+	enum EProtocol { None = 0; ProtoID = 10307; }
+}
+
+// 删除邮件
+message C2SMailDeleteRequest {
+	repeated int32 MailIds					= 1; // 邮件ID
+	enum EProtocol { None = 0; ProtoID = 10308; }
+}
+message S2CMailDeleteResponse {
+	repeated int32 MailIds					= 1; // 邮件ID
+	enum EProtocol { None = 0; ProtoID = 10309; }
+}
+
+// 新邮件通知
+message S2CMailsNewNotify {
+	repeated MailBasicData Mails            = 1; // 新邮件基本数据
+	enum EProtocol { None = 0; ProtoID = 10310; }
+}
+
+// 客户端向服务器拉取邮件列表
+/*message C2SGetMailList {
+	enum EProtocol { None = 0; ProtoID = 10311; }
+}
+
+// 服务器向客户端发送增加邮件消息
+message MailInfo {
+	int32 OpType 							= 1; // 邮件操作类别 0表示同步 1表示增加 2表示删除 3表示更新
+	int32 MailId 							= 2; // 邮件唯一Id
+	int32 MailType 							= 3;  // 邮件类型
+	string Title 							= 4; // 邮件标题
+	string Content 							= 5; // 邮件内容
+	int32 SenderId 							= 6; // 发送者Id
+	string SenderName 						= 7; // 发送者名称
+	int32 SendUnix 							= 8; // 发送时间
+	int32 LeftSec 							= 9; // 剩余多少时间
+	repeated int32 ObjIds 					= 10; // 邮件对象的配置Id集合
+	repeated int32 ObjNums 					= 11; // 邮件对象的数目集合
+	repeated int32 ExtraDatas 				= 12; // 邮件的附加数据
+	int32 State 							= 13; // 邮件的状态
+}
+
+// 服务器向客户端发送邮件列表
+message S2CMailList {
+	repeated MailInfo MailList 				= 1; // 邮件列表
+	enum EProtocol { None = 0; ProtoID = 10312; }
+}
+
+// 客户端向服务器发送领取附件的请求
+message C2SGetMailAttach {
+	int32 MailId 							= 1; // 邮件Id
+	enum EProtocol { None = 0; ProtoID = 10313; }
+}
+
+// 客户端向服务器发送删除邮件请求
+message C2SMailRemove {
+	int32 MailId 							= 1; // 邮件Id
+	enum EProtocol { None = 0; ProtoID = 10314; }
+}
+
+// 客户端向服务器设置邮件已读标志
+message C2SSetMailRead {
+	int32 MailId 							= 1; // 邮件Id
+	enum EProtocol { None = 0; ProtoID = 10315; }
+}
+
+// 客户端向服务器同意帮助
+message C2SAgreeMailHelpReq {
+	int32 MailId 							= 1; // 邮件Id
+	enum EProtocol { None = 0; ProtoID = 10316; }
+}*/
+
+// ------------------------------------ 设置 ----------------------------------
+
+// 客户端向服务器存储设置
+message C2SSaveOptions {
+	repeated int32 Values 					= 1; // 设置的值
+	enum EProtocol { None = 0; ProtoID = 10400; }
+}
+
+// 客户端向服务器请存储的设置
+message C2SGetOptions {
+	enum EProtocol { None = 0; ProtoID = 10401; }
+}
+
+// 服务器向客户端返回设置值
+message S2CRetOptions {
+	repeated int32 Values 					= 1; // 设置的值
+	enum EProtocol { None = 0; ProtoID = 10402; }
+}
+
+// ------------------------------------ 任务 ----------------------------------
+
+// 任务数据
+message TaskData {
+	int32 Id 								= 1; // 任务Id
+	int32 Value 							= 2; // 任务值
+	int32 State 							= 3; // 任务状态   0 未完成 1 完成 2 已领奖
+}
+
+// 客户端向服务器请求日常任务数据
+message C2STaskDataRequest {
+	int32 TaskType							= 1; // 任务类型   0 全部   1 日常  2 成就
+	enum EProtocol { None = 0; ProtoID = 10500; }
+}
+
+// 服务器向客户端发送任务数据
+message S2CTaskDataResponse {
+	int32 TaskType							= 1; // 任务类型
+	repeated TaskData TaskList 				= 2; // 任务数据列表
+	int32 DailyTaskRefreshRemainSeconds		= 3; // 每日任务剩余刷新时间
+	enum EProtocol { None = 0; ProtoID = 10501; }
+}
+
+// 服务器向客户端通知任务值变化
+message S2CTaskValueNotify {
+	TaskData Data							= 1; // 任务状态变化或者有新任务
+	enum EProtocol { None = 0; ProtoID = 10502; }
+}
+
+// 客户端向服务器请求任务奖励
+message C2STaskRewardRequest {
+	int32 TaskId 							= 1; // 任务ID
+	enum EProtocol { None = 0; ProtoID = 10503; }
+}
+
+// 服务器向客户端发送任务结果
+message S2CTaskRewardResponse {
+	int32 TaskId 							= 1; // 任务Id
+	enum EProtocol { None = 0; ProtoID = 10504; }
+}
+
+// 日常任务数据
+/*message DialyTaskData {
+	int32 TaskId 							= 1; // 任务Id
+	int32 TaskValue 						= 2; // 任务值
+	int32 TaskState							= 3; // 任务状态 0 未完成 1 完成 2 已领奖
+}
+
+// 客户端向服务器请求日常任务数据
+message C2SGetDialyTaskInfo {
+	enum EProtocol { None = 0; ProtoID = 10500; }
+}
+
+// 服务器向客户端发送任务数据
+message S2CSyncDialyTask {
+	repeated DialyTaskData TaskList 		= 1; // 任务数据
+	enum EProtocol { None = 0; ProtoID = 10501; }
+}
+
+// 服务器向客户端通知任务值变化
+message S2CNotifyTaskValueChg {
+	int32 TaskId 							= 1; // 任务Id
+	int32 TaskValue 						= 2; // 任务值
+	int32 TaskState 						= 3; // 任务状态  0 未完成 1 完成 2 已领奖
+	enum EProtocol { None = 0; ProtoID = 10502; }
+}
+
+// 成就数据
+message AchieveData {
+	int32 AchieveId 						= 1; // 任务Id
+	int32 AchieveValue 						= 2; // 任务数据
+	int32 AchieveState 						= 3; // 任务状态  0 未完成 1 完成 2 已领奖
+	enum EProtocol { None = 0; ProtoID = 10503; }
+}
+
+// 客户端向服务器请求成就数据
+message C2SGetAchieve {
+	enum EProtocol { None = 0; ProtoID = 10504; }
+}
+
+// 服务器向客户端发送成就数据
+message S2CSyncAchieveData {
+	repeated AchieveData AchieveList 		= 1; // 成就任务数据
+	enum EProtocol { None = 0; ProtoID = 10505; }
+}
+
+// 服务器向客户端通知成就值变化
+message S2CNotifyAchieveValueChg {
+	int32 AchieveId 						= 1; // 任务Id
+	int32 AchieveValue 						= 2; // 任务值
+	int32 AchieveState 						= 3; // 任务状态  0 未完成 1 完成 2 已领奖
+	enum EProtocol { None = 0; ProtoID = 10506; }
+}
+
+// 客户端向服务器请求日常任务奖励
+message C2SGetTaskReward {
+	int32 TaskId 							= 1;
+	enum EProtocol { None = 0; ProtoID = 10507; }
+}
+
+// 服务器向客户端发送任务结果
+message S2CRetTaskReward {
+	int32 TaskId 							= 1; // 任务Id
+	int32 Coin 								= 2; // 金币
+	int32 Diamond 							= 3; // 钻石奖励
+	int32 Exp 								= 4; // 当前经验
+	int32 CurLvl 							= 5; // 当前等级
+	enum EProtocol { None = 0; ProtoID = 10508; }
+}
+
+// 客户端向服务器请求成就奖励
+message C2SGetAchieveReward {
+	int32 AchieveReward 					= 1; // 成就Id
+	enum EProtocol { None = 0; ProtoID = 10509; }
+}
+
+// 服务器向客户端完成成就
+message S2CRetAchieveReward {
+	int32 TaskId 							= 1; // 任务Id
+	int32 Coin 								= 2; // 金币
+	int32 Diamond 							= 3; // 钻石奖励
+	int32 Exp 								= 4; // 当前经验
+	int32 CurLvl 							= 5; // 当前等级
+	enum EProtocol { None = 0; ProtoID = 10510; }
+}*/
+
+// ----------------------------------- 玩家信息 -------------------------------
+
+// 客户端请求修改昵称
+message C2SChgName {
+	string Name 							= 1; // 玩家名称
+	enum EProtocol { None = 0; ProtoID = 10600; }
+}
+// 服务器返回
+message S2CChgName {
+	string Name 							= 1; // 玩家名称
+	int32 ChgNameCount 						= 2; // 改名次数 从0开始
+	enum EProtocol { None = 0; ProtoID = 10601; }
+}
+
+// 客户端请求更改头像
+message C2SChangeHead {
+	int32 NewHead 							= 1; // 头像ID
+	enum EProtocol { None = 0; ProtoID = 10602; }
+}
+// 服务器返回
+message S2CChangeHead {
+	int32 NewHead 							= 1;
+	enum EProtocol { None = 0; ProtoID = 10603; }
+}
+
+// 客户端向服务器查询玩家信息
+message C2SGetPlayerInfo {
+	int32 PlayerId 							= 1; // 玩家Id
+	enum EProtocol { None = 0; ProtoID = 10604; }
+}
+
+message OtherPlayerBaseInfo {
+	int32 PlayerId 							= 1; // 玩家Id
+	int32 MatchScore 						= 2; // 玩家基本
+	int32 Coins 							= 3; // 玩家金币
+	int32 Diamonds 							= 4; // 玩家钻石
+	int32 CurUseCardTeam 					= 5; // 当前上阵卡组
+	int32 MyLvl 							= 6; // 我的等级
+	int32 ArenaLvl 							= 7; // 竞技场等级
+	int32 CurLegBestScore 					= 8; // 当前传奇竞技场最佳分数
+	int32 LastLegBestScore 					= 9; // 上一次赛季传奇最佳分数
+	int32 CurLegScore 						= 10; // 传奇竞技场杯数
+	int32 WinCount 							= 11; // 胜利次数
+	int32 OfenCardCfgId 					= 12; // 近期常用卡片
+	int32 DonateCount 						= 13; // 捐赠总数
+	int32 CheModWinCount 					= 14; // 挑战模式胜利次数
+	int32 CheModeOfenCardCfg 				= 15; // 挑战模式常用卡片
+	int32 ThreeTowerCount 					= 16; // 获得三个皇冠的次数
+	int32 Camp 								= 17; // 玩家阵营
+	string TongName 						= 18; // 帮会名称
+	int32 TongIcon 							= 19; // 帮会图标，为零表示没有帮会
+	repeated int32 FightCardIds 			= 20; // 出战卡片Id
+	repeated int32 FightCardLvls 			= 21; // 出战卡片的等级
+	int32 CurCardGetNum 					= 22; // 目前已经获得的卡片数量
+	int32 IfCaptain 						= 23; // 是否帮会首领
+}
+
+// 服务器向客户端返回玩家信息
+message S2CRetPlayerInfo {
+	OtherPlayerBaseInfo BaseInfo 			= 1; // 玩家信息
+	enum EProtocol { None = 0; ProtoID = 10605; }
+}
+
+// ------------------------------------ 签到 ----------------------------------
+
+// 服务器向客户端同步签到状态
+message S2CSyncSignInfo {
+	int32 CurSignSum 						= 1; // 本月累计签到总数
+ 	repeated int32 CurSignDays 				= 2; // 最近的签到日期
+	repeated int32 CurGetSignSumRewards 	= 3; // 当前领取过的累计签到奖励
+	enum EProtocol { None = 0; ProtoID = 10700; }
+}
+
+// 客户端向服务器请求签到
+message C2SDaySign {
+	enum EProtocol { None = 0; ProtoID = 10701; }
+}
+
+// 服务器向客户端回复签到
+message S2CDaySign {
+	int32 SignDay 							= 1; // 签到天数
+	int32 CurCoin 							= 2; // 当前金币
+	int32 CurDiamond 						= 3; // 当前钻石
+	int32 CurCardToken1 					= 4; // 当前Token1
+	int32 CurCardToken2 					= 5; // 当前Token2
+	int32 CurCardToken3 					= 6; // 当前Token3
+	int32 CurCardToken4 					= 7; // 当前Token4
+	S2COpenChest ChestOpen 					= 8; // 如果奖励中有宝箱，这个是宝箱打开结果
+	int32 CardCfgId 						= 9; // 奖励中单独配置的卡片
+	int32 CurCardNum 						= 10; // 奖励中单独配置的卡片加完之后的数目
+	enum EProtocol { None = 0; ProtoID = 10702; }
+}
+
+// 客户端向服务器请求领取累计签到奖励
+message C2SGetDaySignSumReward {
+	int32 SumNum 							= 1; // 奖励对应的累计天数
+	enum EProtocol { None = 0; ProtoID = 10703; }
+}
+
+// 服务器向客户端返回累计签到领取的奖励
+message S2CRetDaySignSumReward {
+	S2COpenChest Rewards 					= 1; // 累计签到奖励内容
+	int32 SumNum 							= 2; // 本次奖励次数
+	enum EProtocol { None = 0; ProtoID = 10704; }
+}
+
+// ----------------------------------- 首充 -----------------------------------
+
+// 服务器向客户端同步首充状态
+message S2CSyncFirstPayState {
+	int32 CurState 							= 1; // 当前状态
+	enum EProtocol { None = 0; ProtoID = 10705; }
+}
+
+// 客户端向服务器请求领取首充奖励
+message C2SGetFirstPayReward {
+	enum EProtocol { None = 0; ProtoID = 10706; }
+}
+
+// 服务器向客户端回复首充奖励
+message S2CRetFirstPayReward {
+	S2COpenChest Rewards 					= 1; // 累计签到奖励内容
+	enum EProtocol { None = 0; ProtoID = 10707; }
+}
+
+// ----------------------------------- 引导 -----------------------------------
+
+// 服务器向客户端同步引导数据
+message S2CSyncGuideData {
+	repeated int32 GuideIds 				= 1; // 引导数据
+	enum EProtocol { None = 0; ProtoID = 10800; }
+}
+
+// 客户端向服务器存储引导数据
+message C2SSaveGuideData {
+	int32 GuideId 							= 1; // 引导Id
+	enum EProtocol { None = 0; ProtoID = 10801; }
+}
+
+// 服务器向客户端返回引导存储
+message S2CRetSaveGuideData {
+	int32 GuideId 							= 1; // 引导Id
+	enum EProtocol { None = 0; ProtoID = 10802; }
+}
+
+// ----------------------------------- 建筑 -----------------------------------
+
+// 客户端向服务器请求设置建筑
+message C2SSetBuilding {
+	int32 X 								= 1; // 坐标X
+	int32 Y 								= 2; // 坐标Y
+	int32 BuildingCfgId 					= 3; // 建筑配置Id
+	int32 Dir 								= 4; // 是否转向 0表示水平方向（不转向），1表示垂直方向（就是转方向了）
+	int32 IfBuy 							= 5; // 是否直接购买 1表示购买
+	enum EProtocol { None = 0; ProtoID = 10900; }
+}
+
+// 服务器回复建筑设置
+message S2CSetBuilding {
+	int32 X 								= 1; // 坐标X
+	int32 Y 								= 2; // 坐标Y
+	int32 BuildingCfgId 					= 3; // 建筑配置Id
+	int32 Dir 								= 4; // 是否转向 0表示水平方向（不转向），1表示垂直方向（就是转方向了）
+	enum EProtocol { None = 0; ProtoID = 10901; }
+}
+
+// 客户端向服务器移动建筑
+message C2SMoveBuilding {
+	int32 BuildingId 						= 1; // 建筑Id
+	int32 X 								= 2; // 坐标X
+	int32 Y 								= 3; // 坐标Y
+	int32 Dir 								= 4; // 新方向
+	enum EProtocol { None = 0; ProtoID = 10902; }
+}
+
+// 客户端向服务器请求转向建筑
+message C2SChgBuildingDir {
+	int32 BuildingId 						= 1; // 建筑Id
+	int32 X 								= 2; // 坐标X
+	int32 Y 								= 3; // 坐标Y
+	enum EProtocol { None = 0; ProtoID = 10903; }
+}
+
+// 客户端向服务器请求回收建筑
+message C2SGetBackBuilding {
+	int32 BuildingId 						= 1; // 建筑唯一Id
+	enum EProtocol { None = 0; ProtoID = 10904; }
+}
+
+// 服务器回复建筑回收
+message S2CGetBackBuilding {
+	int32 BuildingId 						= 1; // 建筑唯一Id
+	enum EProtocol { None = 0; ProtoID = 10905; }
+}
+
+// 客户端向服务器请求出售建筑
+message C2SSellBuilding {
+	int32 BuildingId 						= 1; // 建筑唯一Id
+	enum EProtocol { None = 0; ProtoID = 10906; }
+}
+
+// 服务器回复建筑出售
+message S2CSellBuilding {
+	int32 BuildingId 						= 1; // 建筑唯一Id
+	enum EProtocol { None = 0; ProtoID = 10907; }
+}
+
+// 客户端向服务器请求清除障碍
+message C2SRemoveBlock {
+	int32 BuildingId 						= 1; // 障碍物Id
+	enum EProtocol { None = 0; ProtoID = 10908; }
+}
+
+// 服务器向客户段返回障碍清除
+message S2CRemoveBlock {
+	int32 BuildingId 						= 1; // 障碍物Id
+	repeated ItemInfo Items 				= 2; // 掉落的道具
+	repeated CatInfo Cats 					= 3; // 掉落的猫
+	repeated DepotBuildingInfo DepotBuildings = 4; // 建筑
+	enum EProtocol { None = 0; ProtoID = 10909; }
+}
+
+// 客户端向服务器请求开启地图宝箱
+message C2SOpenMapChest{
+	int32 BuildingId 						= 1; // 建筑Id
+	int32 FriendId							= 2; // 好友ID  为0表示自己
+	enum EProtocol { None = 0; ProtoID = 10910; }
+}
+
+// 服务器向客户段返回开启地图宝箱
+message S2COpenMapChest{
+	int32 BuildingId 						= 1; // 建筑Id
+	int32 FriendId	  						= 2; // 好友ID 为0表示自己
+	repeated ItemInfo Items 				= 3; // 掉落的道具
+	repeated CatInfo Cats 					= 4; // 掉落的猫
+	repeated DepotBuildingInfo DepotBuildings = 5; // 建筑
+	enum EProtocol { None = 0; ProtoID = 10911; }
+}
+
+// 客户端向服务器请求解锁地图区域
+message C2SUnlockArea {
+	int32 AreaId 							= 1; // 区域Id
+	int32 IfQuick 							= 2; // 是否使用钻石快速解锁
+	enum EProtocol { None = 0; ProtoID = 10912; }
+}
+
+// 服务器向客户段返回解锁地图区域
+message S2CUnlockArea {
+	int32 AreaId = 1; // 区域Id
+	enum EProtocol { None = 0; ProtoID = 10913; }
+}
+
+// ----------------------------------------------------------------------------
+// ------------------------------------ 抽奖 ----------------------------------
+
+// 抽奖
+message C2SDraw {
+	int32 DrawType 							= 1; // 抽取类型
+	int32 DrawCount 						= 2; // 抽取次数
+	enum EProtocol { None = 0; ProtoID = 11000; }
+}
+
+// 服务器返回抽奖结果
+message S2CDrawResult {
+	repeated CatInfo Cats 					= 1; // 获得的猫
+	repeated ItemInfo Items 				= 2; // 获得物品
+	repeated DepotBuildingInfo Buildings 	= 3; // 获得建筑
+	bool IsFirst							= 4; // 首抽
+	enum EProtocol { None = 0; ProtoID = 11001; }
+}
+
+// 碎片合成猫
+message C2SComposeCat {
+	int32 CatConfigId 						= 1; // 猫的配置ID
+	enum EProtocol { None = 0; ProtoID = 11002; }
+}
+message S2CComposeCatResult {
+	CatInfo Cat 							= 1; // 获得新猫
+	ItemInfo UsedFragment 					= 2; // 消耗掉的碎片
+	enum EProtocol { None = 0; ProtoID = 11003; }
+}
+
+// 拉取资源物品属性(Other表里配置的属性，像金币，钻石，体力，魅力值，猫粮等)
+message C2SItemResource {
+	repeated int32 ResourceIds 				= 1; // 需要拉取的属性
+	enum EProtocol { None = 0; ProtoID = 11004; }
+}
+
+// 资源物品属性
+message S2CItemResourceValue {
+	int32 ResourceId 						= 1;
+	int32 ResourceValue 					= 2;
+	enum EProtocol { None = 0; ProtoID = 11005; }
+}
+
+// 拉取资源物品属性返回
+message S2CItemResourceResult {
+	repeated S2CItemResourceValue Items 	= 2;
+	enum EProtocol { None = 0; ProtoID = 11006; }
+}
+
+// 请求商店商品
+message C2SShopItems {
+	int32 ShopId 							= 1; // 商店ID
+	enum EProtocol { None = 0; ProtoID = 11007; }
+}
+message S2CShopItem {
+	int32 ItemId 							= 1; // 商店ID
+	int32 LeftNum 							= 2; //剩余数量
+	int32 RemainSeconds 					= 3; // 剩余时间(秒)
+	enum EProtocol { None = 0; ProtoID = 11008; }
+}
+message S2CShopItemsResult {
+	int32 ShopId 							= 1;
+	repeated S2CShopItem Items 				= 2;
+	enum EProtocol { None = 0; ProtoID = 11009; }
+}
+
+// 购买商店物品
+message C2SBuyShopItem {
+	int32 ItemId 							= 1; // 商品ID
+	int32 ItemNum 							= 2; // 商品数量
+	enum EProtocol { None = 0; ProtoID = 11010; }
+}
+
+// 购买返回的物品
+message S2CBuyShopItemResult {
+	int32 ShopId 							= 1; // 商店ID
+	int32 ItemId 							= 2; // 商品ID
+	int32 ItemNum							= 3; // 商品数量
+	ItemInfo AddItem 						= 4; // 买到的物品
+	ResourceInfo CostRes 					= 5; // 花费的物品资源
+	enum EProtocol { None = 0; ProtoID = 11011; }
+}
+
+// 通知客户端商店需要刷新
+message S2CShopNeedRefreshNotify {
+	enum EProtocol { None = 0; ProtoID = 11012; }
+}
+// ------------------------------------ 猫 ------------------------------------
+
+// 猫升级
+message C2SCatFeed {
+	int32 CatId 							= 1; // 猫实例ID
+	int32 CatFood 							= 2; // 猫粮
+	enum EProtocol { None = 0; ProtoID = 11100; }
+}
+message S2CCatFeedResult {
+	int32 CatId 							= 1;
+	int32 CatLevel 							= 2;
+	int32 CatExp 							= 3;
+	bool IsCritical							= 4;
+	enum EProtocol { None = 0; ProtoID = 11101; }
+}
+
+// 猫升星
+message C2SCatUpgradeStar {
+	int32 CatId 							= 1; // 升星的猫
+	repeated int32 CostCatIds 				= 2; // 消耗的猫
+	enum EProtocol { None = 0; ProtoID = 11102; }
+}
+message S2CCatUpgradeStarResult {
+	int32 CatId 							= 1;
+	int32 CatStar      						= 2;
+	enum EProtocol { None = 0; ProtoID = 11103; }
+}
+
+// 猫技能升级
+message C2SCatSkillLevelUp {
+	int32 CatId 							= 1;
+	repeated int32 CostCatIds 				= 2; // 消耗的猫ID
+	enum EProtocol { None = 0; ProtoID = 11104; }
+}
+message S2CCatSkillLevelUpResult {
+	int32 CatId 							= 1;
+	int32 SkillLevel 						= 3;
+	enum EProtocol { None = 0; ProtoID = 11105; }
+}
+
+// 更改猫昵称
+message C2SCatRenameNick {
+	int32 CatId 							= 1;
+	string NewNick							= 2;
+	enum EProtocol { None = 0; ProtoID = 11106; }
+}
+
+message S2CCatRenameNickResult {
+	int32 CatId								= 1;
+	string NewNick							= 2;
+	enum EProtocol { None = 0; ProtoID = 11107; }
+}
+
+// 锁住猫
+message C2SCatLock {
+	int32 CatId								= 1;
+	bool IsLock								= 2;
+	enum EProtocol { None = 0; ProtoID = 11108; }
+}
+message S2CCatLockResult {
+	int32 CatId								= 1;
+	bool Locked        						= 2;
+	enum EProtocol { None = 0; ProtoID = 11109; }
+}
+
+// 分解猫
+message C2SCatDecompose {
+	repeated int32 CatId					= 1;
+	enum EProtocol { None = 0; ProtoID = 11110; }
+}
+message S2CCatDecomposeResult {
+	repeated int32 CatId 					= 1;
+	int32 GetSoulStone						= 2;
+	enum EProtocol { None = 0; ProtoID = 11111; }
+}
+
+// =================================== 配方 ===================================
+
+// 拉取正在打造的配方建筑
+message C2SGetMakingFormulaBuildings {
+	enum EProtocol { None = 0; ProtoID = 11200; }
+}
+message MakingFormulaBuildingInfo {
+	int32 SlotId 							= 1; // 槽位
+	int32 FormulaId 						= 2; // 配方ID  0 表示该槽位没有正在打造的建筑
+	int32 RemainSeconds 					= 3; // 剩余时间 0 表示已经打造完毕
+	enum EProtocol { None = 0; ProtoID = 11201; }
+}
+message S2CGetMakingFormulaBuildingsResult {
+	repeated MakingFormulaBuildingInfo Buildings = 1; // 正在打造的建筑队列
+	repeated int32 MakedBuildings 			= 2; // 已经打造完成的建筑队列
+	enum EProtocol { None = 0; ProtoID = 11202; }
+}
+
+// 兑换建筑配方
+message C2SExchangeBuildingFormula {
+	int32 FormulaId 						= 1;  // 配方ID
+	enum EProtocol { None = 0; ProtoID = 11203; }
+}
+message S2CExchangeBuildingFormulaResult{
+	int32 FormulaId 						= 1;  // 配方ID
+	enum EProtocol { None = 0; ProtoID = 11204; }
+}
+
+// 拉取配方
+message C2SGetFormulas {
+	enum EProtocol { None = 0; ProtoID = 11205; }
+}
+message S2CGetFormulasResult {
+	repeated int32 Formulas 				= 1;
+	enum EProtocol { None = 0; ProtoID = 11206; }
+}
+
+// 打造配方建筑
+message C2SMakeFormulaBuilding {
+	int32 FormulaId 						= 1; // 配方ID
+	enum EProtocol { None = 0; ProtoID = 11207; }
+}
+message S2CMakeFormulaBuildingResult {
+	int32 FormulaId 						= 1; // 配方ID
+	enum EProtocol { None = 0; ProtoID = 11208; }
+}
+
+// 购买建筑打造位
+message C2SBuyMakeBuildingSlot {
+	enum EProtocol { None = 0; ProtoID = 11209; }
+}
+message S2CBuyMakeBuildingSlotResult {
+	int32 SlotId 							= 1; // 返回新槽位ID
+	enum EProtocol { None = 0; ProtoID = 11210; }
+}
+
+// 加速配方建筑打造
+message C2SSpeedupMakeBuilding {
+	int32 SlotId 							= 1;
+	enum EProtocol { None = 0; ProtoID = 11211; }
+}
+message S2CSpeedupMakeBuildingResult {
+	int32 SlotId 							= 1;
+	enum EProtocol { None = 0; ProtoID = 11212; }
+}
+
+// 收取打造完的配方建筑
+message C2SGetCompletedFormulaBuilding {
+	enum EProtocol { None = 0; ProtoID = 11213; }
+}
+message S2CGetCompletedFormulaBuildingResult {
+	repeated int32 DepotBuildingId 			= 1; // 收取到仓库中的建筑
+	enum EProtocol { None = 0; ProtoID = 11214; }
+}
+
+// 取消打造
+message C2SCancelMakingFormulaBuilding {
+	int32 SlotId 							= 1; // 槽位ID
+	enum EProtocol { None = 0; ProtoID = 11215; }
+}
+message S2CCancelMakingFormulaBuildingResult {
+	int32 SlotId 							= 1; // 槽位
+	repeated ItemInfo ReturnMaterials 		= 2; // 返还的材料道具
+	enum EProtocol { None = 0; ProtoID = 11216; }
+}
+
+// ================================== 作物 ====================================
+
+// 拉取农作物
+message C2SGetCrops {
+	enum EProtocol { None = 0; ProtoID = 11300; }
+}
+message CropInfo {
+	int32 BuildingId 						= 1; // 农田ID
+	int32 CropId 							= 2; // 作物ID
+	int32 RemainSeconds 					= 3; // 剩余成熟时间
+	enum EProtocol { None = 0; ProtoID = 11301; }
+}
+message S2CGetCropsResult {
+	repeated CropInfo crops 				= 1;
+	enum EProtocol { None = 0; ProtoID = 11302; }
+}
+
+// 种植作物
+message C2SPlantCrop {
+	int32 CropId 							= 1; // 作物ID
+	int32 DestBuildingId 					= 2; // 目标农田ID
+	enum EProtocol { None = 0; ProtoID = 11303; }
+}
+message S2CPlantCropResult {
+	int32 CropId 							= 1;
+	int32 DestBuildingId 					= 2;
+	int32 RemainSeconds 					= 3; // 剩余长成时间
+	enum EProtocol { None = 0; ProtoID = 11304; }
+}
+
+// 加速
+message C2SCropSpeedup {
+	int32 FarmBuildingId   					= 1; // 农田ID
+	enum EProtocol { None = 0; ProtoID = 11305; }
+}
+message S2CCropSpeedupResult {
+	int32 FarmBuildingId   					= 1; // 农田ID
+	int32 CropId							= 2; // 作物ID
+	int32 CostDiamond 						= 3; // 花费钻石
+	enum EProtocol { None = 0; ProtoID = 11306; }
+}
+
+// 收割
+message C2SHarvestCrop {
+	int32 FarmBuildingId 					= 1; // 农田ID
+	bool IsSpeedup							= 2; // 是否加速提前
+	enum EProtocol { None = 0; ProtoID = 11307; }
+}
+message S2CHarvestCropResult {
+	int32 FarmBuildingId   					= 1; // 农田ID
+	int32 CropId							= 2; // 作物ID
+	int32 CatFood 							= 3; // 获得猫粮
+	bool IsSpeedup							= 4; // 是否加速
+	int32 AddExp							= 5; // 增加的经验
+	enum EProtocol { None = 0; ProtoID = 11308; }
+}
+
+// 收割多个农田
+message C2SHarvestCrops {
+	repeated int32 BuildingIds				= 1;
+	enum EProtocol { None = 0; ProtoID = 11309; }
+}
+message S2CHarvestCropsResult {
+	repeated int32 BuildingIds				= 1;
+	int32 CatFood 							= 2;
+	enum EProtocol { None = 0; ProtoID = 11310; }
+}
+
+// ----------------------------------- 探索 -----------------------------------
+
+// 获取当前所有的探索任务
+message C2SGetAllExpedition {
+	enum EProtocol { None = 0; ProtoID = 11400; }
+}
+
+message ExpeditonEvent {
+	int32 EventId 							= 1; // 事件Id
+	int32 Sec 								= 2; // 触发秒数
+	repeated int32 DropIdNums 				= 3; // 奖励信息
+}
+
+message ExpeditonCondition {
+	int32 ConditionType 					= 1; // 条件类型
+	repeated int32 ConVals 					= 2; // 条件值
+}
+
+message ExpeditionItem {
+	int32 Id 								= 1; // 唯一Id
+	int32 TaskId 							= 2; // 配置Id
+	int32 ExpeditionLeftSec 				= 3; // 探索剩余秒
+	repeated int32 InCatIds 				= 4; // 其中的猫Id
+	int32 Result 							= 5; // 探索结果 1成功 0失败
+	int32 TaskLeftSec 						= 6; // 时限剩余秒 时限任务才有
+	int32 CurState 							= 7; // 当前任务状态
+	repeated ExpeditonEvent Events 			= 8; // 随机事件
+	repeated ExpeditonCondition Conditions 	= 9; // 探险条件
+	int32 ExpeditionPassSec 				= 10; // 探险已经过去多少秒
+}
+
+// 返回当前所有的探索任务
+message S2CRetAllExpedition {
+	repeated ExpeditionItem Tasks 			= 1; // 当前的任务
+	int32 CurChgCount 						= 2; // 当前改变（删除任务）的次数
+	int32 CurChgCost 						= 3; // 当前改变任务的消耗
+	enum EProtocol { None = 0; ProtoID = 11401; }
+}
+
+// 刷新探索任务 返回S2CRetAllExpedition
+message C2SChgExpedition {
+	int32 Id 								= 1; // 配置Id
+	enum EProtocol { None = 0; ProtoID = 11402; }
+}
+
+// 开始探索 
+message C2SStartExpedition {
+	int32 Id 								= 1; // 任务Id
+	repeated int32 CatIds 					= 2; // 派遣的猫Id
+	enum EProtocol { None = 0; ProtoID = 11403; }
+}
+
+// 返回开始探索结果
+message S2CStartExpedition {
+	int32 Id 								= 1; // 唯一Id
+	int32 TaskId 							= 2; // 任务Id
+	repeated int32 CatIds 					= 3; // 派遣的猫的Id
+	int32 ExpeditionLeftSec 				= 4; // 探索剩余秒
+	int32 Result 							= 5; // 探索结果 1成功 0失败
+	int32 TaskLeftSec 						= 6; // 时限剩余秒 时限任务才有
+	int32 CurState 							= 7; // 当前任务状态
+	repeated ExpeditonEvent Events 			= 8; // 随机事件
+	enum EProtocol { None = 0; ProtoID = 11404; }
+}
+
+// 中断探索 返回S2CRetAllExpedition
+message C2SStopExpedition {
+	int32 Id 								= 1; // 任务Id
+	enum EProtocol { None = 0; ProtoID = 11405; }
+}
+
+// 领取探索任务奖励
+message C2SGetExpeditionReward {
+	int32 Id 								= 1; // 任务Id
+	enum EProtocol { None = 0; ProtoID = 11406; }
+}
+
+// 返回领取奖励结果
+message S2CGetExpeditionReward {
+	int32 Id 								= 1; // 任务Id
+	repeated IdNum Rewards 					= 2; // 奖励信息
+	repeated IdNum Specials 				= 3; // 特殊奖励信息
+	enum EProtocol { None = 0; ProtoID = 11407; }
+}
+
+// 修改探索任务结果
+message C2SChgExpeditionResult{
+	int32 Id 								= 1; // 任务Id
+	enum EProtocol { None = 0; ProtoID = 11408; }
+}
+
+//------------------------------------ 猫舍 -----------------------------------
+
+// 拉取猫舍
+message C2SGetCatHousesInfo {
+	enum EProtocol { None = 0; ProtoID = 11500; }
+}
+message CatHouseInfo {
+	int32 CatHouseId 						= 1; // 建筑物ID
+	int32 Level								= 2; // 等级
+	repeated int32 CatIds					= 3; // 猫ID
+	int32 Gold								= 4; // 当前产出的金币
+	int32 NextLevelRemainSeconds 			= 5; // 下个等级剩余时间
+	int32 BuildingConfigId					= 6; // 建筑配置ID
+	int32 IsDone							= 7; // 是否可用
+}
+message S2CGetCatHousesInfoResult {
+	repeated CatHouseInfo Houses 			= 1;
+	enum EProtocol { None = 0; ProtoID = 11501; }
+}
+
+// 获取单个猫舍
+message C2SGetCatHouseInfo {
+	int32 CatHouseId						= 1;
+	enum EProtocol { None = 0; ProtoID = 11502; }
+}
+message S2CGetCatHouseInfoResult {
+	CatHouseInfo House						= 1;
+	enum EProtocol { None = 0; ProtoID = 11503; }
+}
+
+// 猫舍加猫
+message C2SCatHouseAddCat {
+	int32 CatHouseId						= 1; // 建筑物ID
+	int32 CatId								= 2; // 猫ID
+	enum EProtocol { None = 0; ProtoID = 11504; }
+}
+message S2CCatHouseAddCatResult {
+	int32 CatHouseId						= 1; // 建筑物ID
+	int32 CatId								= 2; // 猫ID
+	int32 Gold								= 3; // 当前产金量
+	enum EProtocol { None = 0; ProtoID = 11505; }
+}
+
+// 猫舍减猫
+message C2SCatHouseRemoveCat {
+	int32 CatHouseId						= 1; // 建筑物ID
+	int32 CatId								= 2; // 猫ID
+	enum EProtocol { None = 0; ProtoID = 11506; }
+}
+message S2CCatHouseRemoveCatResult {
+	int32 CatHouseId						= 1;
+	int32 CatId								= 2;
+	int32 Gold								= 3;
+	enum EProtocol { None = 0; ProtoID = 11507; }
+}
+
+// 猫舍收金
+message C2SCatHouseGetGold {
+	int32 CatHouseId 						= 1;
+	enum EProtocol { None = 0; ProtoID = 11508; }
+}
+message S2CCatHouseGetGoldResult {
+	int32 CatHouseId						= 1;
+	int32 Gold								= 2;
+	enum EProtocol { None = 0; ProtoID = 11509; }
+}
+
+// 多个猫舍收金
+message C2SCatHousesGetGold {
+	repeated int32 CatHouseIds	 			= 1;
+	enum EProtocol { None = 0; ProtoID = 11510; }
+}
+message S2CCatHousesGetGoldResult {
+	repeated int32 CatHouseIds				= 1;
+	int32 Gold								= 2;
+	enum EProtocol { None = 0; ProtoID = 11511; }
+}
+
+// 猫舍开始升级
+message C2SCatHouseStartLevelup {
+	int32 CatHouseId						= 1; // 猫舍ID
+	enum EProtocol { None = 0; ProtoID = 11512; }
+}
+message S2CCatHouseStartLevelupResult {
+	int32 CatHouseId						= 1; // 猫舍ID
+	int32 RemainSeconds						= 2; // 升级需要时间
+	enum EProtocol { None = 0; ProtoID = 11513; }
+}
+
+// 加速升级
+message C2SCatHouseSpeedLevelup {
+	int32 CatHouseId 						= 1;
+	enum EProtocol { None = 0; ProtoID = 11514; }
+}
+message S2CCatHouseSpeedLevelupResult {
+	int32 CatHouseId						= 1;
+	int32 CostDiamond						= 2;
+	enum EProtocol { None = 0; ProtoID = 11515; }
+}
+
+// 出售猫舍
+message C2SSellCatHouse {
+	int32 CatHouseId						= 1;
+	enum EProtocol { None = 0; ProtoID = 11516; }
+}
+message S2CSellCatHouseResult {
+	int32 CatHouseId						= 1;
+	enum EProtocol { None = 0; ProtoID = 11517; }
+}
+
+// 设置启用状态
+message C2SCatHouseSetDone {
+	int32 CatHouseId 						= 1;
+	enum EProtocol { None = 0; ProtoID = 11518; }
+}
+message S2CCatHouseSetDoneResult {
+	int32 CatHouseId						= 1;
+	int32 IsDone 							= 2; // 是否启用
+	enum EProtocol { None = 0; ProtoID = 11519; }
+}
+
+// ------------------------------------ 好友 ----------------------------------
+
+// 好友信息
+message FriendInfo {
+	int32 PlayerId 							= 1; // 好友玩家Id
+	string Name 							= 2; // 好友昵称
+	int32 Head 								= 3; // 好友头像
+	int32 Level 							= 4; // 等级
+	int32 VipLevel 							= 5; // vip等级
+	int32 LastLogin 						= 6; // 上次登录时间
+	int32 FriendPoints 						= 7; // 友情点
+	int32 LeftGiveSeconds 					= 8; // 剩余赠送时间
+	int32 UnreadMessageNum 					= 9; // 未读消息数量
+	int32 Zan								= 10; // 赞
+	bool IsZanToday							= 11; // 今天是否赞过
+	bool IsOnline							= 12; // 是否在线
+	int32 FosterCardId						= 13; // 寄养卡ID
+}
+
+// 按昵称查找好友信息
+message C2SFriendSearch {
+	string Key 								= 1; // 搜索内容
+	enum EProtocol { None = 0; ProtoID = 11600; }
+}
+
+// 按ID查找好友
+message C2SFriendSearchById {
+	int32 PlayerId 							= 1; //玩家ID
+	enum EProtocol { None = 0; ProtoID = 11601; }
+}
+
+// 返回好友信息
+message S2CFriendSearchResult {
+	repeated FriendInfo Result 				= 1; // 搜索结果
+	enum EProtocol { None = 0; ProtoID = 11602; }
+}
+
+// 客户端向服务器获取好友相关列表
+message C2SGetFriendList {
+	enum EProtocol { None = 0; ProtoID = 11603; }
+}
+
+// 加好友请求信息
+message FriendReq {
+	int32 PlayerId 							= 1; // 好友玩家Id
+	string Name 							= 2; // 好友名称
+	int32 Score 							= 3; // 好友积分
+	int32 Head								= 4; // 好友头像
+}
+
+// 服务器向客户端返回好友列表
+message S2CRetFriendListResult {
+	int32 FriendType 						= 1; // 好友类型
+	repeated FriendInfo FriendList 			= 2; // 好友列表
+	repeated FriendReq Reqs 				= 3; // 加好友请求
+	int32 LeftGivePointsNum					= 4; // 剩余赠送次数
+	enum EProtocol { None = 0; ProtoID = 11604; }
+}
+
+// 服务器通知好友状态
+message S2CFriendStateNotify {
+	int32 StateType 						= 1; // 0 更新  1 增加 
+	FriendInfo Info 						= 2; // 好友数据
+	enum EProtocol { None = 0; ProtoID = 11605; }
+}
+
+// 服务器通知好友请求
+message S2CFriendReqNotify {
+	FriendReq Req 							= 1;
+	enum EProtocol { None = 0; ProtoID = 11606; }
+}
+
+// 客户端通过Id加好友
+message C2SAddFriendByPId {
+	int32 PlayerId 							= 1; // 玩家Id
+	enum EProtocol { None = 0; ProtoID = 11607; }
+}
+
+// 客户端通过昵称加好友
+message C2SAddFriendByName {
+	string Name 							= 1; // 玩家账号
+	enum EProtocol { None = 0; ProtoID = 11608; }
+}
+
+// 服务器回复添加好友
+message S2CAddFriendResult {
+	int32 PlayerId 							= 1;
+	enum EProtocol { None = 0; ProtoID = 11609; }
+}
+
+// 客户端同意加好友
+message C2SAgreeFriend {
+	int32 PlayerId 							= 1; // 玩家Id
+	enum EProtocol { None = 0; ProtoID = 11610; }
+}
+
+// 服务器返回增加好友回复
+message S2CAgreeFriendResult {
+	int32 PlayerId 							= 1; // 好友玩家Id
+	string Name 							= 2; // 好友名称
+	int32 Score 							= 3; // 好友积分
+	int32 Level								= 4; // 等级
+	string Head								= 5; // 头像
+	int32 VipLevel		  					= 6; // VIP等级
+	int32 LastLogin							= 7; // 上次登陆时间
+	enum EProtocol { None = 0; ProtoID = 11611; }
+}
+
+// 客户端拒绝加好友
+message C2SRefuseFriend {
+	int32 PlayerId 							= 1; // 玩家Id
+	enum EProtocol { None = 0; ProtoID = 11612; }
+}
+
+// 服务器通知拒绝加好友
+message S2CRefuseFriendResult {
+	string Name 							= 1; // 对方名字
+	int32 PlayerId							= 2; // 对方ID
+	enum EProtocol { None = 0; ProtoID = 11613; }
+}
+
+// 客户端删除好友
+message C2SRemoveFriend {
+	int32 PlayerId 							= 1; // 玩家id
+	enum EProtocol { None = 0; ProtoID = 11614; }
+}
+
+// 服务器通知客户端删除好友
+message S2CRemoveFriendResult {
+	int32 PlayerId 							= 1; // 好友Id
+	enum EProtocol { None = 0; ProtoID = 11615; }
+}
+
+// 赠送友情点
+message C2SGiveFriendPoints {
+	repeated int32 FriendId 				= 1;
+	enum EProtocol { None = 0; ProtoID = 11616; }
+}
+
+message FriendPointsResult {
+	int32 FriendId 							= 1;
+	int32 Points 							= 2;
+	int32 Error								= 3; // 0成功  小于0表示错误码
+	int32 RemainSeconds						= 4; // 剩余友情点赠送时间
+	bool IsTodayGive						= 5; // 今天是否已赠送
+	int32 BackPoints						= 6; // 回馈友情点
+}
+
+message S2CGiveFriendPointsResult {
+	repeated FriendPointsResult PointsData 	= 1; // 赠送友情点数据
+	int32 LeftGivePointsNum 	   			= 2; // 剩余赠送次数
+	enum EProtocol { None = 0; ProtoID = 11617; }
+}
+
+// 收取友情点
+message C2SGetFriendPoints {
+	repeated int32 FriendId 				= 1;
+	enum EProtocol { None = 0; ProtoID = 11618; }
+}
+message FriendPoints {
+	int32 FriendId 							= 1;
+	int32 Points 							= 2;
+}
+message S2CGetFriendPointsResult {
+	repeated FriendPoints PointsData 		= 1;
+	enum EProtocol { None = 0; ProtoID = 11619; }
+}
+
+// ================================== 聊天 ====================================
+
+// 客户端给好友发送消息
+message C2SFriendChat {
+	int32 PlayerId 							= 1; // 玩家Id
+	bytes Content 							= 2; // 聊天内容
+	enum EProtocol { None = 0; ProtoID = 11700; }
+}
+message S2CFriendChatResult {
+	int32 PlayerId 							= 1; // 玩家Id
+	bytes Content 							= 2; // 聊天内容
+	enum EProtocol { None = 0; ProtoID = 11701; }
+}
+
+// 获取好友未读消息数量
+message C2SFriendGetUnreadMessageNum {
+	repeated int32 FriendIds 				= 1; // 好友ID
+	enum EProtocol { None = 0; ProtoID = 11702; }
+}
+message FriendUnreadMessageNumData {
+	int32 FriendId     						= 1; // 好友ID
+	int32 MessageNum 						= 2; // 未读消息数量
+}
+message S2CFriendGetUnreadMessageNumResult {
+	repeated FriendUnreadMessageNumData Data = 1;
+	enum EProtocol { None = 0; ProtoID = 11703; }
+}
+
+// 拉取好友未读聊天消息
+message C2SFriendPullUnreadMessage {
+	int32 FriendId 							= 1; // 好友ID
+	enum EProtocol { None = 0; ProtoID = 11704; }
+}
+message FriendChatData {
+	bytes Content 							= 1; // 内容
+	int32 SendTime 							= 2; // 发送时间
+}
+message S2CFriendPullUnreadMessageResult {
+	int32 FriendId 							= 1; // 好友ID
+	repeated FriendChatData Data 			= 2; // 聊天数据
+	enum EProtocol { None = 0; ProtoID = 11705; }
+}
+
+// 确认聊天未读消息
+message C2SFriendConfirmUnreadMessage {
+	int32 FriendId  						= 1; // 好友ID
+	int32 MessageNum 						= 2; // 消息条数
+	enum EProtocol { None = 0; ProtoID = 11706; }
+}
+message S2CFriendConfirmUnreadMessageResult {
+	int32 FriendId							= 1; // 好友ID
+	int32 MessageNum 						= 2; // 消息条数
+	enum EProtocol { None = 0; ProtoID = 11707; }
+}
+
+// 客户端请求好友在线状态
+message C2SGetOnlineFriends {
+	int32 Key 								= 1; //  好友类型 1好友 2是关注 3是粉丝
+	enum EProtocol { None = 0; ProtoID = 11708; }
+}
+
+// 服务器返回在线好友
+message S2CRetOnlineFriends {
+	repeated int32 PlayerIds 				= 1; // 在线好友Id
+	int32 Key 								= 2; //  好友类型 1好友 2是关注 3是粉丝
+	enum EProtocol { None = 0; ProtoID = 11709; }
+}
+
+// ------------------------------------- 图鉴 ---------------------------------
+
+// 拉取图鉴
+message C2SGetHandbook {
+	enum EProtocol { None = 0; ProtoID = 11800; }
+}
+message S2CGetHandbookResult {
+	repeated int32 Items 					= 1; // 图鉴ID
+	repeated int32 AwardSuitId 				= 2; // 领过奖的套装ID
+	enum EProtocol { None = 0; ProtoID = 11801; }
+}
+
+// 新图鉴物品
+message S2CNewHandbookItemNotify {
+	int32 ItemId 							= 1;
+	enum EProtocol { None = 0; ProtoID = 11802; }
+}
+
+// 头像列表
+message C2SGetHead {
+	enum EProtocol { None = 0; ProtoID = 11803; }
+}
+message S2CGetHeadResult {
+	repeated int32 Items 					= 1;
+	enum EProtocol { None = 0; ProtoID = 11804; }
+}
+
+// 新头像
+message S2CNewHeadNotify {
+	int32 ItemId 							= 1;
+	enum EProtocol { None = 0; ProtoID = 11805; }
+}
+
+// 套装图鉴领奖
+message C2SGetSuitHandbookReward {
+	int32 SuitId 							= 1;
+	enum EProtocol { None = 0; ProtoID = 11806; }
+}
+message S2CGetSuitHandbookRewardResult {
+	repeated ItemInfo Rewards 				= 1;
+	enum EProtocol { None = 0; ProtoID = 11807; }
+}
+
+// ----------------------------------- 点赞 -----------------------------------
+message C2SZanPlayer {
+	int32 PlayerId 							= 1;
+	enum EProtocol { None = 0; ProtoID = 12000; }
+}
+message S2CZanPlayerResult {
+	int32 PlayerId							= 1;
+	int32 TotalZan 							= 2;
+	enum EProtocol { None = 0; ProtoID = 12001; }
+}
+
+// ----------------------------------- 寄养 -----------------------------------
+
+// 拉取寄养所数据
+message C2SPullFosterData {
+	bool IsSettle 							= 1; // 是否结算
+	enum EProtocol { None = 0; ProtoID = 12100; }
+}
+message FosterCatInfo {
+	int32 CatId 							= 1; // 猫ID
+	int32 CatExp 							= 2; // 目前获取的经验进度
+	int32 CatLevel							= 3; // 目前猫的等级
+	repeated ItemInfo Items 				= 4; // 目前获取的物品进度
+	int32 StartTime 						= 5; // 开始时间
+}
+message S2CPullFosterDataResult {
+	int32 BuildingId						= 1; // 建筑ID
+	int32 CardId   							= 2; // 寄样卡ID
+	int32 CardRemainSeconds 				= 3; // 寄样卡剩余时间
+	repeated FosterCatInfo SelfCats 		= 4; // 自己寄养的猫
+	int32 SelfSlotNum						= 5; // 自己的槽位
+	enum EProtocol { None = 0; ProtoID = 12101; }
+}
+
+// 拉取寄养在好友的猫和好友寄养的猫
+message C2SPullFosterCatsWithFriend {
+	enum EProtocol { None = 0; ProtoID = 12102; }
+}
+// 寄养在好友的猫
+message FosterCatInFriendInfo {
+	int32 CatId 							= 1; // 猫ID
+	int32 RemainSeconds 					= 2; // 剩余寄养时间
+	int32 FriendId							= 3; // 好友ID
+	int32 FriendLevel						= 4; // 好友等级
+	string FriendName						= 5; // 好友昵称
+	int32 FriendHead						= 6; // 好友头像
+	int32 StartCardId						= 7; // 放入猫时的寄养卡
+	int32 CatExp							= 8; // 结算猫的经验
+	repeated ItemInfo Items 				= 9; // 结算获得的物品
+	int32 StartTime							= 10; // 开始时间
+}
+// 好友寄养的猫
+message FosteredFriendCatInfo {
+	int32 CatTableId 						= 1; // 猫配置ID
+	string CatNick							= 2; // 猫昵称
+	int32 CatLevel							= 3; // 猫等级
+	int32 CatStar							= 4; // 猫星级
+	int32 FriendId 							= 5; // 好友ID
+	string FriendName  						= 6; // 好友名
+	int32 FriendHead  						= 7; // 好友头像
+	int32 FriendLevel 						= 8; // 好友等级
+	int32 RemainSeconds						= 9; // 剩余寄养时间
+	int32 StartCardId						= 10; // 放入猫时的寄养卡
+}
+message S2CPullFosterCatsWithFriendResult {
+	repeated FosterCatInFriendInfo CatsInFriend = 1; // 寄养在好友的猫
+	int32 FosterFriendSlotNum				= 2; // 寄养好友槽位数
+	repeated FosteredFriendCatInfo FriendCats = 3; // 好友寄养的猫
+	int32 FriendFosteredSlotNum				= 4; // 被好友寄养的槽位数
+	enum EProtocol { None = 0; ProtoID = 12103; }
+}
+
+// 寄养卡合成
+message C2SFosterCardCompose {
+	repeated int32 ItemIds 					= 1; // 寄养卡ID数组
+	enum EProtocol { None = 0; ProtoID = 12104; }
+}
+message S2CFosterCardComposeResult {
+	repeated int32 ItemIds  				= 1;
+	int32 DestItemTableId 					= 2;
+	enum EProtocol { None = 0; ProtoID = 12105; }
+}
+
+// 装备寄养卡
+message C2SFosterEquipCard {
+	int32 BuildingId						= 1; // 寄养所建筑ID
+	int32 CardId 							= 2; // 寄养卡ID
+	enum EProtocol { None = 0; ProtoID = 12106; }
+}
+message S2CFosterEquipCardResult {
+	int32 BuildingId						= 1; // 寄养所
+	int32 CardId							= 2; // 寄养卡
+	int32 CardRemainSeconds 				= 3; // 剩余时间
+	enum EProtocol { None = 0; ProtoID = 12107; }
+}
+
+// 卸载寄养卡
+message C2SFosterUnequipCard {
+	int32 BuildingId 						= 1; // 寄养所建筑ID
+	enum EProtocol { None = 0; ProtoID = 12108; }
+}
+message S2CFosterUnequipCardResult {
+	int32 BuildingId 						= 1; // 寄养所建筑ID
+	repeated ItemInfo Rewards 				= 2; // 结算
+	enum EProtocol { None = 0; ProtoID = 12109; }
+}
+
+// 猫进寄养所
+message C2SFosterSetCat {
+	int32 BuildingId						= 1;
+	int32 CatId								= 2;
+	enum EProtocol { None = 0; ProtoID = 12110; }
+}
+message S2CFosterSetCatResult {
+	int32 BuildingId						= 1;
+	int32 CatId								= 2;
+	enum EProtocol { None = 0; ProtoID = 12101; }
+}
+
+// 猫出寄养所
+message C2SFosterOutCat {
+	int32 BuildingId 						= 1;
+	int32 CatId								= 2;
+	enum EProtocol { None = 0; ProtoID = 12102; }
+}
+message S2CFosterOutCatResult {
+	int32 BuildingId						= 1;
+	int32 CatId								= 2;
+	enum EProtocol { None = 0; ProtoID = 12103; }
+}
+
+// 猫进好友寄养所
+message C2SFosterSetCat2Friend {
+	int32 FriendId							= 1;
+	int32 CatId								= 2;
+	enum EProtocol { None = 0; ProtoID = 12104; }
+}
+message S2CFosterSetCat2FriendResult {
+	int32 FriendId							= 1;
+	int32 CatId								= 2;
+	enum EProtocol { None = 0; ProtoID = 12105; }
+}
+
+// 获取有寄养空位的好友列表
+message C2SFosterGetEmptySlotFriends {
+	enum EProtocol { None = 0; ProtoID = 12106; }	
+}
+message S2CFosterGetEmptySlotFriendsResult {
+	repeated FriendInfo Friends 			= 1;
+	enum EProtocol { None = 0; ProtoID = 12107; }
+}
+
+// 获取玩家的寄养所
+message C2SGetPlayerFosterCats {
+	int32 PlayerId 							= 1;
+	enum EProtocol { None = 0; ProtoID = 12108; }
+}
+message FosterPlayerCatInfo {
+	int32 CatTableId 						= 1;
+	int32 CatLevel 							= 2;
+	int32 CatStar							= 3;
+}
+message FosterPlayerSelfCatInfo {
+	int32 CatId								= 1;
+	int32 StartCardId						= 2;
+	int32 RemainSeconds 					= 3;
+}
+message S2CGetPlayerFosterCatsResult {
+	int32 PlayerId							= 1;
+	int32 FosterCardId						= 2;
+	int32 CardRemainSeconds					= 3;
+	repeated FosterPlayerCatInfo Cats 		= 4; // 玩家寄养所的猫
+	repeated FosteredFriendCatInfo FriendCats = 5; // 玩家好友寄养的猫
+	int32 FosteredSlotNum					= 6; // 寄养槽位数
+	enum EProtocol { None = 0; ProtoID = 12109; }
+}
+
+// ----------------------------------- 排行榜 ---------------------------------
+// 排行项
+message RankItemInfo {
+	int32 Rank 								= 1; // 排名
+	int32 PlayerId							= 2; // 玩家ID
+	string PlayerName						= 3; // 玩家昵称
+	int32 PlayerLevel						= 4; // 玩家等级
+	int32 PlayerHead						= 5; // 玩家头像
+}
+
+// 请求排行榜
+message C2SRankListRequest {
+	int32 RankType							= 1; // 排行榜类型    1 竞技场  2 关卡  3 战力
+	int32 StartRank							= 2; // 开始
+	int32 RankNum							= 3; // 数量
+	repeated int32 Params					= 4; // 参数, 跟具体类型有关
+	enum EProtocol { None = 0; ProtoID = 12200; }
+}
+
+message S2CRankListResponse {
+	int32 RankListType						= 1; // 排行榜类型
+	repeated RankItemInfo RankItems			= 2; // 排名项
+	int32 SelfHistoryTopRank				= 3; // 自己历史最高排名，暂时只有竞技场有
+	int32 SelfRank							= 4; // 自己排名
+	int32 SelfValue							= 5; // 数据值
+	int32 SelfValue2						= 6; // 数据值2
+	enum EProtocol { None = 0; ProtoID = 12201; }
+}
+
+// ----------------------------------- 聊天 -----------------------------------
+// 发送世界聊天消息
+message C2SChatRequest {
+	int32 Channel							= 1; // 频道  1 世界  2 公会  3 招募  4 系统公告
+	bytes Content							= 2; // 内容
+	enum EProtocol { None = 0; ProtoID = 12300; }
+}
+message S2CChatResponse {
+	int32 Channel							= 1; // 频道  1 世界  2 公会  3 招募  4 系统公告
+	bytes Content							= 2; // 内容
+	enum EProtocol { None = 0; ProtoID = 12301; }
+}
+
+// 拉取聊天消息
+message C2SChatMsgPullRequest {
+	int32 Channel							= 1; // 频道
+	enum EProtocol { None = 0; ProtoID = 12302; }
+}
+message ChatItem {
+	bytes Content 							= 1; // 内容
+	int32 PlayerId							= 2; // 玩家ID
+	string PlayerName						= 3; // 玩家名称
+	int32 PlayerHead						= 4; // 玩家头像
+	int32 PlayerLevel						= 5; // 玩家等级
+	int32 IsFriend							= 6; // 是否好友
+	int32 SendTime							= 7; // 发送时间
+	int32 ExtraValue						= 8; // 额外数据   招聘频道时为公会ID
+}
+message S2CChatMsgPullResponse {
+	int32 Channel							= 1; // 频道
+	repeated ChatItem Items					= 2; // 拉取的聊天队列
+	enum EProtocol { None = 0; ProtoID = 12303; }
+}
+
+// ----------------------------------- 拜访 -----------------------------------
+// 拜访玩家
+message C2SVisitPlayer {
+	int32 PlayerId 							= 1; // 玩家ID
+	enum EProtocol { None = 0; ProtoID = 12400; }
+}
+message ViewBuildingInfo {
+	BuildingInfo BaseData 					= 1; // 建筑基础数据
+	CropInfo CropData						= 2; // 农田数据，非农田为空
+	CatHouseInfo CatHouseData  				= 3; // 猫舍数据，非猫舍为空
+}
+message S2CVisitPlayerResult {
+	int32 PlayerId							= 1; // 玩家ID
+	string PlayerName						= 2; // 玩家昵称
+	int32 PlayerLevel						= 3; // 玩家等级
+	int32 PlayerVipLevel					= 4; // 玩家VIP等级
+	int32 PlayerGold						= 5; // 玩家金币
+	int32 PlayerDiamond						= 6; // 玩家钻石
+	int32 PlayerCharm						= 7; // 玩家魅力值
+	int32 PlayerHead						= 8; // 玩家头像
+	repeated ViewBuildingInfo Buildings 	= 9; // 建筑物数据
+	repeated AreaInfo Areas 				= 10; // 区域信息
+	enum EProtocol { None = 0; ProtoID = 12401; }
+}
+
+// 开好友宝箱
+message C2SOpenFriendChest {
+	int32 Friendid 							= 1; // 好友ID
+	int32 BuildingId						= 2; // 宝箱ID
+	enum EProtocol { None = 0; ProtoID = 12402; }
+}
+message S2COpenFriendChestResult {
+	int32 FriendId							= 1; // 好友ID
+	int32 BuildingId						= 2; // 宝箱ID
+	S2COpenMapChest OpenResult 				= 3; // 打开宝箱结果
+	enum EProtocol { None = 0; ProtoID = 12403; }
+}
+
+// 请求玩家的猫数据
+message C2SPlayerCatInfo {
+	int32 PlayerId							= 1;
+	int32 CatId								= 2;
+	enum EProtocol { None = 0; ProtoID = 12404; }
+}
+message S2CPlayerCatInfoResult {
+	int32 PlayerId							= 1; // 玩家ID
+	int32 CatId								= 2; // 猫ID
+	int32 CatLevel							= 3; // 等级
+	int32 CatExp							= 4; // 经验
+	int32 CatStar							= 5; // 星级
+	int32 CatSkillLevel						= 6; // 技能等级
+	int32 CatAddCoin						= 7; // 产金能力
+	int32 CatAddMatch						= 8; // 消除能力
+	int32 CatAddExplore						= 9; // 探索能力
+	enum EProtocol { None = 0; ProtoID = 12405; }
+}
+
+// ---------------------------------- 系统公告 --------------------------------
+// 系统公告项
+message AnouncementItem {
+	int32 MsgType							= 1; // 公告类型（1 获得4/5星寄养卡  2 获得4阶装饰物  3 获得4阶装饰物配方  4 获得SSR猫  5 排行榜首位  6 猫满级  7 纯文本）
+	int32 PlayerId							= 2; // 玩家ID
+	string PlayerName						= 3; // 玩家昵称
+	int32 PlayerLevel						= 4; // 玩家等级
+	int32 SendTime							= 5; // 发送时间
+	int32 FosterCardTableId					= 6; // 获得寄养卡配置ID，对应获取寄养卡公告
+	int32 FormulaTableId					= 7; // 配方ID获得，对应获取装饰物配方公告
+	int32 BuildingTableId					= 8; // 获得装饰物配置ID，对应获得装饰物公告
+	int32 SSRCatTableId						= 9; // 获得SSR猫配置ID，对应获取SSR猫公告
+	int32 RankType							= 10; // 排行榜首位类型，对应排行榜公告
+	int32 StageId							= 11; // 关卡ID，对应积分排行榜公告
+	int32 CatFullLevelTableId				= 12; // 猫满级的配置ID，对应猫满级公告
+	string Content							= 13; // 文本内容，对应纯文本公告
+}
+
+// 系统公告通知
+message S2CAnouncementNotify {
+	repeated AnouncementItem Items			= 1; // 公告数据
+	enum EProtocol { None = 0; ProtoID = 12500; }
+}
+
+// ----------------------------------------------------------------------------
+// 评论
+message PSLeaveMsgComment {
+	int32 CommentId							= 1; // 评论ID
+	bytes Content							= 2; // 内容
+	int32 SendTime							= 3; // 发送时间
+	int32 SendPlayerId						= 4; // 发送玩家ID
+	int32 ReplyPlayerId						= 5; // 被回复玩家ID
+}
+
+// 留言
+message PSLeaveMsg {
+	int32 MsgId								= 1;
+	bytes Content							= 2;
+	int32 SendTime							= 3;
+	int32 SendPlayerId						= 4;
+	repeated PSLeaveMsgComment Comments 	= 5;
+}
+
+// 个人空间照片基础信息
+message PSPicData {
+	int32 PicId								= 1; // 图片ID
+	string ThumbNailUrl						= 2; // 缩略图地址
+	int32 Zaned								= 3; // 被赞数
+	int32 MsgNum							= 4; // 留言数
+}
+
+// 获取个人空间
+message C2SGetPersonalSpace {
+	int32 PlayerId							= 1; // 玩家ID 0表示自己
+	enum EProtocol { None = 0; ProtoID = 12600; }
+}
+// 返回个人空间
+message S2CGetPersonalSpaceResult {
+	int32 PlayerId							= 1; // 玩家ID
+	string Signature						= 2; // 签名
+	repeated PSPicData Pics  				= 3; // 图片
+	repeated PSLeaveMsg LeaveMsgs 			= 4; // 留言
+	int32 IsMoreMsg							= 5; // 是否有更多留言
+	enum EProtocol { None = 0; ProtoID = 12601; }
+}
+
+// 修改空间签名
+message C2SPersonalSpaceModifySignature {
+	string Signature						= 1;
+	enum EProtocol { None = 0; ProtoID = 12602; }
+}
+message S2CPersonalSpaceModifySignatureResult {
+	string Signature 						= 1;
+	enum EProtocol { None = 0; ProtoID = 12603; }
+}
+
+// 空间点赞
+message C2SPersonalSpaceZan {
+	int32 PlayerId 							= 1; // 玩家ID
+	int32 PicId								= 2; // 图片ID
+	enum EProtocol { None = 0; ProtoID = 12604; }
+}
+message S2CPersonalSpaceZanResult {
+	int32 PlayerId							= 1; // 玩家ID
+	int32 PicId								= 2; // 图片ID
+	int32 Zaned								= 3; // 点赞数
+	enum EProtocol { None = 0; ProtoID = 12605; }
+}
+
+// 获取空间单个照片具体数据
+message C2SPersonalSpaceGetPicture {
+	int32 PlayerId							= 1; // 玩家ID
+	int32 PicId								= 2; // 图片ID
+	enum EProtocol { None = 0; ProtoID = 12606; }
+}
+message S2CPersonalSpaceGetPictureResult {
+	int32 PlayerId							= 1; // 玩家ID
+	int32 PicId								= 2; // 图片ID
+	string Url								= 3; // 图片地址
+	repeated PSLeaveMsg LeaveMsgs			= 4; // 留言
+	enum EProtocol { None = 0; ProtoID = 12607; }
+}
+
+// 删除空间照片
+message C2SPersonalSpaceDeletePic {
+	int32 PicId								= 1;
+	enum EProtocol { None = 0; ProtoID = 12608; }
+}
+message S2SPersonalSpaceDeletePicResult {
+	int32 PicId								= 1;
+	enum EProtocol { None = 0; ProtoID = 12609; }
+}
+
+// 拉取空间留言
+message C2SPersonalSpacePullLeaveMsg {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2; // 图片ID  空间留言时为0
+	int32 StartIndex						= 3;
+	int32 MsgNum							= 4;
+	enum EProtocol { None = 0; ProtoID = 12610; }
+}
+message S2CPersonalSpacePullLeaveMsgResult {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2;
+	int32 StartIndex						= 3;
+	int32 MsgNum 							= 4;
+	repeated PSLeaveMsg LeaveMsgs			= 5;
+	enum EProtocol { None = 0; ProtoID = 12611; }
+}
+
+// 发送空间留言
+message C2SPersonalSpaceSendLeaveMsg {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2;
+	bytes LeaveMsg							= 3;
+	enum EProtocol { None = 0; ProtoID = 12612; }
+}
+message S2CPersonalSpaceSendLeaveMsgResult {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2;
+	bytes LeaveMsg							= 3;
+	int32 MsgId								= 4;
+	int32 SendTime							= 5;
+	enum EProtocol { None = 0; ProtoID = 12613; }
+}
+
+// 删除空间留言
+message C2SPersonalSpaceDelLeaveMsg {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2;
+	int32 MsgId								= 3;
+	enum EProtocol { None = 0; ProtoID = 12614; }
+}
+message S2CPersonalSpaceDelLeaveMsgResult {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2;
+	int32 MsgId								= 3;
+	enum EProtocol { None = 0; ProtoID = 12615; }
+}
+
+// 发送空间留言评论
+message C2SPersonalSpaceSendLeaveMsgComment {
+	int32 PlayerId							= 1; // 玩家ID
+	int32 PicId								= 2; // 图片ID  空间留言时为0
+	int32 MsgId								= 3; // 留言ID
+	bytes Comment  							= 4; // 评论内容
+	enum EProtocol { None = 0; ProtoID = 12616; }
+}
+message S2CPersonalSpaceSendLeaveMsgCommentResult {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2;
+	int32 MsgId								= 3;
+	bytes Comment							= 4;
+	int32 CommentId							= 5;
+	enum EProtocol { None = 0; ProtoID = 12617; }
+}
+
+// 删除空间留言评论
+message C2SPersonalSpaceDelLeaveMsgComment {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2;
+	int32 MsgId								= 3;
+	int32 CommentId							= 4;
+	enum EProtocol { None = 0; ProtoID = 12618; }
+}
+message S2CPersonalSpaceDelLeaveMsgCommentResult {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2;
+	int32 MsgId								= 3;
+	int32 CommentId							= 4;
+	enum EProtocol { None = 0; ProtoID = 12619; }
+}
+
+// 拉取空间留言评论
+message C2SPersonalSpacePullLeaveMsgComment {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2;
+	int32 MsgId								= 3;
+	int32 StartIndex						= 4;
+	int32 CommentNum						= 5;
+	enum EProtocol { None = 0; ProtoID = 12620; }
+}
+message S2CPersonalSpacePullLeaveMsgCommentResult {
+	int32 PlayerId							= 1;
+	int32 PicId								= 2;
+	int32 MsgId								= 3;
+	int32 StartIndex						= 4;
+	int32 CommentNum						= 5;
+	repeated PSLeaveMsgComment Comments 	= 6;
+	enum EProtocol { None = 0; ProtoID = 12621; }
+}
+
+// ---------------------------------- 充值 ------------------------------------
+// 充值数据
+message C2SChargeDataRequest {
+	enum EProtocol { None = 0; ProtoID = 12700; }
+}
+
+message MonthCardData {
+	string BundleId							= 1; // BundleId
+	int32 EndTime							= 2; // 结束时间
+	int32 SendMailNum						= 3; // 已发送奖励邮件数
+}
+
+message S2CChargeDataResponse {
+	int32 FirstChargeState					= 1; // 首充状态 0 未充  1 已充可领取  2 已领取
+	repeated MonthCardData Datas			= 2; // 月卡数据
+	repeated string ChargedBundleIds		= 3; // 已充过值的BundleId
+	enum EProtocol { None = 0; ProtoID = 12701; }
+}
+
+// 充值请求 
+message C2SChargeRequest {
+	int32 Channel							= 1; // 渠道  1 google   2 appele
+	string BundleId							= 2; // BundleId
+	bytes PurchareData						= 3; // 需要验证的支付数据
+	bytes ExtraData							= 4; // 额外数据
+	int32 ClientIndex						= 5; // 客户端索引，用于标记充值记录
+	enum EProtocol { None = 0; ProtoID = 12702; }
+}
+
+message S2CChargeResponse {
+	int32 Channel							= 1; // 渠道  1 google   2 appele
+	string BundleId							= 2; // BundleId
+	bool IsFirst							= 3; // 是否首次
+	int32 ClientIndex						= 4; // 客户端索引，用于标记充值记录
+	enum EProtocol { None = 0; ProtoID = 12703; }
+}
+
+// 首充奖励通知, 第一次充值会通知
+message S2CChargeFirstRewardNotify {
+	enum EProtocol { None = 0; ProtoID = 12704; }
+}
+
+// 首充领奖
+message C2SChargeFirstAwardRequest {
+	enum EProtocol { None = 0; ProtoID = 12705; }
+}
+
+message S2CChargeFirstAwardResponse {
+	repeated ItemInfo Rewards				= 1; // 奖励物品
+	enum EProtocol { None = 0; ProtoID = 12706; }
+}
+
+// ---------------------------------- 活动 ------------------------------------
+
+// 子活动数据
+message SubActivityData {
+	int32 SubId								= 1; // 子ID
+	int32 Value								= 2; // 值
+}
+
+
+// 活动数据
+message ActivityData {
+	int32 Id								= 1; // ID
+	int32 RemainSeconds						= 2; // 剩余时间
+	repeated SubActivityData SubDatas		= 3; // 子任务列表
+}
+
+// 请求活动数据
+message C2SActivityDataRequest {
+	enum EProtocol { None = 0; ProtoID = 12800; }
+}
+
+message S2CActivityDataResponse {
+	repeated ActivityData Data				= 1; // 数据
+	enum EProtocol { None = 0; ProtoID = 12801; }
+}
+
+// 活动数据通知
+message S2CActivityDataNotify {
+	int32 Id								= 1; // ID
+	int32 SubId								= 2; // 子ID
+	int32 Value								= 3; // 数据
+	enum EProtocol { None = 0; ProtoID = 12802; }
+}
+
+// 活动兑换
+message C2SActivityExchangeRequest {
+	int32 Id								= 1;
+	int32 SubId								= 2;
+	enum EProtocol { None = 0; ProtoID = 12803; }
+}
+
+message S2CActivityExchangeResponse {
+	int32 Id								= 1;
+	int32 SubId								= 2;
+	enum EProtocol { None = 0; ProtoID = 12804; }
+}
+
+// --------------------------------- 红点提示 ---------------------------------
+// 红点功能枚举
+enum RED_POINT {
+	STATE_NONE								= 0;
+	TASK									= 1; // 成就任务(有奖励)            按位与运算大于0 :  0x01 成就任务          0x02 每日任务
+	WELFARE									= 2; // 福利(有奖励)				按位与运算大于0 :  0x01 首充              0x02 七天乐
+	CAMPAIN							    	= 3; // 战役(有随机战利品)			按位与运算大于0 :  0x01 有战利品
+	DRAW									= 4; // 抽卡(免费抽卡)				按位与运算大于0 :  0x01 普通招募          0x02 高级招募
+	EXPLORE							    	= 5; // 探索(有奖励)				按位与运算大于0 :  0x01 有奖励
+	CHAT									= 6; // 聊天(有新聊天消息)          按位与运算大于0 :  0x01 世界频道          0x02 公会频道         0x04 招募频道         0x08 系统公告频道
+	MAIL									= 7; // 邮件(有未读邮件)            按位与运算大于0 :  0x01 有未读邮件
+	FRIEND							    	= 8; // 好友                        按位与运算大于0 :  0x01 好友助战可以搜索  0x02 有新好友申请
+	GOLD_HAND								= 9; // 点金手(免费点金)            按位与运算大于0 :  0x01 有免费点金
+	GUILD									= 10; // 公会(签到)                 按位与运算大于0 :  0x01 可签到
+	SIGN 									= 11; // 签到                       按位与运算大于0 :  0x01 可签到
+	MAX                                     = 20; // 最大值
+}
+
+// 红点通知
+message C2SRedPointStatesRequest {
+	repeated int32 Modules					= 1; // 需要功能序列  索引为红点功能定义，空序列为都需要
+	enum EProtocol { None = 0; ProtoID = 12900; }
+}
+
+message S2CRedPointStatesResponse {
+	repeated int32 Modules                  = 1; // 需要功能序列
+	repeated int32 States 					= 2; // 状态序列  0 不提示  大于0 提示  索引为红点功能
+	enum EProtocol { None = 0; ProtoID = 12901; }
+}
+
+// ----------------------------------- 引导 -----------------------------------
+// 引导数据保存
+message C2SGuideDataSaveRequest {
+	bytes Data 								= 1;
+	enum EProtocol { None = 0; ProtoID = 12902; }
+}
+
+message S2CGuideDataSaveResponse {
+	bytes Data								= 1;
+	enum EProtocol { None = 0; ProtoID = 12903; }
+}
+
+// 引导数据  进入游戏后主动通知
+message S2CGuideDataResponse {
+	bytes Data								= 1;
+	enum EProtocol { None = 0; ProtoID = 12904; }
+}

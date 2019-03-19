@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="1301" Name="木宝箱" Weight="60" Remove="[]" Exp="300" FriPoint="50" Time="108000" Reward="[10001,1]" />
+	<item Id="1302" Name="银宝箱" Weight="40" Remove="[2,5000]" Exp="600" FriPoint="70" Time="108000" Reward="[10002,1]" />
+	<item Id="1303" Name="金宝箱" Weight="20" Remove="[3,20]" Exp="1000" FriPoint="100" Time="108000" Reward="[10003,1]" />
+</Config>

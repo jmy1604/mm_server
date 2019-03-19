@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="1401" NameId="52900" Level="3" Cost="0" OutPut="10" Time="[10,30]" Exp="1" />
+	<item Id="1402" NameId="52901" Level="3" Cost="15" OutPut="65" Time="[60,180]" Exp="6" />
+	<item Id="1403" NameId="52902" Level="3" Cost="160" OutPut="360" Time="[300,900]" Exp="30" />
+	<item Id="1404" NameId="52903" Level="6" Cost="1800" OutPut="1600" Time="[1200,3600]" Exp="120" />
+	<item Id="1405" NameId="52904" Level="10" Cost="6000" OutPut="3450" Time="[2400,7200]" Exp="240" />
+	<item Id="1406" NameId="52905" Level="15" Cost="12000" OutPut="5400" Time="[3600,10800]" Exp="360" />
+	<item Id="1407" NameId="52906" Level="21" Cost="21000" OutPut="7800" Time="[4800,14400]" Exp="480" />
+	<item Id="1408" NameId="52907" Level="28" Cost="32000" OutPut="10500" Time="[6000,18000]" Exp="600" />
+	<item Id="1409" NameId="52908" Level="36" Cost="50000" OutPut="13600" Time="[7200,21600]" Exp="720" />
+	<item Id="1410" NameId="52909" Level="45" Cost="90000" OutPut="19200" Time="[9600,28800]" Exp="960" />
+</Config>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Lvl="1" Rewards="[2,1000,4,1000,3,10]" />
+	<item Lvl="2" Rewards="[2,2000,301,2,305,2]" />
+	<item Lvl="3" Rewards="[2,3000,302,2,306,2]" />
+	<item Lvl="4" Rewards="[2,4000,303,2,307,2]" />
+	<item Lvl="5" Rewards="[2,5000,304,2,308,2]" />
+	<item Lvl="6" Rewards="[2,6000,51,5,52,5]" />
+	<item Lvl="7" Rewards="[2,7000,53,5,54,5]" />
+	<item Lvl="10" Rewards="[2,10000,201,5,202,1]" />
+	<item Lvl="15" Rewards="[2,15000,101,5,102,5,103,5]" />
+	<item Lvl="20" Rewards="[2,20000,301,10,305,10]" />
+	<item Lvl="25" Rewards="[2,25000,302,10,306,10]" />
+	<item Lvl="30" Rewards="[2,30000,303,10,307,10]" />
+	<item Lvl="35" Rewards="[2,35000,304,10,308,10]" />
+	<item Lvl="40" Rewards="[2,40000,201,10,202,3]" />
+</Config>

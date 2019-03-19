@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="51" Name="木锤" Icon="Icon_Tools_09" Type="1" Tag="3" Compose="0" SaleCoin="1" Use="0" More="1" MaxNumber="99" DescriptionId="58078" Cost="10" Diamond="1" />
+	<item Id="52" Name="强制交换" Icon="Icon_Tools_01" Type="1" Tag="3" Compose="0" SaleCoin="1" Use="0" More="1" MaxNumber="99" DescriptionId="58080" Cost="10" Diamond="1" />
+	<item Id="53" Name="魔法棒（点头）" Icon="Icon_Tools_02" Type="1" Tag="3" Compose="0" SaleCoin="1" Use="0" More="1" MaxNumber="99" DescriptionId="58081" Cost="10" Diamond="1" />
+	<item Id="54" Name="魔法棒（摇头）" Icon="Icon_Tools_03" Type="1" Tag="3" Compose="0" SaleCoin="1" Use="0" More="1" MaxNumber="99" DescriptionId="58082" Cost="10" Diamond="1" />
+	<item Id="55" Name="得分增加" Icon="Icon_Tools_10" Type="1" Tag="3" Compose="0" SaleCoin="1" Use="0" More="1" MaxNumber="99" DescriptionId="58083" Cost="10" Diamond="1" />
+	<item Id="56" Name="金币增加" Icon="Icon_Tools_04" Type="1" Tag="3" Compose="0" SaleCoin="1" Use="0" More="1" MaxNumber="99" DescriptionId="58084" Cost="10" Diamond="1" />
+	<item Id="57" Name="加3步" Icon="Icon_Tools_12" Type="1" Tag="3" Compose="0" SaleCoin="1" Use="0" More="1" MaxNumber="99" DescriptionId="58085" Cost="10" Diamond="1" />
+	<item Id="58" Name="快速提示" Icon="Icon_Tools_11" Type="1" Tag="3" Compose="0" SaleCoin="1" Use="0" More="1" MaxNumber="99" DescriptionId="58086" Cost="10" Diamond="1" />
+</Config>

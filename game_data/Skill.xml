@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="16101" Name="工匠的技能" Icon="Icon_Skill1001_Gj" Description="54052" ShortDescription="54080" Type="1001" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="40" />
+	<item Id="16102" Name="女仆的技能" Icon="Icon_Skill1002_Np" Description="54053" ShortDescription="54081" Type="1001" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="40" />
+	<item Id="16103" Name="飞行员的技能" Icon="Icon_Skill1003_Fxy" Description="54054" ShortDescription="54082" Type="1001" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="40" />
+	<item Id="16104" Name="水手的技能" Icon="Icon_Skill1004_Ss" Description="54055" ShortDescription="54083" Type="1001" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="40" />
+	<item Id="16105" Name="舞女的技能" Icon="Icon_Skill1005_Wn" Description="54056" ShortDescription="54084" Type="1001" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="40" />
+	<item Id="16106" Name="绅士的技能" Icon="Icon_Skill1006_Ss" Description="54057" ShortDescription="54085" Type="1001" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="40" />
+	<item Id="16201" Name="弓手的技能" Icon="Icon_Skill2001_Gs" Description="54058" ShortDescription="54086" Type="1002" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="50" />
+	<item Id="16202" Name="健美队员的技能" Icon="Icon_Skill2002_Js" Description="54059" ShortDescription="54087" Type="1002" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="50" />
+	<item Id="16203" Name="游牧乐手的技能" Icon="Icon_Skill2003_Yc" Description="54060" ShortDescription="54088" Type="1002" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="50" />
+	<item Id="16204" Name="礼物猫的技能" Icon="Icon_Skill2004_Lw" Description="54061" ShortDescription="54089" Type="1002" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="50" />
+	<item Id="16205" Name="占卜师的技能" Icon="Icon_Skill2005_Jbs" Description="54062" ShortDescription="54090" Type="1002" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="50" />
+	<item Id="16206" Name="船长的技能" Icon="Icon_Skill2006_Cz" Description="54063" ShortDescription="54091" Type="1002" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="50" />
+	<item Id="16301" Name="护卫的技能" Icon="Icon_Skill3001_Hwd" Description="54064" ShortDescription="54092" Type="1003" SkillValue1="[50,60,70,80,90]" SkillValue2="[50,60,70,80,90]" EnergyCost="60" />
+	<item Id="16302" Name="先知的技能" Icon="Icon_Skill3002_Xz" Description="54065" ShortDescription="54093" Type="1003" SkillValue1="[50,60,70,80,90]" SkillValue2="[50,60,70,80,90]" EnergyCost="60" />
+	<item Id="16303" Name="护士的技能" Icon="Icon_Skill3003_Hs" Description="54066" ShortDescription="54094" Type="1003" SkillValue1="[50,60,70,80,90]" SkillValue2="[50,60,70,80,90]" EnergyCost="60" />
+	<item Id="16304" Name="森林精灵的技能" Icon="Icon_Skill3004_Sl" Description="54067" ShortDescription="54095" Type="1003" SkillValue1="[50,60,70,80,90]" SkillValue2="[50,60,70,80,90]" EnergyCost="60" />
+	<item Id="16305" Name="药师的技能" Icon="Icon_Skill3005_Yjs" Description="54068" ShortDescription="54096" Type="1003" SkillValue1="[50,60,70,80,90]" SkillValue2="[50,60,70,80,90]" EnergyCost="60" />
+	<item Id="16306" Name="侦探的技能" Icon="Icon_Skill3006_Zt" Description="54069" ShortDescription="54097" Type="1003" SkillValue1="[50,60,70,80,90]" SkillValue2="[50,60,70,80,90]" EnergyCost="60" />
+	<item Id="16401" Name="舞蹈家的技能" Icon="Icon_Skill4001_Bl" Description="54070" ShortDescription="54098" Type="1012" SkillValue1="[1,2,3,4]" SkillValue2="[1,2,3,4]" EnergyCost="50" />
+	<item Id="16402" Name="女警的技能" Icon="Icon_Skill4002_Nj" Description="54071" ShortDescription="54099" Type="1009" SkillValue1="[10,20,30,40,50]" SkillValue2="[10,20,30,40,50]" EnergyCost="50" />
+	<item Id="16403" Name="国王的技能" Icon="Icon_Skill4003_Gw" Description="54072" ShortDescription="54100" Type="1011" SkillValue1="[10,20,30,40,50]" SkillValue2="[10,20,30,40,50]" EnergyCost="70" />
+	<item Id="16404" Name="黑公主的技能" Icon="Icon_Skill4004_Hgz" Description="54073" ShortDescription="54101" Type="1004" SkillValue1="[1,2,3,4]" SkillValue2="[1,2,3,4]" EnergyCost="60" />
+	<item Id="16405" Name="警长的技能" Icon="Icon_Skill4005_Jz" Description="54074" ShortDescription="54102" Type="1010" SkillValue1="[10,20,30,40,50]" SkillValue2="[10,20,30,40,50]" EnergyCost="60" />
+	<item Id="16406" Name="僵尸射手的技能" Icon="Icon_Skill4006_Js" Description="54075" ShortDescription="54103" Type="1013" SkillValue1="[1,2,3,4]" SkillValue2="[1,2,3,4]" EnergyCost="60" />
+	<item Id="16407" Name="女巫的技能" Icon="Icon_Skill4007_Nw" Description="54076" ShortDescription="54104" Type="1008" SkillValue1="[1,2,3]" SkillValue2="[1,2,3]" EnergyCost="60" />
+	<item Id="16408" Name="白公主的技能" Icon="Icon_Skill4008_Bgz" Description="54077" ShortDescription="54105" Type="1007" SkillValue1="[1,2,3]" SkillValue2="[5,8,10]" EnergyCost="70" />
+	<item Id="16409" Name="小提琴手的技能" Icon="Icon_Skill4009_Tqj" Description="54078" ShortDescription="54106" Type="1006" SkillValue1="[2,3,4,5,6]" SkillValue2="[2,3,4,5,6]" EnergyCost="50" />
+	<item Id="16410" Name="魔术师的技能" Icon="Icon_Skill4010_Mss" Description="54079" ShortDescription="54107" Type="1005" SkillValue1="[1,2,3,4,5]" SkillValue2="[1,2,3,4,5]" EnergyCost="50" />
+</Config>

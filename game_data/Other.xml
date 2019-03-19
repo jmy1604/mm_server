@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="1" Name="人民币" Icon="0" DescriptionId="0" Type="1" Cost="1" Money="0" Cost2="0" Money2="0" />
+	<item Id="2" Name="金币" Icon="Icon_Gold_01" DescriptionId="58144" Type="100" Cost="3" Money="1000" Cost2="1" Money2="1" />
+	<item Id="3" Name="钻石" Icon="Icon_Diamond_01" DescriptionId="58145" Type="10" Cost="1" Money="0" Cost2="0" Money2="0" />
+	<item Id="4" Name="猫粮" Icon="Icon_food_01" DescriptionId="58146" Type="5" Cost="3" Money="0" Cost2="0" Money2="0" />
+	<item Id="5" Name="体力" Icon="Icon_energy_01" DescriptionId="58147" Type="1" Cost="3" Money="0" Cost2="0" Money2="0" />
+	<item Id="6" Name="友情点" Icon="Icon_Cj_109" DescriptionId="58148" Type="0" Cost="0" Money="0" Cost2="0" Money2="0" />
+	<item Id="7" Name="魅力值" Icon="Icon_Love_03" DescriptionId="58149" Type="0" Cost="0" Money="0" Cost2="0" Money2="0" />
+	<item Id="8" Name="经验值" Icon="Icon_Cj_01" DescriptionId="58150" Type="0" Cost="0" Money="0" Cost2="0" Money2="0" />
+	<item Id="9" Name="魂石" Icon="Icon_Cj_129" DescriptionId="58151" Type="0" Cost="0" Money="0" Cost2="0" Money2="0" />
+	<item Id="10" Name="魅力勋章" Icon="Icon_Cj_108" DescriptionId="58152" Type="0" Cost="0" Money="0" Cost2="0" Money2="0" />
+	<item Id="11" Name="时间（秒）" Icon="0" DescriptionId="0" Type="300" Cost="3" Money="0" Cost2="0" Money2="0" />
+	<item Id="12" Name="星星" Icon="Icon_Star_01" DescriptionId="0" Type="1" Cost="0" Money="0" Cost2="0" Money2="0" />
+	<item Id="13" Name="猫咪经验" Icon="0" DescriptionId="0" Type="0" Cost="0" Money="0" Cost2="0" Money2="0" />
+</Config>

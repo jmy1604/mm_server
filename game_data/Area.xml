@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item AreaId="1501" Area="Area_001" FrontArea="[]" UnlockLevel="0" UnlockStar="0" UnlockCost="[2,0]" QuickUnlock="[3,99999]" MaxObstacle="27" AllGrid="275" />
+	<item AreaId="1524" Area="Area_024" FrontArea="[1501]" UnlockLevel="6" UnlockStar="6" UnlockCost="[2,1000]" QuickUnlock="[3,99999]" MaxObstacle="37" AllGrid="374" />
+	<item AreaId="1525" Area="Area_025" FrontArea="[1501]" UnlockLevel="8" UnlockStar="12" UnlockCost="[2,4000]" QuickUnlock="[3,99999]" MaxObstacle="57" AllGrid="573" />
+	<item AreaId="1502" Area="Area_002" FrontArea="[1501]" UnlockLevel="10" UnlockStar="21" UnlockCost="[2,7000]" QuickUnlock="[3,99999]" MaxObstacle="34" AllGrid="345" />
+	<item AreaId="1503" Area="Area_003" FrontArea="[1502]" UnlockLevel="12" UnlockStar="27" UnlockCost="[2,15000]" QuickUnlock="[3,99999]" MaxObstacle="65" AllGrid="654" />
+	<item AreaId="1504" Area="Area_004" FrontArea="[1502]" UnlockLevel="14" UnlockStar="45" UnlockCost="[2,36000]" QuickUnlock="[3,99999]" MaxObstacle="71" AllGrid="711" />
+	<item AreaId="1505" Area="Area_005" FrontArea="[1504]" UnlockLevel="16" UnlockStar="63" UnlockCost="[2,44000]" QuickUnlock="[3,99999]" MaxObstacle="32" AllGrid="329" />
+	<item AreaId="1506" Area="Area_006" FrontArea="[1505]" UnlockLevel="20" UnlockStar="87" UnlockCost="[2,88000]" QuickUnlock="[3,99999]" MaxObstacle="40" AllGrid="400" />
+	<item AreaId="1507" Area="Area_007" FrontArea="[1505]" UnlockLevel="23" UnlockStar="114" UnlockCost="[2,130000]" QuickUnlock="[3,99999]" MaxObstacle="33" AllGrid="335" />
+	<item AreaId="1508" Area="Area_008" FrontArea="[1503,1504]" UnlockLevel="18" UnlockStar="132" UnlockCost="[2,120000]" QuickUnlock="[3,99999]" MaxObstacle="14" AllGrid="143" />
+	<item AreaId="1509" Area="Area_009" FrontArea="[1503,1504]" UnlockLevel="21" UnlockStar="159" UnlockCost="[2,350000]" QuickUnlock="[3,99999]" MaxObstacle="57" AllGrid="573" />
+	<item AreaId="1510" Area="Area_010" FrontArea="[1503,1504]" UnlockLevel="24" UnlockStar="183" UnlockCost="[2,260000]" QuickUnlock="[3,99999]" MaxObstacle="16" AllGrid="167" />
+	<item AreaId="1511" Area="Area_011" FrontArea="[1510]" UnlockLevel="22" UnlockStar="207" UnlockCost="[2,480000]" QuickUnlock="[3,99999]" MaxObstacle="33" AllGrid="331" />
+	<item AreaId="1512" Area="Area_012" FrontArea="[1511]" UnlockLevel="26" UnlockStar="234" UnlockCost="[2,500000]" QuickUnlock="[3,99999]" MaxObstacle="20" AllGrid="206" />
+	<item AreaId="1513" Area="Area_013" FrontArea="[1512]" UnlockLevel="30" UnlockStar="267" UnlockCost="[2,1130000]" QuickUnlock="[3,99999]" MaxObstacle="53" AllGrid="535" />
+	<item AreaId="1514" Area="Area_014" FrontArea="[1513]" UnlockLevel="36" UnlockStar="300" UnlockCost="[2,940000]" QuickUnlock="[3,99999]" MaxObstacle="20" AllGrid="202" />
+	<item AreaId="1515" Area="Area_015" FrontArea="[1514]" UnlockLevel="40" UnlockStar="348" UnlockCost="[2,2710000]" QuickUnlock="[3,99999]" MaxObstacle="72" AllGrid="720" />
+	<item AreaId="1516" Area="Area_016" FrontArea="[1515]" UnlockLevel="44" UnlockStar="393" UnlockCost="[2,2870000]" QuickUnlock="[3,99999]" MaxObstacle="38" AllGrid="387" />
+	<item AreaId="1517" Area="Area_017" FrontArea="[1516]" UnlockLevel="48" UnlockStar="441" UnlockCost="[2,4400000]" QuickUnlock="[3,99999]" MaxObstacle="43" AllGrid="433" />
+	<item AreaId="1518" Area="Area_018" FrontArea="[1515]" UnlockLevel="50" UnlockStar="492" UnlockCost="[2,7060000]" QuickUnlock="[3,99999]" MaxObstacle="52" AllGrid="523" />
+	<item AreaId="1519" Area="Area_019" FrontArea="[1518]" UnlockLevel="55" UnlockStar="558" UnlockCost="[2,14800000]" QuickUnlock="[3,99999]" MaxObstacle="89" AllGrid="898" />
+	<item AreaId="1520" Area="Area_020" FrontArea="[1519]" UnlockLevel="58" UnlockStar="618" UnlockCost="[2,16300000]" QuickUnlock="[3,99999]" MaxObstacle="48" AllGrid="483" />
+	<item AreaId="1521" Area="Area_021" FrontArea="[1520]" UnlockLevel="62" UnlockStar="675" UnlockCost="[2,19700000]" QuickUnlock="[3,99999]" MaxObstacle="33" AllGrid="330" />
+	<item AreaId="1522" Area="Area_022" FrontArea="[1520]" UnlockLevel="66" UnlockStar="744" UnlockCost="[2,40000000]" QuickUnlock="[3,99999]" MaxObstacle="56" AllGrid="560" />
+	<item AreaId="1523" Area="Area_023" FrontArea="[1520]" UnlockLevel="70" UnlockStar="810" UnlockCost="[2,50000000]" QuickUnlock="[3,99999]" MaxObstacle="38" AllGrid="381" />
+</Config>

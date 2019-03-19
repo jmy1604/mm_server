@@ -1,0 +1,29 @@
+{
+	"ServerId":1,
+	"InnerVersion":"1.0.0",
+	"ServerName":"ih_login_server",
+	"ListenClientIP":"192.168.1.250:35000",
+	
+	"ListenGameIP":"192.168.1.250:35001",
+	"MaxGameConnections":300,
+	"LogConfigFile":"login_server_tracer.json",
+	
+	"CenterServerIP":"192.168.1.250:30000",
+	"RedisServerIP" : "127.0.0.1:6379",
+	
+	"VerifyAccount": false,
+	"VERIFY_EXPIRATION": 600,
+	"FacebookAppID": "1025834900929074",
+	"FacebookAppSecret": "f443d211157eb3d606764d679f2a64c9",
+	
+	"MYSQL_IP":"127.0.0.1:3306",
+	"MYSQL_ACCOUNT":"root",
+	"MYSQL_PWD":"",
+	"MYSQL_NAME":"mm_login_server",
+	"DBCST_MIN":300,
+	"DBCST_MAX":350,
+	"DBPM_MIN":0,
+	"DBPM_MAX":10000,
+	
+	"UseHttps": false
+}

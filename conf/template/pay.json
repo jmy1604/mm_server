@@ -1,0 +1,12 @@
+{
+	"PayChannels": [
+		{
+			"KeyFile": "googlepay.key",
+			"Partner": "idle battle"
+		},
+		{
+			"KeyFile": "googlepay2.key",
+			"Partner": "idle battle 2"
+		}
+	]
+}

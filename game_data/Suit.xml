@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item Id="40001" Name="樱之烂漫" Type="1" Icon="Bj_Cj_Yinghua" Description="0" Reward="[3,20,2,10000,5,50]" />
+	<item Id="40002" Name="百日草神话" Type="1" Icon="Bj_Cj_Bairicao" Description="0" Reward="[3,20,2,10000,5,51]" />
+	<item Id="40003" Name="北葵向暖" Type="1" Icon="Bj_Cj_Beikui" Description="0" Reward="[3,20,2,10000,5,52]" />
+	<item Id="40004" Name="玉兰花主题" Type="1" Icon="Bj_Cj_Yulan" Description="0" Reward="[3,20,2,10000,5,53]" />
+	<item Id="40005" Name="欧式乐器" Type="1" Icon="Bj_Cj_Yueqi" Description="0" Reward="[3,20,2,10000,5,54]" />
+	<item Id="40006" Name="海盗主题" Type="1" Icon="Bj_Cj_Haidao" Description="0" Reward="[3,20,2,10000,5,55]" />
+	<item Id="40007" Name="黑猫女巫主题" Type="1" Icon="Bj_Cj_Nvwu" Description="0" Reward="[3,20,2,10000,5,56]" />
+	<item Id="40008" Name="海洋主题" Type="1" Icon="Bj_Cj_Haiyang" Description="0" Reward="[3,20,2,10000,5,57]" />
+	<item Id="40009" Name="婚庆主题" Type="1" Icon="Bj_Cj_Hunli" Description="0" Reward="[3,20,2,10000,5,58]" />
+	<item Id="40010" Name="童话主题" Type="1" Icon="Bj_Cj_Tonghua" Description="0" Reward="[3,20,2,10000,5,59]" />
+	<item Id="40011" Name="星座主题" Type="1" Icon="Bj_Cj_Xingzuo" Description="0" Reward="[3,20,2,10000,5,60]" />
+	<item Id="40012" Name="户外野餐主题" Type="1" Icon="Bj_Cj_Yecan" Description="0" Reward="[3,20,2,10000,5,61]" />
+	<item Id="40013" Name="情人节" Type="1" Icon="Bj_Cj_Qingren" Description="0" Reward="[3,20,2,10000,5,62]" />
+	<item Id="40014" Name="愚人节" Type="1" Icon="Bj_Cj_Yuren" Description="0" Reward="[3,20,2,10000,5,63]" />
+	<item Id="40015" Name="复活节" Type="1" Icon="Bj_Cj_Fuhuo" Description="0" Reward="[3,20,2,10000,5,64]" />
+	<item Id="40016" Name="儿童节" Type="1" Icon="Bj_Cj_Ertong" Description="0" Reward="[3,20,2,10000,5,65]" />
+	<item Id="40017" Name="万圣节" Type="1" Icon="Bj_Cj_Wansheng" Description="0" Reward="[3,20,2,10000,5,66]" />
+	<item Id="40018" Name="感恩节" Type="1" Icon="Bj_Cj_Ganen" Description="0" Reward="[3,20,2,10000,5,67]" />
+	<item Id="40019" Name="圣诞节" Type="1" Icon="Bj_Cj_Shengdan" Description="0" Reward="[3,20,2,10000,5,68]" />
+	<item Id="40020" Name="春节" Type="1" Icon="Bj_Cj_Chunjie" Description="0" Reward="[3,20,2,10000,5,69]" />
+	<item Id="40021" Name="七夕情人节" Type="1" Icon="Bj_Cj_Qixi" Description="0" Reward="[3,20,2,10000,5,70]" />
+	<item Id="40022" Name="中秋节" Type="1" Icon="Bj_Cj_Zhongqiu" Description="0" Reward="[3,20,2,10000,5,71]" />
+	<item Id="41001" Name="猫镇" Type="2" Icon="0" Description="0" Reward="[3,20,2,10000,5,72]" />
+	<item Id="41002" Name="阳光岛" Type="2" Icon="0" Description="0" Reward="[3,20,2,10000,5,73]" />
+	<item Id="41003" Name="空中岛" Type="2" Icon="0" Description="0" Reward="[3,20,2,10000,5,74]" />
+	<item Id="41004" Name="美食岛" Type="2" Icon="0" Description="0" Reward="[3,20,2,10000,5,75]" />
+	<item Id="41005" Name="游乐园" Type="2" Icon="0" Description="0" Reward="[3,20,2,10000,5,76]" />
+	<item Id="41006" Name="流浪基地" Type="2" Icon="0" Description="0" Reward="[3,20,2,10000,5,77]" />
+	<item Id="41007" Name="信仰岛" Type="2" Icon="0" Description="0" Reward="[3,20,2,10000,5,78]" />
+</Config>
