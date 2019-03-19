@@ -52,7 +52,7 @@ func (this *SignalMgr) DoAllCloseFunc() {
 	case <-this.signal_c:
 		{
 			this.b_closing = true
-			hall_server.Shutdown()
+			game_server.Shutdown()
 			for _, info := range this.close_map {
 				info.close_func(info)
 			}
