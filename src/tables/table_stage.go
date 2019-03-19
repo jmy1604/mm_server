@@ -47,7 +47,7 @@ func (this *StageTableManager) Init(table_file string) bool {
 	tmp_cfg := &XmlStageConfig{}
 	err = xml.Unmarshal(content, tmp_cfg)
 	if nil != err {
-		log.Error("CfgStageManager Load unmarshal err (%s)", err.Error())
+		log.Error("StageTableManager Load unmarshal err (%s)", err.Error())
 		return false
 	}
 

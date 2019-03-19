@@ -90,7 +90,7 @@ type TaskTableMgr struct {
 
 func (this *TaskTableMgr) Init(table_file string) bool {
 	if table_file == "" {
-		table_file = "mission.xml"
+		table_file = "Mission.xml"
 	}
 	file_path := server_config.GetGameDataPathFile(table_file)
 	content, err := ioutil.ReadFile(file_path)
