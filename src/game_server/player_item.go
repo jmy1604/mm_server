@@ -608,7 +608,7 @@ func (this *Player) AddItemResource(cid, num int32, reason, mod string) int32 {
 		}
 	default:
 		{
-			if this.AddItem(cid, num, reason, mod, false) == nil {
+			if this.AddItem(cid, num, reason, mod, true) == nil {
 				return -1
 			}
 		}

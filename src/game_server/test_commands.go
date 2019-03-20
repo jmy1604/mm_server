@@ -238,7 +238,7 @@ func add_cat_cmd(p *Player, args []string) int32 {
 	}
 
 	for i := 0; i < num; i++ {
-		p.AddCat(int32(cat_cid), "add_cat_cmd", "test_command", false)
+		p.AddCat(int32(cat_cid), "add_cat_cmd", "test_command", true)
 	}
 
 	p.item_cat_building_change_info.send_cats_update(p)

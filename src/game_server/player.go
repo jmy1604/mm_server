@@ -887,14 +887,13 @@ func (this *Player) send_areas() {
 
 func (this *Player) send_data_on_login(new_player bool) {
 	this.send_info()
-	if !new_player {
-		this.send_items()
-		this.send_cats()
-	}
+	this.send_items()
+	this.send_cats()
 	this.send_buildings()
 	this.send_depot_buildings()
 	this.send_areas()
 	this.send_stage_info()
+	this.SyncPlayerGuideData()
 }
 
 func C2SGetInfoHandler(p *Player, msg_data []byte) int32 {
