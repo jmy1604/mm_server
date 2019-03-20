@@ -360,14 +360,28 @@ func (this *Player) send_enter_game(acc string, id int32) {
 
 func (this *Player) send_info() {
 	response := &msg_client_message.S2CPlayerInfoResponse{
-		Level:    this.db.Info.GetLvl(),
-		Exp:      this.db.Info.GetExp(),
-		Gold:     this.db.Info.GetGold(),
-		Diamond:  this.db.Info.GetDiamond(),
-		Head:     this.db.Info.GetHead(),
-		VipLevel: this.db.Info.GetVipLvl(),
-		Name:     this.db.GetName(),
-		SysTime:  int32(time.Now().Unix()),
+		Level:                 this.db.Info.GetLvl(),
+		Exp:                   this.db.Info.GetExp(),
+		Gold:                  this.db.Info.GetGold(),
+		Diamond:               this.db.Info.GetDiamond(),
+		Head:                  this.db.Info.GetHead(),
+		VipLevel:              this.db.Info.GetVipLvl(),
+		Name:                  this.db.GetName(),
+		SysTime:               int32(time.Now().Unix()),
+		Star:                  this.db.Info.GetTotalStars(),
+		CurMaxStage:           this.db.Info.GetCurMaxStage(),
+		CurUnlockMaxStage:     this.db.Info.GetMaxUnlockStage(),
+		CharmVal:              this.db.Info.GetCharmVal(),
+		CatFood:               this.db.Info.GetCatFood(),
+		Zan:                   this.db.Info.GetZan(),
+		FriendPoints:          this.db.Info.GetFriendPoints(),
+		SoulStone:             this.db.Info.GetSoulStone(),
+		Spirit:                this.CalcSpirit(),
+		CharmMetal:            this.db.Info.GetCharmMedal(),
+		HistoricalMaxStar:     this.db.Stages.GetTotalTopStar(),
+		ChangeNameNum:         this.db.Info.GetChangeNameCount(),
+		ChangeNameCostDiamond: global_config.ChangeNameCostDiamond,
+		ChangeNameFreeNum:     global_config.ChangeNameFreeNum,
 	}
 	this.Send(uint16(msg_client_message.S2CPlayerInfoResponse_ProtoID), response)
 	log.Trace("Player[%v] info: %v", this.Id, response)
@@ -871,10 +885,12 @@ func (this *Player) send_areas() {
 	this.Send(uint16(msg_client_message.S2CGetAreasInfos_ProtoID), m)
 }
 
-func (this *Player) send_data_on_login() {
+func (this *Player) send_data_on_login(new_player bool) {
 	this.send_info()
-	this.send_items()
-	this.send_cats()
+	if !new_player {
+		this.send_items()
+		this.send_cats()
+	}
 	this.send_buildings()
 	this.send_depot_buildings()
 	this.send_areas()

@@ -50,6 +50,24 @@ func add_exp_cmd(p *Player, args []string) int32 {
 	return 1
 }
 
+func set_level_cmd(p *Player, args []string) int32 {
+	if len(args) < 1 {
+		log.Error("参数数量[%v]不够", len(args))
+		return -1
+	}
+
+	var level int
+	var err error
+	level, err = strconv.Atoi(args[0])
+	if err != nil {
+		return -1
+	}
+
+	p.db.SetLevel(int32(level))
+	p.send_info()
+	return 1
+}
+
 func add_item_cmd(p *Player, args []string) int32 {
 	if len(args) < 2 {
 		log.Error("参数数量[%v]不够", len(args))
@@ -1366,7 +1384,7 @@ func finish_stage_cmd(p *Player, args []string) int32 {
 		return -1
 	}
 
-	/*var result, stage_id int
+	var result, stage_id int
 	var err error
 	result, err = strconv.Atoi(args[0])
 	if err != nil {
@@ -1393,7 +1411,7 @@ func finish_stage_cmd(p *Player, args []string) int32 {
 	d.stage_id = int32(stage_id)
 	p.CheckBeginStage(&d)
 
-	return p.stage_pass(int32(result), int32(stage_id), int32(99999), int32(stars), make([]*msg_client_message.ItemInfo, 0), true)*/
+	return p.stage_pass(int32(result), int32(stage_id), int32(99999), int32(stars), make([]*msg_client_message.ItemInfo, 0), true)
 
 	return 1
 }
@@ -2054,30 +2072,12 @@ func pull_personal_space_leave_msg_comment_cmd(p *Player, args []string) int32 {
 	return p.personal_space_pull_leave_msg_comment(int32(player_id), int32(pic_id), int32(msg_id), int32(start_index), int32(comment_num))
 }*/
 
-func reset_day_sign_reward(p *Player, args []string) int32 {
-	/*if nil == p {
-		log.Error("reset_day_sign_reward p nil !")
-		return -1
-	}
-
-	cur_month_day := int32(time.Now().Day())
-	p.db.Activitys.SetStates0(2001, PLAYER_ACTIVITY_STATE_FINISHED)
-	p.db.Activitys.RemoveValsVal(2001, cur_month_day)
-
-	res2cil := p.db.Activitys.FillAllClientMsg(p.db.Info.GetVipCardEndDay() - timer.GetDayFrom1970WithCfg(0))
-	if nil != res2cil {
-		p.Send(res2cil)
-		return 1
-	}*/
-
-	return 1
-}
-
 type test_cmd_func func(*Player, []string) int32
 
 var test_cmd2funcs = map[string]test_cmd_func{
 	"player_info":         player_info_cmd,
 	"add_exp":             add_exp_cmd,
+	"set_level":           set_level_cmd,
 	"add_item":            add_item_cmd,
 	"add_all_item":        add_all_item_cmd,
 	"use_item":            use_item_cmd,
@@ -2178,7 +2178,6 @@ var test_cmd2funcs = map[string]test_cmd_func{
 	"send_ps_msg_comment":   send_personal_space_leave_msg_comment_cmd,
 	"del_ps_msg_comment":    delete_personal_space_leave_msg_comment_cmd,
 	"pull_ps_msg_comment":   pull_personal_space_leave_msg_comment_cmd,*/
-	"reset_day_sign_reward": reset_day_sign_reward,
 }
 
 func C2STestCommandHandler(p *Player, msg_data []byte) int32 {

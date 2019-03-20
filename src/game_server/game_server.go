@@ -62,6 +62,8 @@ func (this *GameServer) Init() (ok bool) {
 	// 公告跑马灯
 	anouncement_mgr.Init()
 
+	stage_pass_mgr.Init()
+
 	this.initialized = true
 
 	ok = true

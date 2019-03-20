@@ -404,9 +404,9 @@ func C2SEnterGameRequestHandler(msg_data []byte) (int32, *Player) {
 		pdb.SetAccount(req.GetAcc())
 		//pdb.SetCurrReplyMsgNum(0)
 		p = new_player(player_id, uid, req.GetAcc(), "", pdb)
-		p.OnCreate()
 		player_mgr.Add2IdMap(p)
 		player_mgr.Add2UidMap(uid, p)
+		p.OnCreate()
 		is_new = true
 		log.Info("player_db_to_msg new player(%d) !", player_id)
 	} else {
@@ -417,17 +417,9 @@ func C2SEnterGameRequestHandler(msg_data []byte) (int32, *Player) {
 		}
 	}
 
-	p.send_enter_game(req.Acc, p.Id)
 	p.OnLogin()
-	if !is_new {
-		//p.send_items()
-		//p.send_roles()
-	} else {
-		//p.check_and_send_items_change()
-		//p.check_and_send_roles_change()
-	}
-	//p.send_info()
-	p.send_data_on_login()
+	p.send_enter_game(req.Acc, p.Id)
+	p.send_data_on_login(is_new)
 	p.notify_enter_complete()
 
 	log.Info("PlayerEnterGameHandler account[%s]", req.GetAcc())
