@@ -878,6 +878,7 @@ func (this *Player) send_data_on_login() {
 	this.send_buildings()
 	this.send_depot_buildings()
 	this.send_areas()
+	this.send_stage_info()
 }
 
 func C2SGetInfoHandler(p *Player, msg_data []byte) int32 {
