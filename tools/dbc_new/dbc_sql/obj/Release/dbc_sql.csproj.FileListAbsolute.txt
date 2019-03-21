@@ -4,3 +4,9 @@ D:\work\go_projects\src\ih_server\tools\dbc_new\dbc_sql\bin\Release\dbc.pdb
 D:\work\go_projects\src\ih_server\tools\dbc_new\dbc_sql\obj\Release\dbc.exe
 D:\work\go_projects\src\ih_server\tools\dbc_new\dbc_sql\obj\Release\dbc.pdb
 D:\work\go_projects\src\ih_server\tools\dbc_new\dbc_sql\obj\Release\dbc_sql.csprojResolveAssemblyReference.cache
+D:\work\go_projects\src\mm_server\tools\dbc_new\dbc_sql\bin\Release\dbc.exe.config
+D:\work\go_projects\src\mm_server\tools\dbc_new\dbc_sql\obj\Release\dbc.exe
+D:\work\go_projects\src\mm_server\tools\dbc_new\dbc_sql\obj\Release\dbc.pdb
+D:\work\go_projects\src\mm_server\tools\dbc_new\dbc_sql\bin\Release\dbc.exe
+D:\work\go_projects\src\mm_server\tools\dbc_new\dbc_sql\bin\Release\dbc.pdb
+D:\work\go_projects\src\mm_server\tools\dbc_new\dbc_sql\obj\Release\dbc_sql.csprojResolveAssemblyReference.cache

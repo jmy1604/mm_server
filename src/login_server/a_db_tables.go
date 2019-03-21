@@ -576,7 +576,7 @@ func (this *dbAccountTable) check_create_table() (err error) {
 	}
 	_, hasUniqueId := columns["UniqueId"]
 	if !hasUniqueId {
-		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN UniqueId varchar(45) DEFAULT ''")
+		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN UniqueId varchar(256) DEFAULT ''")
 		if err != nil {
 			log.Error("ADD COLUMN UniqueId failed")
 			return
@@ -584,7 +584,7 @@ func (this *dbAccountTable) check_create_table() (err error) {
 	}
 	_, hasPassword := columns["Password"]
 	if !hasPassword {
-		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN Password varchar(45) DEFAULT ''")
+		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN Password varchar(256) DEFAULT ''")
 		if err != nil {
 			log.Error("ADD COLUMN Password failed")
 			return
@@ -600,7 +600,7 @@ func (this *dbAccountTable) check_create_table() (err error) {
 	}
 	_, hasChannel := columns["Channel"]
 	if !hasChannel {
-		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN Channel varchar(45) DEFAULT ''")
+		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN Channel varchar(256) DEFAULT ''")
 		if err != nil {
 			log.Error("ADD COLUMN Channel failed")
 			return
@@ -608,7 +608,7 @@ func (this *dbAccountTable) check_create_table() (err error) {
 	}
 	_, hasToken := columns["Token"]
 	if !hasToken {
-		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN Token varchar(45) DEFAULT ''")
+		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN Token varchar(256) DEFAULT ''")
 		if err != nil {
 			log.Error("ADD COLUMN Token failed")
 			return
@@ -632,7 +632,7 @@ func (this *dbAccountTable) check_create_table() (err error) {
 	}
 	_, hasBindNewAccount := columns["BindNewAccount"]
 	if !hasBindNewAccount {
-		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN BindNewAccount varchar(45) DEFAULT '0'")
+		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN BindNewAccount varchar(256) DEFAULT '0'")
 		if err != nil {
 			log.Error("ADD COLUMN BindNewAccount failed")
 			return
@@ -640,7 +640,7 @@ func (this *dbAccountTable) check_create_table() (err error) {
 	}
 	_, hasOldAccount := columns["OldAccount"]
 	if !hasOldAccount {
-		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN OldAccount varchar(45) DEFAULT '0'")
+		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN OldAccount varchar(256) DEFAULT '0'")
 		if err != nil {
 			log.Error("ADD COLUMN OldAccount failed")
 			return
@@ -1115,7 +1115,7 @@ func (this *dbBanPlayerTable) check_create_table() (err error) {
 	}
 	_, hasAccount := columns["Account"]
 	if !hasAccount {
-		_, err = this.m_dbc.Exec("ALTER TABLE BanPlayers ADD COLUMN Account varchar(45) DEFAULT ''")
+		_, err = this.m_dbc.Exec("ALTER TABLE BanPlayers ADD COLUMN Account varchar(256) DEFAULT ''")
 		if err != nil {
 			log.Error("ADD COLUMN Account failed")
 			return
@@ -1139,7 +1139,7 @@ func (this *dbBanPlayerTable) check_create_table() (err error) {
 	}
 	_, hasStartTimeStr := columns["StartTimeStr"]
 	if !hasStartTimeStr {
-		_, err = this.m_dbc.Exec("ALTER TABLE BanPlayers ADD COLUMN StartTimeStr varchar(45) DEFAULT ''")
+		_, err = this.m_dbc.Exec("ALTER TABLE BanPlayers ADD COLUMN StartTimeStr varchar(256) DEFAULT ''")
 		if err != nil {
 			log.Error("ADD COLUMN StartTimeStr failed")
 			return

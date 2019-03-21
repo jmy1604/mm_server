@@ -44,15 +44,6 @@ func (this *dbGlobalRow) GetNextPlayerId() int32 {
 	return new_id
 }
 
-func (this *dbGlobalRow) GetNextGuildId() int32 {
-	curr_id := atomic.AddInt32(&this.m_CurrentGuildId, 1)
-	new_id := share_data.GenerateGuildId(config.ServerId, curr_id) //((config.ServerId << 20) & 0x7ff00000) | curr_id
-	this.m_lock.UnSafeLock("dbGlobalRow.GetNextGuildId")
-	this.m_CurrentGuildId_changed = true
-	this.m_lock.UnSafeUnlock()
-	return new_id
-}
-
 func (this *dbPlayerInfoColumn) SubGold(v int32) int32 {
 	this.m_row.m_lock.UnSafeLock("dbPlayerInfoColumn.SubGold")
 	defer this.m_row.m_lock.UnSafeUnlock()
