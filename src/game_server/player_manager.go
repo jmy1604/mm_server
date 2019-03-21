@@ -190,7 +190,7 @@ func (this *PlayerManager) RegMsgHandler() {
 	// 农田
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetCrops_ProtoID), C2SGetCropsHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlantCrop_ProtoID), C2SPlantCropHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SHarvestCrops_ProtoID), C2SHarvestCropHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SHarvestCrop_ProtoID), C2SHarvestCropHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCropSpeedup_ProtoID), C2SSpeedupCropHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SHarvestCrops_ProtoID), C2SHarvestCropsHandler)
 
