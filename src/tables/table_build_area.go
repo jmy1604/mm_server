@@ -102,42 +102,42 @@ func (this *BuildAreaMgr) LoadArea(area_config string) bool {
 	this.AreaXY2AreaId = make(map[int32]int32)
 	tmp_len := int32(len(tmp_cfg.Areas))
 	//this.InitAreaIds = make([]int32, 0, tmp_len)
-	var tmp_arena *SingleBuildArea
+	var tmp_area *SingleBuildArea
 	var tmp_x, tmp_y int32
 	var tmp_xy *AreaXY
-	var aren_xy int32
+	var area_xy int32
 	for idx := int32(0); idx < tmp_len; idx++ {
-		tmp_arena = tmp_cfg.Areas[idx]
-		if nil == tmp_arena {
+		tmp_area = tmp_cfg.Areas[idx]
+		if nil == tmp_area {
 			continue
 		}
 
-		tmp_arena.ArenaXYsMap = make(map[int32]bool)
+		tmp_area.ArenaXYsMap = make(map[int32]bool)
 
 		// 范围内区域
-		for tmp_x = int32(0); tmp_x <= tmp_arena.GridRect.Z; tmp_x++ {
-			for tmp_y = int32(0); tmp_y <= tmp_arena.GridRect.W; tmp_y++ {
-				aren_xy = ((tmp_x + tmp_arena.GridRect.X) << 16) | ((tmp_y + tmp_arena.GridRect.Y) & 0x0000FFFF)
-				tmp_arena.ArenaXYsMap[aren_xy] = true
-				this.AreaXY2Type[aren_xy] = tmp_arena.Geography
-				this.AreaXY2AreaId[aren_xy] = tmp_arena.Index
+		for tmp_x = int32(0); tmp_x <= tmp_area.GridRect.Z; tmp_x++ {
+			for tmp_y = int32(0); tmp_y <= tmp_area.GridRect.W; tmp_y++ {
+				area_xy = ((tmp_x + tmp_area.GridRect.X) << 16) | ((tmp_y + tmp_area.GridRect.Y) & 0x0000FFFF)
+				tmp_area.ArenaXYsMap[area_xy] = true
+				this.AreaXY2Type[area_xy] = tmp_area.Geography
+				this.AreaXY2AreaId[area_xy] = tmp_area.Index
 			}
 		}
 
 		// 增加区域
-		for _, tmp_xy = range tmp_arena.AddGrids {
-			aren_xy = ((tmp_xy.X + tmp_arena.GridRect.X) << 16) | ((tmp_xy.Y + tmp_arena.GridRect.Y) & 0x0000FFFF)
-			tmp_arena.ArenaXYsMap[aren_xy] = true
-			this.AreaXY2Type[aren_xy] = tmp_arena.Geography
-			this.AreaXY2AreaId[aren_xy] = tmp_arena.Index
+		for _, tmp_xy = range tmp_area.AddGrids {
+			area_xy = ((tmp_xy.X + tmp_area.GridRect.X) << 16) | ((tmp_xy.Y + tmp_area.GridRect.Y) & 0x0000FFFF)
+			tmp_area.ArenaXYsMap[area_xy] = true
+			this.AreaXY2Type[area_xy] = tmp_area.Geography
+			this.AreaXY2AreaId[area_xy] = tmp_area.Index
 		}
 
 		// 删除区域
-		for _, tmp_xy = range tmp_arena.DelGrids {
-			aren_xy = ((tmp_xy.X + tmp_arena.GridRect.X) << 16) | ((tmp_xy.Y + tmp_arena.GridRect.Y) & 0x0000FFFF)
-			tmp_arena.ArenaXYsMap[aren_xy] = false
-			delete(this.AreaXY2Type, aren_xy)
-			delete(this.AreaXY2AreaId, aren_xy)
+		for _, tmp_xy = range tmp_area.DelGrids {
+			area_xy = ((tmp_xy.X + tmp_area.GridRect.X) << 16) | ((tmp_xy.Y + tmp_area.GridRect.Y) & 0x0000FFFF)
+			tmp_area.ArenaXYsMap[area_xy] = false
+			delete(this.AreaXY2Type, area_xy)
+			delete(this.AreaXY2AreaId, area_xy)
 		}
 
 		/*
@@ -158,9 +158,9 @@ func (this *BuildAreaMgr) LoadArea(area_config string) bool {
 			}
 		*/
 
-		tmp_arena.DefMapBuildings = make(map[int32]*DefaultMapBuilding)
+		tmp_area.DefMapBuildings = make(map[int32]*DefaultMapBuilding)
 
-		this.Idx2area[tmp_arena.Index] = tmp_arena
+		this.Idx2area[tmp_area.Index] = tmp_area
 	}
 
 	//log.Info("初始区域 %v", this.InitAreaIds)

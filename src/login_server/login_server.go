@@ -642,12 +642,6 @@ func login_handler(account, password, channel string) (err_code int32, resp_data
 		}
 	}
 
-	now_time := time.Now()
-	last_time := acc_row.GetLastGetAccountPlayerListTime()
-	if int32(now_time.Unix())-last_time >= 5*60 {
-		acc_row.SetLastGetAccountPlayerListTime(int32(now_time.Unix()))
-	}
-
 	ban_row := dbc.BanPlayers.GetRow(acc_row.GetUniqueId())
 	if ban_row != nil && ban_row.GetStartTime() > 0 {
 		err_code = int32(msg_client_message.E_ERR_ACCOUNT_BE_BANNED)

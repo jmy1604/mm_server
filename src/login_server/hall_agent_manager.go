@@ -283,10 +283,10 @@ func (this *GameAgentManager) GetAgent(c *server_conn.ServerConn) (agent *GameAg
 	return
 }
 
-func (this *GameAgentManager) GetAgentByID(hall_id int32) (agent *GameAgent) {
+func (this *GameAgentManager) GetAgentByID(game_server_id int32) (agent *GameAgent) {
 	this.agents_lock.RLock()
 	defer this.agents_lock.RUnlock()
-	a, o := this.id2agents[hall_id]
+	a, o := this.id2agents[game_server_id]
 	if !o {
 		return
 	}

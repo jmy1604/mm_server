@@ -75,18 +75,6 @@
 					"Fields":[]
 				},
 				{
-					"ColumnName":"LastGetAccountPlayerListTime",
-					"DBColumnName":"LastGetAccountPlayerListTime",
-					"InUse":true,
-					"Simple":true,
-					"SimpleType":"int32",
-					"Preload":true,
-					"Map":false,
-					"AutoIndex":false,
-					"DefaultValue":0,
-					"Fields":[]
-				},
-				{
 					"ColumnName":"ServerId",
 					"DBColumnName":"ServerId",
 					"InUse":true,
