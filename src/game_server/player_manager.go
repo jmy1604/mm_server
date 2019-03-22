@@ -288,6 +288,10 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChgBuildingDir_ProtoID), C2SChgBuildingDirHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SVisitPlayer_ProtoID), C2SVisitPlayerHandler)
 
+	// 地板
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSurfaceDataRequest_ProtoID), C2SSurfaceDataHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSurfaceUpdateRequest_ProtoID), C2SSurfaceUpdateHandler)
+
 	// 探索
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetAllExpedition_ProtoID), C2SGetAllExpeditionHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChgExpedition_ProtoID), C2SChgExpeditionHandler)

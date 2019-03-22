@@ -1312,8 +1312,33 @@ message S2CUnlockArea {
 	enum EProtocol { None = 0; ProtoID = 10913; }
 }
 
+// ----------------------------------- 地板 -----------------------------------
+
+// 请求地板数据
+message C2SSurfaceDataRequest {
+	enum EProtocol { None = 0; ProtoID = 10914; }
+}
+
+// 返回地板数据
+message S2CSurfaceDataResponse {
+	repeated BuildingInfo Data				= 1;
+	enum EProtocol { None = 0; ProtoID = 10915; }
+}
+
+// 请求更新地板数据
+message C2SSurfaceUpdateRequest {
+	repeated BuildingInfo UpdateData		= 1; // 更新的地板
+	repeated BuildingInfo RemoveData		= 2; // 减少的地板
+	enum EProtocol { None = 0; ProtoID = 10916; }
+}
+
+// 返回更新结果
+message S2CSurfaceUpdateResponse {
+	enum EProtocol { None = 0; ProtoID = 10917; }
+}
+
 // ----------------------------------------------------------------------------
-// ------------------------------------ 抽奖 ----------------------------------
+// ----------------------------------- 抽奖 -----------------------------------
 
 // 抽奖
 message C2SDraw {

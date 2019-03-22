@@ -943,6 +943,19 @@
 					"Fields":[
 						{"Type":"int32","Index":1,"Name":"CurrId"}
 					]
+				},
+				{
+					"ColumnName":"Surface",
+					"DBColumnName":"Surface",
+					"InUse":true,
+					"Simple":false,
+					"SimpleType":"",
+					"Preload":true,
+					"Map":false,
+					"AutoIndex":false,
+					"Fields":[
+						{"Type":"bytes","Index":1,"Name":"Data"}
+					]
 				}
 			]
 		},

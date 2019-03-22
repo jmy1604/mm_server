@@ -160,8 +160,8 @@ func (this *DBC) Loop() {
 		}
 		log.Trace("db存数据花费时长: %v", time.Now().Sub(begin).Nanoseconds())
 		
-			now_time_hour := int32(time.Now().Hour())
-			if now_time_hour-24 >= this.m_db_last_copy_time {
+			now_time := time.Now()
+			if int32(now_time.Unix()) - 24*3600 >= this.m_db_last_copy_time {
 				args := []string {
 					fmt.Sprintf("-h%v", this.m_db_addr),
 					fmt.Sprintf("-u%v", this.m_db_account),
@@ -190,7 +190,7 @@ func (this *DBC) Loop() {
 				} else {
 					log.Error("数据库备份失败！")
 				}
-				this.m_db_last_copy_time = now_time_hour
+				this.m_db_last_copy_time = int32(now_time.Unix())
 			}
 		
 		if this.m_quit {
@@ -305,18 +305,6 @@ func (this *dbAccountRow)SetToken(v string){
 	this.m_Token_changed=true
 	return
 }
-func (this *dbAccountRow)GetLastGetAccountPlayerListTime( )(r int32 ){
-	this.m_lock.UnSafeRLock("dbAccountRow.GetdbAccountLastGetAccountPlayerListTimeColumn")
-	defer this.m_lock.UnSafeRUnlock()
-	return int32(this.m_LastGetAccountPlayerListTime)
-}
-func (this *dbAccountRow)SetLastGetAccountPlayerListTime(v int32){
-	this.m_lock.UnSafeLock("dbAccountRow.SetdbAccountLastGetAccountPlayerListTimeColumn")
-	defer this.m_lock.UnSafeUnlock()
-	this.m_LastGetAccountPlayerListTime=int32(v)
-	this.m_LastGetAccountPlayerListTime_changed=true
-	return
-}
 func (this *dbAccountRow)GetServerId( )(r int32 ){
 	this.m_lock.UnSafeRLock("dbAccountRow.GetdbAccountServerIdColumn")
 	defer this.m_lock.UnSafeRUnlock()
@@ -373,8 +361,6 @@ type dbAccountRow struct {
 	m_Channel string
 	m_Token_changed bool
 	m_Token string
-	m_LastGetAccountPlayerListTime_changed bool
-	m_LastGetAccountPlayerListTime int32
 	m_ServerId_changed bool
 	m_ServerId int32
 	m_BindNewAccount_changed bool
@@ -392,7 +378,6 @@ func new_dbAccountRow(table *dbAccountTable, AccountId string) (r *dbAccountRow)
 	this.m_RegisterTime_changed=true
 	this.m_Channel_changed=true
 	this.m_Token_changed=true
-	this.m_LastGetAccountPlayerListTime_changed=true
 	this.m_ServerId_changed=true
 	this.m_BindNewAccount_changed=true
 	this.m_OldAccount_changed=true
@@ -405,23 +390,22 @@ func (this *dbAccountRow) save_data(release bool) (err error, released bool, sta
 	this.m_lock.UnSafeLock("dbAccountRow.save_data")
 	defer this.m_lock.UnSafeUnlock()
 	if this.m_new {
-		db_args:=new_db_args(10)
+		db_args:=new_db_args(9)
 		db_args.Push(this.m_AccountId)
 		db_args.Push(this.m_UniqueId)
 		db_args.Push(this.m_Password)
 		db_args.Push(this.m_RegisterTime)
 		db_args.Push(this.m_Channel)
 		db_args.Push(this.m_Token)
-		db_args.Push(this.m_LastGetAccountPlayerListTime)
 		db_args.Push(this.m_ServerId)
 		db_args.Push(this.m_BindNewAccount)
 		db_args.Push(this.m_OldAccount)
 		args=db_args.GetArgs()
 		state = 1
 	} else {
-		if this.m_UniqueId_changed||this.m_Password_changed||this.m_RegisterTime_changed||this.m_Channel_changed||this.m_Token_changed||this.m_LastGetAccountPlayerListTime_changed||this.m_ServerId_changed||this.m_BindNewAccount_changed||this.m_OldAccount_changed{
+		if this.m_UniqueId_changed||this.m_Password_changed||this.m_RegisterTime_changed||this.m_Channel_changed||this.m_Token_changed||this.m_ServerId_changed||this.m_BindNewAccount_changed||this.m_OldAccount_changed{
 			update_string = "UPDATE Accounts SET "
-			db_args:=new_db_args(10)
+			db_args:=new_db_args(9)
 			if this.m_UniqueId_changed{
 				update_string+="UniqueId=?,"
 				db_args.Push(this.m_UniqueId)
@@ -441,10 +425,6 @@ func (this *dbAccountRow) save_data(release bool) (err error, released bool, sta
 			if this.m_Token_changed{
 				update_string+="Token=?,"
 				db_args.Push(this.m_Token)
-			}
-			if this.m_LastGetAccountPlayerListTime_changed{
-				update_string+="LastGetAccountPlayerListTime=?,"
-				db_args.Push(this.m_LastGetAccountPlayerListTime)
 			}
 			if this.m_ServerId_changed{
 				update_string+="ServerId=?,"
@@ -471,7 +451,6 @@ func (this *dbAccountRow) save_data(release bool) (err error, released bool, sta
 	this.m_RegisterTime_changed = false
 	this.m_Channel_changed = false
 	this.m_Token_changed = false
-	this.m_LastGetAccountPlayerListTime_changed = false
 	this.m_ServerId_changed = false
 	this.m_BindNewAccount_changed = false
 	this.m_OldAccount_changed = false
@@ -614,14 +593,6 @@ func (this *dbAccountTable) check_create_table() (err error) {
 			return
 		}
 	}
-	_, hasLastGetAccountPlayerListTime := columns["LastGetAccountPlayerListTime"]
-	if !hasLastGetAccountPlayerListTime {
-		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN LastGetAccountPlayerListTime int(11) DEFAULT 0")
-		if err != nil {
-			log.Error("ADD COLUMN LastGetAccountPlayerListTime failed")
-			return
-		}
-	}
 	_, hasServerId := columns["ServerId"]
 	if !hasServerId {
 		_, err = this.m_dbc.Exec("ALTER TABLE Accounts ADD COLUMN ServerId int(11) DEFAULT 0")
@@ -649,7 +620,7 @@ func (this *dbAccountTable) check_create_table() (err error) {
 	return
 }
 func (this *dbAccountTable) prepare_preload_select_stmt() (err error) {
-	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT AccountId,UniqueId,Password,RegisterTime,Channel,Token,LastGetAccountPlayerListTime,ServerId,BindNewAccount,OldAccount FROM Accounts")
+	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT AccountId,UniqueId,Password,RegisterTime,Channel,Token,ServerId,BindNewAccount,OldAccount FROM Accounts")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -657,7 +628,7 @@ func (this *dbAccountTable) prepare_preload_select_stmt() (err error) {
 	return
 }
 func (this *dbAccountTable) prepare_save_insert_stmt()(err error){
-	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Accounts (AccountId,UniqueId,Password,RegisterTime,Channel,Token,LastGetAccountPlayerListTime,ServerId,BindNewAccount,OldAccount) VALUES (?,?,?,?,?,?,?,?,?,?)")
+	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Accounts (AccountId,UniqueId,Password,RegisterTime,Channel,Token,ServerId,BindNewAccount,OldAccount) VALUES (?,?,?,?,?,?,?,?,?)")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -707,12 +678,11 @@ func (this *dbAccountTable) Preload() (err error) {
 	var dRegisterTime int32
 	var dChannel string
 	var dToken string
-	var dLastGetAccountPlayerListTime int32
 	var dServerId int32
 	var dBindNewAccount string
 	var dOldAccount string
 	for r.Next() {
-		err = r.Scan(&AccountId,&dUniqueId,&dPassword,&dRegisterTime,&dChannel,&dToken,&dLastGetAccountPlayerListTime,&dServerId,&dBindNewAccount,&dOldAccount)
+		err = r.Scan(&AccountId,&dUniqueId,&dPassword,&dRegisterTime,&dChannel,&dToken,&dServerId,&dBindNewAccount,&dOldAccount)
 		if err != nil {
 			log.Error("Scan err[%v]", err.Error())
 			return
@@ -723,7 +693,6 @@ func (this *dbAccountTable) Preload() (err error) {
 		row.m_RegisterTime=dRegisterTime
 		row.m_Channel=dChannel
 		row.m_Token=dToken
-		row.m_LastGetAccountPlayerListTime=dLastGetAccountPlayerListTime
 		row.m_ServerId=dServerId
 		row.m_BindNewAccount=dBindNewAccount
 		row.m_OldAccount=dOldAccount
@@ -732,7 +701,6 @@ func (this *dbAccountTable) Preload() (err error) {
 		row.m_RegisterTime_changed=false
 		row.m_Channel_changed=false
 		row.m_Token_changed=false
-		row.m_LastGetAccountPlayerListTime_changed=false
 		row.m_ServerId_changed=false
 		row.m_BindNewAccount_changed=false
 		row.m_OldAccount_changed=false

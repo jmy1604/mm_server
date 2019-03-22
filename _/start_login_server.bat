@@ -2,7 +2,7 @@ cd ..
 cd bin
 start login_server.exe
 cd ..
-cd src/ih_server/_
+cd src/mm_server/_
 
 exit
 

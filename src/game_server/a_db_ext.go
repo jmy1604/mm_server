@@ -30,6 +30,8 @@ func (this *DBC) on_preload() (err error) {
 		if p.db.GetLevel() == 0 {
 			p.db.SetLevel(p.db.Info.GetLvl())
 		}
+
+		p.load_surface_data()
 	}
 
 	return

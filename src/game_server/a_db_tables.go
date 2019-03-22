@@ -160,8 +160,8 @@ func (this *DBC) Loop() {
 		}
 		log.Trace("db存数据花费时长: %vms", time.Now().Sub(begin).Nanoseconds()/1000000)
 		
-		now_time_hour := int32(time.Now().Hour())
-		if now_time_hour-24 >= this.m_db_last_copy_time {
+		now_time := time.Now()
+		if int32(now_time.Unix()) - 24*3600 >= this.m_db_last_copy_time {
 			args := []string {
 				fmt.Sprintf("-h%v", this.m_db_addr),
 				fmt.Sprintf("-u%v", this.m_db_account),
@@ -190,7 +190,7 @@ func (this *DBC) Loop() {
 			} else {
 				log.Error("数据库备份失败！")
 			}
-			this.m_db_last_copy_time = now_time_hour
+			this.m_db_last_copy_time = int32(now_time.Unix())
 		}
 		
 		if this.m_quit {
@@ -2363,6 +2363,28 @@ func (this* dbPlayerSysMailData)to_pb()(pb *db.PlayerSysMail){
 }
 func (this* dbPlayerSysMailData)clone_to(d *dbPlayerSysMailData){
 	d.CurrId = this.CurrId
+	return
+}
+type dbPlayerSurfaceData struct{
+	Data []byte
+}
+func (this* dbPlayerSurfaceData)from_pb(pb *db.PlayerSurface){
+	if pb == nil {
+		return
+	}
+	this.Data = pb.GetData()
+	return
+}
+func (this* dbPlayerSurfaceData)to_pb()(pb *db.PlayerSurface){
+	pb = &db.PlayerSurface{}
+	pb.Data = this.Data
+	return
+}
+func (this* dbPlayerSurfaceData)clone_to(d *dbPlayerSurfaceData){
+	d.Data = make([]byte, len(this.Data))
+	for _ii, _vv := range this.Data {
+		d.Data[_ii]=_vv
+	}
 	return
 }
 type dbSysMailAttachedItemsData struct{
@@ -12938,6 +12960,72 @@ func (this *dbPlayerSysMailColumn)SetCurrId(v int32){
 	this.m_changed = true
 	return
 }
+type dbPlayerSurfaceColumn struct{
+	m_row *dbPlayerRow
+	m_data *dbPlayerSurfaceData
+	m_changed bool
+}
+func (this *dbPlayerSurfaceColumn)load(data []byte)(err error){
+	if data == nil || len(data) == 0 {
+		this.m_data = &dbPlayerSurfaceData{}
+		this.m_changed = false
+		return nil
+	}
+	pb := &db.PlayerSurface{}
+	err = proto.Unmarshal(data, pb)
+	if err != nil {
+		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_data = &dbPlayerSurfaceData{}
+	this.m_data.from_pb(pb)
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerSurfaceColumn)save( )(data []byte,err error){
+	pb:=this.m_data.to_pb()
+	data, err = proto.Marshal(pb)
+	if err != nil {
+		log.Error("Marshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerSurfaceColumn)Get( )(v *dbPlayerSurfaceData ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerSurfaceColumn.Get")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v=&dbPlayerSurfaceData{}
+	this.m_data.clone_to(v)
+	return
+}
+func (this *dbPlayerSurfaceColumn)Set(v dbPlayerSurfaceData ){
+	this.m_row.m_lock.UnSafeLock("dbPlayerSurfaceColumn.Set")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data=&dbPlayerSurfaceData{}
+	v.clone_to(this.m_data)
+	this.m_changed=true
+	return
+}
+func (this *dbPlayerSurfaceColumn)GetData( )(v []byte){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerSurfaceColumn.GetData")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v = make([]byte, len(this.m_data.Data))
+	for _ii, _vv := range this.m_data.Data {
+		v[_ii]=_vv
+	}
+	return
+}
+func (this *dbPlayerSurfaceColumn)SetData(v []byte){
+	this.m_row.m_lock.UnSafeLock("dbPlayerSurfaceColumn.SetData")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data.Data = make([]byte, len(v))
+	for _ii, _vv := range v {
+		this.m_data.Data[_ii]=_vv
+	}
+	this.m_changed = true
+	return
+}
 type dbPlayerRow struct {
 	m_table *dbPlayerTable
 	m_lock       *RWMutex
@@ -13016,6 +13104,7 @@ type dbPlayerRow struct {
 	GuideData dbPlayerGuideDataColumn
 	ActivityDatas dbPlayerActivityDataColumn
 	SysMail dbPlayerSysMailColumn
+	Surface dbPlayerSurfaceColumn
 }
 func new_dbPlayerRow(table *dbPlayerTable, PlayerId int32) (r *dbPlayerRow) {
 	this := &dbPlayerRow{}
@@ -13143,6 +13232,8 @@ func new_dbPlayerRow(table *dbPlayerTable, PlayerId int32) (r *dbPlayerRow) {
 	this.ActivityDatas.m_data=make(map[int32]*dbPlayerActivityDataData)
 	this.SysMail.m_row=this
 	this.SysMail.m_data=&dbPlayerSysMailData{}
+	this.Surface.m_row=this
+	this.Surface.m_data=&dbPlayerSurfaceData{}
 	return this
 }
 func (this *dbPlayerRow) GetPlayerId() (r int32) {
@@ -13152,7 +13243,7 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.m_lock.UnSafeLock("dbPlayerRow.save_data")
 	defer this.m_lock.UnSafeUnlock()
 	if this.m_new {
-		db_args:=new_db_args(64)
+		db_args:=new_db_args(65)
 		db_args.Push(this.m_PlayerId)
 		db_args.Push(this.m_UniqueId)
 		db_args.Push(this.m_Account)
@@ -13507,12 +13598,18 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 			return db_err,false,0,"",nil
 		}
 		db_args.Push(dSysMail)
+		dSurface,db_err:=this.Surface.save()
+		if db_err!=nil{
+			log.Error("insert save Surface failed")
+			return db_err,false,0,"",nil
+		}
+		db_args.Push(dSurface)
 		args=db_args.GetArgs()
 		state = 1
 	} else {
-		if this.m_UniqueId_changed||this.m_Account_changed||this.m_Name_changed||this.m_Token_changed||this.m_Level_changed||this.Info.m_changed||this.Stages.m_changed||this.ChapterUnLock.m_changed||this.Items.m_changed||this.Areas.m_changed||this.Buildings.m_changed||this.BuildingDepots.m_changed||this.DepotBuildingFormulas.m_changed||this.MakingFormulaBuildings.m_changed||this.Crops.m_changed||this.Cats.m_changed||this.CatHouses.m_changed||this.ShopItems.m_changed||this.ShopLimitedInfos.m_changed||this.Chests.m_changed||this.PayBacks.m_changed||this.Options.m_changed||this.TaskCommon.m_changed||this.Tasks.m_changed||this.FinishedTasks.m_changed||this.DailyTaskAllDailys.m_changed||this.SevenActivitys.m_changed||this.SignInfo.m_changed||this.Guidess.m_changed||this.FriendRelative.m_changed||this.Friends.m_changed||this.FriendRecommends.m_changed||this.FriendAsks.m_changed||this.FriendReqs.m_changed||this.FriendPoints.m_changed||this.FriendChatUnreadIds.m_changed||this.FriendChatUnreadMessages.m_changed||this.FocusPlayers.m_changed||this.BeFocusPlayers.m_changed||this.CustomData.m_changed||this.ChaterOpenRequest.m_changed||this.Expeditions.m_changed||this.HandbookItems.m_changed||this.HeadItems.m_changed||this.Activitys.m_changed||this.SuitAwards.m_changed||this.Zans.m_changed||this.Foster.m_changed||this.FosterCats.m_changed||this.FosterCatOnFriends.m_changed||this.FosterFriendCats.m_changed||this.Chats.m_changed||this.Anouncement.m_changed||this.FirstDrawCards.m_changed||this.TalkForbid.m_changed||this.ServerRewards.m_changed||this.MailCommon.m_changed||this.Mails.m_changed||this.PayCommon.m_changed||this.Pays.m_changed||this.GuideData.m_changed||this.ActivityDatas.m_changed||this.SysMail.m_changed{
+		if this.m_UniqueId_changed||this.m_Account_changed||this.m_Name_changed||this.m_Token_changed||this.m_Level_changed||this.Info.m_changed||this.Stages.m_changed||this.ChapterUnLock.m_changed||this.Items.m_changed||this.Areas.m_changed||this.Buildings.m_changed||this.BuildingDepots.m_changed||this.DepotBuildingFormulas.m_changed||this.MakingFormulaBuildings.m_changed||this.Crops.m_changed||this.Cats.m_changed||this.CatHouses.m_changed||this.ShopItems.m_changed||this.ShopLimitedInfos.m_changed||this.Chests.m_changed||this.PayBacks.m_changed||this.Options.m_changed||this.TaskCommon.m_changed||this.Tasks.m_changed||this.FinishedTasks.m_changed||this.DailyTaskAllDailys.m_changed||this.SevenActivitys.m_changed||this.SignInfo.m_changed||this.Guidess.m_changed||this.FriendRelative.m_changed||this.Friends.m_changed||this.FriendRecommends.m_changed||this.FriendAsks.m_changed||this.FriendReqs.m_changed||this.FriendPoints.m_changed||this.FriendChatUnreadIds.m_changed||this.FriendChatUnreadMessages.m_changed||this.FocusPlayers.m_changed||this.BeFocusPlayers.m_changed||this.CustomData.m_changed||this.ChaterOpenRequest.m_changed||this.Expeditions.m_changed||this.HandbookItems.m_changed||this.HeadItems.m_changed||this.Activitys.m_changed||this.SuitAwards.m_changed||this.Zans.m_changed||this.Foster.m_changed||this.FosterCats.m_changed||this.FosterCatOnFriends.m_changed||this.FosterFriendCats.m_changed||this.Chats.m_changed||this.Anouncement.m_changed||this.FirstDrawCards.m_changed||this.TalkForbid.m_changed||this.ServerRewards.m_changed||this.MailCommon.m_changed||this.Mails.m_changed||this.PayCommon.m_changed||this.Pays.m_changed||this.GuideData.m_changed||this.ActivityDatas.m_changed||this.SysMail.m_changed||this.Surface.m_changed{
 			update_string = "UPDATE Players SET "
-			db_args:=new_db_args(64)
+			db_args:=new_db_args(65)
 			if this.m_UniqueId_changed{
 				update_string+="UniqueId=?,"
 				db_args.Push(this.m_UniqueId)
@@ -14055,6 +14152,15 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 				}
 				db_args.Push(dSysMail)
 			}
+			if this.Surface.m_changed{
+				update_string+="Surface=?,"
+				dSurface,err:=this.Surface.save()
+				if err!=nil{
+					log.Error("update save Surface failed")
+					return err,false,0,"",nil
+				}
+				db_args.Push(dSurface)
+			}
 			update_string = strings.TrimRight(update_string, ", ")
 			update_string+=" WHERE PlayerId=?"
 			db_args.Push(this.m_PlayerId)
@@ -14126,6 +14232,7 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.GuideData.m_changed = false
 	this.ActivityDatas.m_changed = false
 	this.SysMail.m_changed = false
+	this.Surface.m_changed = false
 	if release && this.m_loaded {
 		atomic.AddInt32(&this.m_table.m_gc_n, -1)
 		this.m_loaded = false
@@ -14729,10 +14836,18 @@ func (this *dbPlayerTable) check_create_table() (err error) {
 			return
 		}
 	}
+	_, hasSurface := columns["Surface"]
+	if !hasSurface {
+		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN Surface LONGBLOB")
+		if err != nil {
+			log.Error("ADD COLUMN Surface failed")
+			return
+		}
+	}
 	return
 }
 func (this *dbPlayerTable) prepare_preload_select_stmt() (err error) {
-	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,Guidess,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,FocusPlayers,BeFocusPlayers,CustomData,ChaterOpenRequest,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail FROM Players")
+	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,Guidess,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,FocusPlayers,BeFocusPlayers,CustomData,ChaterOpenRequest,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface FROM Players")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -14740,7 +14855,7 @@ func (this *dbPlayerTable) prepare_preload_select_stmt() (err error) {
 	return
 }
 func (this *dbPlayerTable) prepare_save_insert_stmt()(err error){
-	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Players (PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,Guidess,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,FocusPlayers,BeFocusPlayers,CustomData,ChaterOpenRequest,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Players (PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,Guidess,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,FocusPlayers,BeFocusPlayers,CustomData,ChaterOpenRequest,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -14848,9 +14963,10 @@ func (this *dbPlayerTable) Preload() (err error) {
 	var dGuideData []byte
 	var dActivityDatas []byte
 	var dSysMail []byte
+	var dSurface []byte
 		this.m_preload_max_id = 0
 	for r.Next() {
-		err = r.Scan(&PlayerId,&dUniqueId,&dAccount,&dName,&dToken,&dLevel,&dInfo,&dStages,&dChapterUnLock,&dItems,&dAreas,&dBuildings,&dBuildingDepots,&dDepotBuildingFormulas,&dMakingFormulaBuildings,&dCrops,&dCats,&dCatHouses,&dShopItems,&dShopLimitedInfos,&dChests,&dPayBacks,&dOptions,&dTaskCommon,&dTasks,&dFinishedTasks,&dDailyTaskAllDailys,&dSevenActivitys,&dSignInfo,&dGuidess,&dFriendRelative,&dFriends,&dFriendRecommends,&dFriendAsks,&dFriendReqs,&dFriendPoints,&dFriendChatUnreadIds,&dFriendChatUnreadMessages,&dFocusPlayers,&dBeFocusPlayers,&dCustomData,&dChaterOpenRequest,&dExpeditions,&dHandbookItems,&dHeadItems,&dActivitys,&dSuitAwards,&dZans,&dFoster,&dFosterCats,&dFosterCatOnFriends,&dFosterFriendCats,&dChats,&dAnouncement,&dFirstDrawCards,&dTalkForbid,&dServerRewards,&dMailCommon,&dMails,&dPayCommon,&dPays,&dGuideData,&dActivityDatas,&dSysMail)
+		err = r.Scan(&PlayerId,&dUniqueId,&dAccount,&dName,&dToken,&dLevel,&dInfo,&dStages,&dChapterUnLock,&dItems,&dAreas,&dBuildings,&dBuildingDepots,&dDepotBuildingFormulas,&dMakingFormulaBuildings,&dCrops,&dCats,&dCatHouses,&dShopItems,&dShopLimitedInfos,&dChests,&dPayBacks,&dOptions,&dTaskCommon,&dTasks,&dFinishedTasks,&dDailyTaskAllDailys,&dSevenActivitys,&dSignInfo,&dGuidess,&dFriendRelative,&dFriends,&dFriendRecommends,&dFriendAsks,&dFriendReqs,&dFriendPoints,&dFriendChatUnreadIds,&dFriendChatUnreadMessages,&dFocusPlayers,&dBeFocusPlayers,&dCustomData,&dChaterOpenRequest,&dExpeditions,&dHandbookItems,&dHeadItems,&dActivitys,&dSuitAwards,&dZans,&dFoster,&dFosterCats,&dFosterCatOnFriends,&dFosterFriendCats,&dChats,&dAnouncement,&dFirstDrawCards,&dTalkForbid,&dServerRewards,&dMailCommon,&dMails,&dPayCommon,&dPays,&dGuideData,&dActivityDatas,&dSysMail,&dSurface)
 		if err != nil {
 			log.Error("Scan err[%v]", err.Error())
 			return
@@ -15152,6 +15268,11 @@ func (this *dbPlayerTable) Preload() (err error) {
 		err = row.SysMail.load(dSysMail)
 		if err != nil {
 			log.Error("SysMail %v", PlayerId)
+			return
+		}
+		err = row.Surface.load(dSurface)
+		if err != nil {
+			log.Error("Surface %v", PlayerId)
 			return
 		}
 		row.m_UniqueId_changed=false

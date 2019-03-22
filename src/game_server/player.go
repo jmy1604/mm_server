@@ -79,6 +79,8 @@ type Player struct {
 	new_mail_list_locker sync.RWMutex // 新邮件列表锁
 	new_mail_ids         []int32      // 新邮件ID列表
 	receive_mail_locker  sync.RWMutex // 接受邮件锁
+
+	surface_data map[int32]map[int32]int32 // 地块
 }
 
 func new_player(id int32, uid, account, token string, db *dbPlayerRow) *Player {

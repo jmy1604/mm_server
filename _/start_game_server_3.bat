@@ -1,7 +1,7 @@
 cd ..
 cd bin
-start hall_server.exe -f ../conf/hall_server3.json
+start game_server.exe -f ../conf/game_server3.json
 cd ..
-cd src/ih_server/_
+cd src/mm_server/_
 
 exit

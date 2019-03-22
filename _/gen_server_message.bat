@@ -20,7 +20,7 @@ cd ../_
 if errorlevel 1 goto exit
 
 cd ../proto
-go install ih_server/proto/gen_go/server_message
+go install mm_server/proto/gen_go/server_message
 cd ../_
 if errorlevel 1 goto exit
 
