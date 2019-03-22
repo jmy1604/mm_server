@@ -1117,91 +1117,6 @@ message S2CTaskRewardResponse {
 	enum EProtocol { None = 0; ProtoID = 10504; }
 }
 
-// 日常任务数据
-/*message DialyTaskData {
-	int32 TaskId 							= 1; // 任务Id
-	int32 TaskValue 						= 2; // 任务值
-	int32 TaskState							= 3; // 任务状态 0 未完成 1 完成 2 已领奖
-}
-
-// 客户端向服务器请求日常任务数据
-message C2SGetDialyTaskInfo {
-	enum EProtocol { None = 0; ProtoID = 10500; }
-}
-
-// 服务器向客户端发送任务数据
-message S2CSyncDialyTask {
-	repeated DialyTaskData TaskList 		= 1; // 任务数据
-	enum EProtocol { None = 0; ProtoID = 10501; }
-}
-
-// 服务器向客户端通知任务值变化
-message S2CNotifyTaskValueChg {
-	int32 TaskId 							= 1; // 任务Id
-	int32 TaskValue 						= 2; // 任务值
-	int32 TaskState 						= 3; // 任务状态  0 未完成 1 完成 2 已领奖
-	enum EProtocol { None = 0; ProtoID = 10502; }
-}
-
-// 成就数据
-message AchieveData {
-	int32 AchieveId 						= 1; // 任务Id
-	int32 AchieveValue 						= 2; // 任务数据
-	int32 AchieveState 						= 3; // 任务状态  0 未完成 1 完成 2 已领奖
-	enum EProtocol { None = 0; ProtoID = 10503; }
-}
-
-// 客户端向服务器请求成就数据
-message C2SGetAchieve {
-	enum EProtocol { None = 0; ProtoID = 10504; }
-}
-
-// 服务器向客户端发送成就数据
-message S2CSyncAchieveData {
-	repeated AchieveData AchieveList 		= 1; // 成就任务数据
-	enum EProtocol { None = 0; ProtoID = 10505; }
-}
-
-// 服务器向客户端通知成就值变化
-message S2CNotifyAchieveValueChg {
-	int32 AchieveId 						= 1; // 任务Id
-	int32 AchieveValue 						= 2; // 任务值
-	int32 AchieveState 						= 3; // 任务状态  0 未完成 1 完成 2 已领奖
-	enum EProtocol { None = 0; ProtoID = 10506; }
-}
-
-// 客户端向服务器请求日常任务奖励
-message C2SGetTaskReward {
-	int32 TaskId 							= 1;
-	enum EProtocol { None = 0; ProtoID = 10507; }
-}
-
-// 服务器向客户端发送任务结果
-message S2CRetTaskReward {
-	int32 TaskId 							= 1; // 任务Id
-	int32 Coin 								= 2; // 金币
-	int32 Diamond 							= 3; // 钻石奖励
-	int32 Exp 								= 4; // 当前经验
-	int32 CurLvl 							= 5; // 当前等级
-	enum EProtocol { None = 0; ProtoID = 10508; }
-}
-
-// 客户端向服务器请求成就奖励
-message C2SGetAchieveReward {
-	int32 AchieveReward 					= 1; // 成就Id
-	enum EProtocol { None = 0; ProtoID = 10509; }
-}
-
-// 服务器向客户端完成成就
-message S2CRetAchieveReward {
-	int32 TaskId 							= 1; // 任务Id
-	int32 Coin 								= 2; // 金币
-	int32 Diamond 							= 3; // 钻石奖励
-	int32 Exp 								= 4; // 当前经验
-	int32 CurLvl 							= 5; // 当前等级
-	enum EProtocol { None = 0; ProtoID = 10510; }
-}*/
-
 // ----------------------------------- 玩家信息 -------------------------------
 
 // 客户端请求修改昵称
@@ -1225,44 +1140,6 @@ message C2SChangeHead {
 message S2CChangeHead {
 	int32 NewHead 							= 1;
 	enum EProtocol { None = 0; ProtoID = 10603; }
-}
-
-// 客户端向服务器查询玩家信息
-message C2SGetPlayerInfo {
-	int32 PlayerId 							= 1; // 玩家Id
-	enum EProtocol { None = 0; ProtoID = 10604; }
-}
-
-message OtherPlayerBaseInfo {
-	int32 PlayerId 							= 1; // 玩家Id
-	int32 MatchScore 						= 2; // 玩家基本
-	int32 Coins 							= 3; // 玩家金币
-	int32 Diamonds 							= 4; // 玩家钻石
-	int32 CurUseCardTeam 					= 5; // 当前上阵卡组
-	int32 MyLvl 							= 6; // 我的等级
-	int32 ArenaLvl 							= 7; // 竞技场等级
-	int32 CurLegBestScore 					= 8; // 当前传奇竞技场最佳分数
-	int32 LastLegBestScore 					= 9; // 上一次赛季传奇最佳分数
-	int32 CurLegScore 						= 10; // 传奇竞技场杯数
-	int32 WinCount 							= 11; // 胜利次数
-	int32 OfenCardCfgId 					= 12; // 近期常用卡片
-	int32 DonateCount 						= 13; // 捐赠总数
-	int32 CheModWinCount 					= 14; // 挑战模式胜利次数
-	int32 CheModeOfenCardCfg 				= 15; // 挑战模式常用卡片
-	int32 ThreeTowerCount 					= 16; // 获得三个皇冠的次数
-	int32 Camp 								= 17; // 玩家阵营
-	string TongName 						= 18; // 帮会名称
-	int32 TongIcon 							= 19; // 帮会图标，为零表示没有帮会
-	repeated int32 FightCardIds 			= 20; // 出战卡片Id
-	repeated int32 FightCardLvls 			= 21; // 出战卡片的等级
-	int32 CurCardGetNum 					= 22; // 目前已经获得的卡片数量
-	int32 IfCaptain 						= 23; // 是否帮会首领
-}
-
-// 服务器向客户端返回玩家信息
-message S2CRetPlayerInfo {
-	OtherPlayerBaseInfo BaseInfo 			= 1; // 玩家信息
-	enum EProtocol { None = 0; ProtoID = 10605; }
 }
 
 // ------------------------------------ 签到 ----------------------------------
@@ -1306,25 +1183,6 @@ message S2CRetDaySignSumReward {
 	S2COpenChest Rewards 					= 1; // 累计签到奖励内容
 	int32 SumNum 							= 2; // 本次奖励次数
 	enum EProtocol { None = 0; ProtoID = 10704; }
-}
-
-// ----------------------------------- 首充 -----------------------------------
-
-// 服务器向客户端同步首充状态
-message S2CSyncFirstPayState {
-	int32 CurState 							= 1; // 当前状态
-	enum EProtocol { None = 0; ProtoID = 10705; }
-}
-
-// 客户端向服务器请求领取首充奖励
-message C2SGetFirstPayReward {
-	enum EProtocol { None = 0; ProtoID = 10706; }
-}
-
-// 服务器向客户端回复首充奖励
-message S2CRetFirstPayReward {
-	S2COpenChest Rewards 					= 1; // 累计签到奖励内容
-	enum EProtocol { None = 0; ProtoID = 10707; }
 }
 
 // ----------------------------------- 引导 -----------------------------------

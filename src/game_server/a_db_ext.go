@@ -202,54 +202,6 @@ func (this *dbPlayerFriendReqColumn) CheckAndAdd(player_id int32, player_name st
 	return 1
 }
 
-func (this *dbPlayerFriendReqColumn) AgreeFriend(friend_id int32) bool {
-	this.m_row.m_lock.UnSafeLock("dbPlayerFriendReqColumn.AgreeFriend")
-	defer this.m_row.m_lock.UnSafeUnlock()
-
-	d := this.m_data[friend_id]
-	if d != nil {
-
-	}
-	return true
-}
-
-func (this *dbPlayerFriendColumn) GetAllIds() (ret_ids []int32) {
-	this.m_row.m_lock.UnSafeRLock("dbPlayerFriendColumn.GetAllIds")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	tmp_len := len(this.m_data)
-	if tmp_len <= 0 {
-		return nil
-	}
-
-	ret_ids = make([]int32, 0, len(this.m_data))
-	for _, v := range this.m_data {
-		ret_ids = append(ret_ids, v.FriendId)
-	}
-	return
-}
-
-func (this *dbPlayerFocusPlayerColumn) GetAllIds() (ret_ids []int32) {
-	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.GetAllIds")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	tmp_len := len(this.m_data)
-	if tmp_len <= 0 {
-		return nil
-	}
-
-	ret_ids = make([]int32, 0, len(this.m_data))
-	for _, v := range this.m_data {
-		ret_ids = append(ret_ids, v.FriendId)
-	}
-
-	return
-}
-
-func (this *dbPlayerBeFocusPlayerColumn) GetNum() int32 {
-	this.m_row.m_lock.UnSafeRLock("dbPlayerBeFocusPlayerColumn.GetNum")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	return int32(len(this.m_data))
-}
-
 func (this *dbPlayerItemColumn) ChkAddItemByNum(cfgid, num int32) int32 {
 	this.m_row.m_lock.UnSafeLock("dbPlayerItemColumn.Add")
 	defer this.m_row.m_lock.UnSafeUnlock()
@@ -545,7 +497,7 @@ func (this *dbPlayerBuildingColumn) GetAllBuildingPos() (pos_map map[int32]int32
 	pos_map = make(map[int32]int32, len(this.m_data))
 	//cur_area_use_count = make(map[int32]int32)
 	cur_area_block_count = make(map[int32]int32)
-	var arena_xy, arena_id int32
+	var area_xy, area_id int32
 	var building_cfg *tables.XmlBuildingItem
 	for _, d := range this.m_data {
 		if nil == d {
@@ -565,20 +517,20 @@ func (this *dbPlayerBuildingColumn) GetAllBuildingPos() (pos_map map[int32]int32
 		}
 
 		if nil != block_table_mgr.Map[d.CfgId] {
-			arena_xy = (d.X)<<16 | (d.Y)&0x0000FFFF
-			arena_id = build_area_mgr.AreaXY2AreaId[arena_xy]
-			if arena_id > 0 {
-				cur_area_block_count[arena_id] = cur_area_block_count[arena_id] + 1
+			area_xy = (d.X)<<16 | (d.Y)&0x0000FFFF
+			area_id = build_area_mgr.AreaXY2AreaId[area_xy]
+			if area_id > 0 {
+				cur_area_block_count[area_id] = cur_area_block_count[area_id] + 1
 			}
 		}
 
 		for tmp_x := int32(0); tmp_x < width; tmp_x++ {
 			for tmp_y := int32(0); tmp_y < height; tmp_y++ {
-				arena_xy = (d.X+tmp_x)<<16 | (d.Y+tmp_y)&0x0000FFFF
-				pos_map[arena_xy] = d.Id
-				//arena_id = cfg_build_area_mgr.AreaXY2AreaId[arena_xy]
-				//if arena_id > 0 {
-				//cur_area_use_count[arena_id] = cur_area_use_count[arena_id] + 1
+				area_xy = (d.X+tmp_x)<<16 | (d.Y+tmp_y)&0x0000FFFF
+				pos_map[area_xy] = d.Id
+				//area_id = cfg_build_area_mgr.AreaXY2AreaId[area_xy]
+				//if area_id > 0 {
+				//cur_area_use_count[arena_id] = cur_area_use_count[area_id] + 1
 				//}
 			}
 		}
@@ -640,94 +592,6 @@ func (this *dbPlayerExpeditionColumn) CheckUpdateExpedition(p_lvl int32) (cur_id
 	}
 
 	log.Info("需要随机%d-%d个任务 删除了%d个任务", global_config.ExpeditionTaskCount, cur_count, len(del_map))
-
-	//need_count = global_config_mgr.GetGlobalConfig().ExpeditionTaskCount - cur_count
-
-	/*
-		if cur_count < global_config_mgr.GetGlobalConfig().ExpeditionTaskCount {
-			new_tasks := cfg_expedition_mgr.RandNWithExistIds(cur_ids, p_lvl, global_config_mgr.GetGlobalConfig().ExpeditionTaskCount-cur_count)
-			var tmp_task *dbPlayerExpeditionData
-
-			var rand_val, total_weight int32
-			for _, task := range new_tasks {
-				if nil == task {
-					continue
-				}
-
-				tmp_task = &dbPlayerExpeditionData{TaskId: task.Id, StartUnix: int32(time.Now().Unix())}
-				if PLAYER_EXPEDITION_TYPE_TIMELIMIT == task.TaskType {
-					tmp_task.TaskLeftSecLastUpUnix = cur_unix
-					tmp_task.TaskLeftSec = task.LimitTimeSec
-					log.Info("设置限时任务的刷新时间 %d", tmp_task.TaskLeftSec)
-				}
-
-				// 随机任务条件
-				log.Info("随机任务[%d]的条件", task.Id)
-				tmp_task.Conditions = make([]dbExpeditionConData, task.NeedConditionNum)
-				total_weight = task.TotalConWeight
-				cur_map := make(map[int]bool)
-				for cur_num := int32(0); cur_num < task.NeedConditionNum; cur_num++ {
-					if total_weight <= 0 {
-						log.Info("第%d次随机任务条件totalweight[%d]<0退出", cur_num+1, total_weight)
-						break
-					}
-
-					rand_val = rand.Int31n(total_weight)
-					log.Info("第%d次随机任务条件，totol_weight[%d] rand_val[%d] 当前随机好的对象%v", cur_num+1, total_weight, rand_val, cur_map)
-					for idx, tmp_con := range task.Conditions {
-						if cur_map[idx] {
-							continue
-						}
-
-						log.Info("	===随机任务条件对比weight[%d] rand_val[%d]", tmp_con.Con_Weight, rand_val)
-						if rand_val < tmp_con.Con_Weight {
-							total_weight -= tmp_con.Con_Weight
-							tmp_task.Conditions[cur_num].ConType = tmp_con.Con_Type
-							if PLAYER_EXPEDITION_CON_CAT_COLOR == tmp_con.Con_Type {
-								tmp_task.Conditions[cur_num].ConVals = make([]int32, 0, tmp_con.Con_Val)
-								sub_total_weight := tmp_con.Ext_val
-								sub_cur_map := make(map[int]bool)
-								for sub_cur_num := int32(0); sub_cur_num < tmp_con.Con_Val; sub_cur_num++ {
-									if sub_total_weight <= 0 {
-										break
-									}
-
-									sub_rand_val := rand.Int31n(sub_total_weight)
-									for sub_idx, color_weight := range tmp_con.Ext_vals {
-										if sub_cur_map[sub_idx] {
-											continue
-										}
-
-										if sub_rand_val < color_weight {
-											tmp_task.Conditions[cur_num].ConVals = append(tmp_task.Conditions[cur_num].ConVals, int32(1<<(uint32(sub_idx))))
-											sub_cur_map[sub_idx] = true
-											sub_total_weight -= color_weight
-											break
-										} else {
-											sub_rand_val -= color_weight
-										}
-									}
-								}
-							} else {
-								tmp_task.Conditions[cur_num].ConVals = make([]int32, 1)
-								tmp_task.Conditions[cur_num].ConVals[0] = tmp_con.Con_Val
-							}
-							cur_map[idx] = true
-							break
-						} else {
-							rand_val -= tmp_con.Con_Weight
-						}
-					}
-
-				}
-
-				this.m_data[task.Id] = tmp_task
-
-				log.Info("赋值任务[task.id]给m_data", tmp_task)
-			}
-		}
-
-	*/
 
 	return
 }
