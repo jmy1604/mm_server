@@ -896,6 +896,7 @@ func (this *Player) send_data_on_login(new_player bool) {
 	this.send_areas()
 	this.get_crops()
 	this.get_cathouses_info()
+	this.send_surface_data()
 	this.send_stage_info()
 	this.SyncPlayerGuideData()
 }

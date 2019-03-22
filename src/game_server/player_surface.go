@@ -8,8 +8,8 @@ import (
 )
 
 func (this *Player) load_surface_data() int32 {
-	data := this.db.Surface.GetData()
 	var msg msg_client_message.S2CSurfaceDataResponse
+	data := this.db.Surface.GetData()
 	err := proto.Unmarshal(data, &msg)
 	if err != nil {
 		log.Error("Player %v load surface data error %v", err.Error())
@@ -31,20 +31,48 @@ func (this *Player) load_surface_data() int32 {
 	return 1
 }
 
-func (this *Player) send_surface_data() int32 {
-	var data []*msg_client_message.BuildingInfo
+func (this *Player) save_surface_data() int32 {
+	if this.surface_data == nil {
+		return 0
+	}
+	var msg msg_client_message.S2CSurfaceDataResponse
 	for x, d := range this.surface_data {
 		if d == nil {
 			continue
 		}
 		for y, bid := range d {
-			data = append(data, &msg_client_message.BuildingInfo{
+			msg.Data = append(msg.Data, &msg_client_message.BuildingInfo{
 				CfgId: bid,
 				X:     x,
 				Y:     y,
 			})
 		}
+	}
+	data, err := proto.Marshal(&msg)
+	if err != nil {
+		log.Error("Player %v save surface err %v", this.Id, err.Error())
+		return -1
+	}
+	this.db.Surface.SetData(data)
+	return 1
+}
 
+func (this *Player) send_surface_data() int32 {
+	var data []*msg_client_message.BuildingInfo
+	if this.surface_data != nil {
+		for x, d := range this.surface_data {
+			if d == nil {
+				continue
+			}
+			for y, bid := range d {
+				data = append(data, &msg_client_message.BuildingInfo{
+					CfgId: bid,
+					X:     x,
+					Y:     y,
+				})
+			}
+
+		}
 	}
 	this.Send(uint16(msg_client_message.S2CSurfaceDataResponse_ProtoID), &msg_client_message.S2CSurfaceDataResponse{
 		data,
@@ -55,21 +83,23 @@ func (this *Player) send_surface_data() int32 {
 
 func (this *Player) surface_update(update_data, remove_data []*msg_client_message.BuildingInfo) int32 {
 	var updated bool
+	// 更新的地板
 	for _, d := range update_data {
 		if this.surface_data == nil {
 			this.surface_data = make(map[int32]map[int32]int32)
 		}
 		x := d.GetX()
-		y := d.GetY()
 		if this.surface_data[x] == nil {
 			this.surface_data[x] = make(map[int32]int32)
 		}
+		y := d.GetY()
 		v := this.surface_data[x][y]
 		if v != d.GetCfgId() {
 			this.surface_data[x][y] = d.GetCfgId()
 			updated = true
 		}
 	}
+	// 删除的地板
 	for _, d := range remove_data {
 		x := d.GetX()
 		if this.surface_data[x] != nil {
@@ -80,25 +110,10 @@ func (this *Player) surface_update(update_data, remove_data []*msg_client_messag
 	}
 	// 保存
 	if updated {
-		var msg msg_client_message.S2CSurfaceDataResponse
-		for x, d := range this.surface_data {
-			if d == nil {
-				continue
-			}
-			for y, bid := range d {
-				msg.Data = append(msg.Data, &msg_client_message.BuildingInfo{
-					CfgId: bid,
-					X:     x,
-					Y:     y,
-				})
-			}
+		res := this.save_surface_data()
+		if res < 0 {
+			return res
 		}
-		data, err := proto.Marshal(&msg)
-		if err != nil {
-			log.Error("Player %v save surface err %v", this.Id, err.Error())
-			return -1
-		}
-		this.db.Surface.SetData(data)
 	}
 	this.Send(uint16(msg_client_message.S2CSurfaceUpdateResponse_ProtoID), &msg_client_message.S2CSurfaceUpdateResponse{})
 	log.Trace("Player %v updated surface", this.Id)
