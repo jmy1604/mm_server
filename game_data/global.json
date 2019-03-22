@@ -10,7 +10,7 @@
 ],	
 	"MaxFriendNum":200,
 	
-	"HeartbeatInterval":180,
+	"HeartbeatInterval":600,
 	
 	"DaySignSumRewards":[
 		{
