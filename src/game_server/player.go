@@ -898,6 +898,7 @@ func (this *Player) send_data_on_login(new_player bool) {
 	this.get_cathouses_info()
 	this.send_surface_data()
 	this.send_stage_info()
+	this.pull_formula_building()
 	this.SyncPlayerGuideData()
 }
 
