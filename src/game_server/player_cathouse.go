@@ -355,7 +355,7 @@ func (this *Player) get_cathouses_info() int32 {
 		response.Houses = response.Houses[:c]
 	}
 	log.Trace("@@@@ Player[%v] get cat house %v", this.Id, response)
-	this.Send(uint16(msg_client_message.S2CGetCatHouseInfoResult_ProtoID), response)
+	this.Send(uint16(msg_client_message.S2CGetCatHousesInfoResult_ProtoID), response)
 	return 1
 }
 
