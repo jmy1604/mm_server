@@ -121,6 +121,7 @@ enum E_ERR{
 	ITEM_TABLE_DATA_NOT_FOUND 					= -101000; // 物品配置不存在
 	ITEM_NOT_FOUND								= -101001; // 物品不存在
 	ITEM_NUM_NOT_ENOUGH							= -101002; // 物品数量不足
+	ITEM_ACTION_NOT_ENOUGH						= -101003; // 行动力不足
 	
 	// 猫错误码
 	CAT_TABLE_DATA_NOT_FOUND  					= -101100; // 猫配置不存在
@@ -195,6 +196,7 @@ enum E_ERR{
 	CATHOUSE_SPEEDUP_LEVELUP_NOT_ENOUGH_DIAMOND = -101410; // 猫舍加速升级钻石不足
 	CATHOUSE_CANT_SELL							= -101411; // 不能出售猫舍
 	CATHOUSE_CAT_MUST_SAME_COLOR				= -101412; // 猫的颜色不符
+	CATHOUSE_CAT_PRODUCING_GOLD					= -101413; // 猫舍正在产金
 	
 	// 商店错误码
 	SHOP_NOT_FOUND								= -101501; // 商店不存在
@@ -1759,6 +1761,7 @@ message CatHouseInfo {
 	int32 NextLevelRemainSeconds 			= 5; // 下个等级剩余时间
 	int32 BuildingConfigId					= 6; // 建筑配置ID
 	int32 IsDone							= 7; // 是否可用
+	int32 ProduceGoldRemainSeconds			= 8; // 产金剩余时间   -1表示没有产金  >=0表示产金剩余时间
 }
 message S2CGetCatHousesInfoResult {
 	repeated CatHouseInfo Houses 			= 1;
@@ -1801,69 +1804,80 @@ message S2CCatHouseRemoveCatResult {
 	enum EProtocol { None = 0; ProtoID = 11507; }
 }
 
+// 猫舍开始产金
+message C2SCatHouseProduceGold {
+	int32 CatHouseId						= 1;
+	enum EProtocol { None = 0; ProtoID = 11508; }
+}
+
+message S2CCatHouseProduceGoldResult {
+	int32 CatHouseId						= 1;
+	enum EProtocol { None = 0; ProtoID = 11509; }
+}
+
 // 猫舍收金
 message C2SCatHouseGetGold {
 	int32 CatHouseId 						= 1;
-	enum EProtocol { None = 0; ProtoID = 11508; }
+	enum EProtocol { None = 0; ProtoID = 11510; }
 }
 message S2CCatHouseGetGoldResult {
 	int32 CatHouseId						= 1;
 	int32 Gold								= 2;
-	enum EProtocol { None = 0; ProtoID = 11509; }
+	enum EProtocol { None = 0; ProtoID = 11511; }
 }
 
 // 多个猫舍收金
 message C2SCatHousesGetGold {
 	repeated int32 CatHouseIds	 			= 1;
-	enum EProtocol { None = 0; ProtoID = 11510; }
+	enum EProtocol { None = 0; ProtoID = 11512; }
 }
 message S2CCatHousesGetGoldResult {
 	repeated int32 CatHouseIds				= 1;
 	int32 Gold								= 2;
-	enum EProtocol { None = 0; ProtoID = 11511; }
+	enum EProtocol { None = 0; ProtoID = 11513; }
 }
 
 // 猫舍开始升级
 message C2SCatHouseStartLevelup {
 	int32 CatHouseId						= 1; // 猫舍ID
-	enum EProtocol { None = 0; ProtoID = 11512; }
+	enum EProtocol { None = 0; ProtoID = 11514; }
 }
 message S2CCatHouseStartLevelupResult {
 	int32 CatHouseId						= 1; // 猫舍ID
 	int32 RemainSeconds						= 2; // 升级需要时间
-	enum EProtocol { None = 0; ProtoID = 11513; }
+	enum EProtocol { None = 0; ProtoID = 11515; }
 }
 
 // 加速升级
 message C2SCatHouseSpeedLevelup {
 	int32 CatHouseId 						= 1;
-	enum EProtocol { None = 0; ProtoID = 11514; }
+	enum EProtocol { None = 0; ProtoID = 11516; }
 }
 message S2CCatHouseSpeedLevelupResult {
 	int32 CatHouseId						= 1;
 	int32 CostDiamond						= 2;
-	enum EProtocol { None = 0; ProtoID = 11515; }
+	enum EProtocol { None = 0; ProtoID = 11517; }
 }
 
 // 出售猫舍
 message C2SSellCatHouse {
 	int32 CatHouseId						= 1;
-	enum EProtocol { None = 0; ProtoID = 11516; }
+	enum EProtocol { None = 0; ProtoID = 11518; }
 }
 message S2CSellCatHouseResult {
 	int32 CatHouseId						= 1;
-	enum EProtocol { None = 0; ProtoID = 11517; }
+	enum EProtocol { None = 0; ProtoID = 11519; }
 }
 
 // 设置启用状态
 message C2SCatHouseSetDone {
 	int32 CatHouseId 						= 1;
-	enum EProtocol { None = 0; ProtoID = 11518; }
+	enum EProtocol { None = 0; ProtoID = 11520; }
 }
 message S2CCatHouseSetDoneResult {
 	int32 CatHouseId						= 1;
 	int32 IsDone 							= 2; // 是否启用
-	enum EProtocol { None = 0; ProtoID = 11519; }
+	enum EProtocol { None = 0; ProtoID = 11521; }
 }
 
 // ------------------------------------ 好友 ----------------------------------

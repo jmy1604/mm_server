@@ -331,7 +331,8 @@
 						{"Type":"int32","Index":5,"Name":"LastGetGoldTime"},
 						{"Type":"int32","Index":6,"Name":"CurrGold","Incby":true},
 						{"Type":"int32","Index":7,"Name":"LevelupStartTime"},
-						{"Type":"int32","Index":8,"Name":"IsDone"}
+						{"Type":"int32","Index":8,"Name":"IsDone"},
+						{"Type":"int32","Index":9,"Name":"ProduceGoldTime"}
 					]
 				},	
 				{

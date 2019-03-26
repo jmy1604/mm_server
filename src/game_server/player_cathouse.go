@@ -54,7 +54,7 @@ func get_cathouse_table_data(cathouse_cid, level int32) *tables.XmlCatHouseItem 
 func (this *Player) get_cathouse_curr_gold(building_id int32) int32 {
 
 	now_time := int32(time.Now().Unix())
-	last_gold_time, o := this.db.CatHouses.GetLastGetGoldTime(building_id)
+	/*last_gold_time, o := this.db.CatHouses.GetLastGetGoldTime(building_id)
 	if !o {
 		return -1
 	}
@@ -76,6 +76,16 @@ func (this *Player) get_cathouse_curr_gold(building_id int32) int32 {
 	cost_seconds := int32(0)
 	if last_gold_time > 0 {
 		cost_seconds = now_time - last_gold_time
+	}*/
+
+	produce_time, _ := this.db.CatHouses.GetProduceGoldTime(building_id)
+	if produce_time <= 0 {
+		return 0
+	}
+
+	cost_seconds := now_time - produce_time
+	if cost_seconds > 8*3600 {
+		cost_seconds = 8 * 3600
 	}
 
 	cat_ids, _ := this.db.CatHouses.GetCatIds(building_id)
@@ -101,12 +111,13 @@ func (this *Player) get_cathouse_curr_gold(building_id int32) int32 {
 		log.Debug("!!!!! player[%v] cat[%v] level[%v] growth_rate[%v] initial_rate[%v] coin_ability[%v,%v] cost_seconds[%v]", this.Id, cid, level, cat.GrowthRate, cat.InitialRate, coin_ability, t, cost_seconds)
 	}
 	add_gold := int32(cost_seconds * v / 60)
-	if add_gold > max_add {
+	/*if add_gold > max_add {
 		add_gold = max_add
 	}
 	curr_gold := this.db.CatHouses.IncbyCurrGold(building_id, add_gold)
 	this.db.CatHouses.SetLastGetGoldTime(building_id, now_time)
-	return curr_gold
+	return curr_gold*/
+	return add_gold
 }
 
 func (this *Player) update_cathouse_level(building_id int32) (bool, int32, int32) {
@@ -177,6 +188,13 @@ func (this *Player) send_cathouse_info(building_id int32, on_update bool) {
 	}
 	is_done, _ := this.db.CatHouses.GetIsDone(building_id)
 	cathouse_cid, _ := this.db.CatHouses.GetCfgId(building_id)
+	produce_time, _ := this.db.CatHouses.GetProduceGoldTime(building_id)
+	var produce_gold_remain_seconds int32
+	if produce_time <= 0 {
+		produce_gold_remain_seconds = -1
+	} else {
+		produce_gold_remain_seconds = GetRemainSeconds(produce_time, 8*3600)
+	}
 
 	msg := &msg_client_message.S2CGetCatHouseInfoResult{}
 	msg.House = &msg_client_message.CatHouseInfo{}
@@ -187,6 +205,7 @@ func (this *Player) send_cathouse_info(building_id int32, on_update bool) {
 	msg.House.NextLevelRemainSeconds = remain_seconds
 	msg.House.BuildingConfigId = cathouse_cid
 	msg.House.IsDone = is_done
+	msg.House.ProduceGoldRemainSeconds = produce_gold_remain_seconds
 
 	log.Debug("Player[%v] get cathouse[%v] info: cat_ids[%v] level[%v] gold[%v] is_done[%v]", this.Id, building_id, msg.House.GetCatIds(), level, curr_gold, is_done)
 
@@ -252,6 +271,12 @@ func (this *Player) cathouse_add_cat(cat_id int32, building_id int32) int32 {
 	cathouse_data := this.create_cathouse(building_id)
 	if cathouse_data == nil {
 		return int32(msg_client_message.E_ERR_CATHOUSE_NOT_FOUND)
+	}
+
+	produce_time, _ := this.db.CatHouses.GetProduceGoldTime(building_id)
+	if produce_time > 0 {
+		log.Error("Player %v must stop produce gold before add cat %v", this.Id, building_id)
+		return int32(msg_client_message.E_ERR_CATHOUSE_CAT_PRODUCING_GOLD)
 	}
 
 	cathouse_cid, _ := this.db.CatHouses.GetCfgId(building_id)
@@ -349,6 +374,14 @@ func (this *Player) get_cathouses_info() int32 {
 			response.Houses[c].BuildingConfigId = cathouse_cid
 			is_done, _ := this.db.CatHouses.GetIsDone(id)
 			response.Houses[c].IsDone = is_done
+			produce_time, _ := this.db.CatHouses.GetProduceGoldTime(id)
+			var produce_gold_remain_seconds int32
+			if produce_time <= 0 {
+				produce_gold_remain_seconds = -1
+			} else {
+				produce_gold_remain_seconds = GetRemainSeconds(produce_time, 8*3600)
+			}
+			response.Houses[c].ProduceGoldRemainSeconds = produce_gold_remain_seconds
 			c += 1
 			log.Debug("@@@@ Player[%v] cathouse[%v] cat_ids[%v] level[%v] gold[%v] is_done[%v]", this.Id, id, cat_ids, level, curr_gold, is_done)
 		}
@@ -370,6 +403,12 @@ func (this *Player) cathouse_remove_cat(cat_id, building_id int32) int32 {
 		//this.get_cathouse_info(building_id)
 		log.Error("Player[%v] cathouse[%v] not set done", this.Id, building_id)
 		return -1
+	}
+
+	produce_time, _ := this.db.CatHouses.GetProduceGoldTime(building_id)
+	if produce_time > 0 {
+		log.Error("Player %v must stop produce gold before add cat %v", this.Id, building_id)
+		return int32(msg_client_message.E_ERR_CATHOUSE_CAT_PRODUCING_GOLD)
 	}
 
 	cat_data := this.db.Cats.Get(cat_id)
@@ -420,8 +459,45 @@ func (this *Player) cathouse_remove_cat(cat_id, building_id int32) int32 {
 
 	this.send_cathouse_info(building_id, false)
 
-	log.Debug("Player[%v] removed cat[%v] from cathouse[%v], cat_ids[%v]", this.Id, cat_id, building_id, cathouse_data.CatIds[:cats_num])
+	log.Trace("Player[%v] removed cat[%v] from cathouse[%v], cat_ids[%v]", this.Id, cat_id, building_id, cathouse_data.CatIds[:cats_num])
 
+	return 1
+}
+
+func (this *Player) cathouse_produce_gold(building_id int32) int32 {
+	is_done, o := this.db.CatHouses.GetIsDone(building_id)
+	if !o {
+		log.Error("Player %v cathouse %v not found", this.Id, building_id)
+		return int32(msg_client_message.E_ERR_CATHOUSE_NOT_FOUND)
+	}
+
+	if is_done == 0 {
+		log.Error("Player[%v] cathouse[%v] not set done", this.Id, building_id)
+		return -1
+	}
+
+	produce_time, _ := this.db.CatHouses.GetProduceGoldTime(building_id)
+	if produce_time > 0 {
+		log.Error("Player %v cathouse must stop before produce gold")
+		return -1
+	}
+
+	action_num := this.GetItemResourceValue(ITEM_RESOURCE_ID_ACTION)
+	if action_num < 1 {
+		return int32(msg_client_message.E_ERR_ITEM_ACTION_NOT_ENOUGH)
+	}
+
+	now_time := time.Now()
+	this.db.CatHouses.SetProduceGoldTime(building_id, int32(now_time.Unix()))
+	this.RemoveItemResource(ITEM_RESOURCE_ID_ACTION, 1, "produce gold", "cathouse")
+
+	this.Send(uint16(msg_client_message.S2CCatHouseProduceGoldResult_ProtoID), &msg_client_message.S2CCatHouseProduceGoldResult{
+		CatHouseId: building_id,
+	})
+
+	this.send_cathouse_info(building_id, false)
+
+	log.Trace("Player %v cathouse %v start produce gold", this.Id, building_id)
 	return 1
 }
 
@@ -438,9 +514,15 @@ func (this *Player) cathouse_collect_gold(building_id int32) int32 {
 		return -1
 	}
 
+	produce_time, _ := this.db.CatHouses.GetProduceGoldTime(building_id)
+	if produce_time == 0 {
+		log.Error("Player %v has not produce gold in cat house %v", this.Id, building_id)
+	}
+
 	gold := this.get_cathouse_curr_gold(building_id)
-	this.db.CatHouses.SetCurrGold(building_id, 0)
+	//this.db.CatHouses.SetCurrGold(building_id, 0)
 	this.AddGold(gold, "cathouse_collect_gold", "cathouse")
+	this.db.CatHouses.SetProduceGoldTime(building_id, 0)
 
 	response := &msg_client_message.S2CCatHouseGetGoldResult{}
 	response.CatHouseId = building_id

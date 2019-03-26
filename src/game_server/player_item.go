@@ -42,6 +42,7 @@ const (
 	ITEM_RESOURCE_ID_TIME         = 11 // 时间
 	ITEM_RESOURCE_ID_STAR         = 12 // 星数
 	ITEM_RESOURCE_ID_CAT_EXP      = 13 // 猫经验
+	ITEM_RESOURCE_ID_ACTION       = 14 // 行动力
 )
 
 type ItemCatBuildingChangeInfo struct {

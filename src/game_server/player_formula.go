@@ -222,6 +222,10 @@ func (this *Player) get_formulas() int32 {
 
 // 打造
 func (this *Player) make_formula_building(formula_id /*, slot_id*/ int32) int32 {
+	action_num := this.GetItemResourceValue(ITEM_RESOURCE_ID_ACTION)
+	if action_num < 1 {
+		return int32(msg_client_message.E_ERR_ITEM_ACTION_NOT_ENOUGH)
+	}
 
 	all_idx := this.db.MakingFormulaBuildings.GetAllIndex()
 	if all_idx == nil || len(all_idx) == 0 {
@@ -320,6 +324,8 @@ func (this *Player) make_formula_building(formula_id /*, slot_id*/ int32) int32 
 	for i := 0; i < len(f.CostItems); i++ {
 		this.RemoveItem(f.CostItems[i].Id, f.CostItems[i].Num, true)
 	}
+
+	this.RemoveItemResource(ITEM_RESOURCE_ID_ACTION, 1, "make formula building", "formula")
 
 	this.SendItemsUpdate()
 

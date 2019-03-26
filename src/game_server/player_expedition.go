@@ -245,6 +245,11 @@ func C2SStartExpeditionHandler(p *Player, msg_data []byte) int32 {
 		return int32(msg_client_message.E_ERR_EXPEDITION_START_LESS_COUNT)
 	}
 
+	action_item_num := p.GetItemResourceValue(ITEM_RESOURCE_ID_ACTION)
+	if action_item_num < 1 {
+		return int32(msg_client_message.E_ERR_ITEM_ACTION_NOT_ENOUGH)
+	}
+
 	catids := req.GetCatIds()
 	tmp_len := int32(len(catids))
 	if tmp_len < 1 {
@@ -453,6 +458,7 @@ func C2SStartExpeditionHandler(p *Player, msg_data []byte) int32 {
 	}
 	p.db.Expeditions.SetEventIds(task_id, dbEvents)
 	p.db.Expeditions.SetTotalSpecials(task_id, totol_special_num)
+	p.RemoveItemResource(ITEM_RESOURCE_ID_ACTION, 1, "start expedition", "expedition")
 
 	res_2cli.Id = task_id
 	res_2cli.CatIds = catids
@@ -462,6 +468,7 @@ func C2SStartExpeditionHandler(p *Player, msg_data []byte) int32 {
 	p.Send(uint16(msg_client_message.S2CStartExpedition_ProtoID), res_2cli)
 
 	p.send_cats_update(catids)
+	p.SendItemsUpdate()
 
 	return 1
 }

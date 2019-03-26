@@ -904,6 +904,7 @@ type dbPlayerCatHouseData struct{
 	CurrGold int32
 	LevelupStartTime int32
 	IsDone int32
+	ProduceGoldTime int32
 }
 func (this* dbPlayerCatHouseData)from_pb(pb *db.PlayerCatHouse){
 	if pb == nil {
@@ -921,6 +922,7 @@ func (this* dbPlayerCatHouseData)from_pb(pb *db.PlayerCatHouse){
 	this.CurrGold = pb.GetCurrGold()
 	this.LevelupStartTime = pb.GetLevelupStartTime()
 	this.IsDone = pb.GetIsDone()
+	this.ProduceGoldTime = pb.GetProduceGoldTime()
 	return
 }
 func (this* dbPlayerCatHouseData)to_pb()(pb *db.PlayerCatHouse){
@@ -936,6 +938,7 @@ func (this* dbPlayerCatHouseData)to_pb()(pb *db.PlayerCatHouse){
 	pb.CurrGold = proto.Int32(this.CurrGold)
 	pb.LevelupStartTime = proto.Int32(this.LevelupStartTime)
 	pb.IsDone = proto.Int32(this.IsDone)
+	pb.ProduceGoldTime = proto.Int32(this.ProduceGoldTime)
 	return
 }
 func (this* dbPlayerCatHouseData)clone_to(d *dbPlayerCatHouseData){
@@ -950,6 +953,7 @@ func (this* dbPlayerCatHouseData)clone_to(d *dbPlayerCatHouseData){
 	d.CurrGold = this.CurrGold
 	d.LevelupStartTime = this.LevelupStartTime
 	d.IsDone = this.IsDone
+	d.ProduceGoldTime = this.ProduceGoldTime
 	return
 }
 type dbPlayerShopItemData struct{
@@ -5795,6 +5799,28 @@ func (this *dbPlayerCatHouseColumn)SetIsDone(id int32,v int32)(has bool){
 		return
 	}
 	d.IsDone = v
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerCatHouseColumn)GetProduceGoldTime(id int32)(v int32 ,has bool){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerCatHouseColumn.GetProduceGoldTime")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		return
+	}
+	v = d.ProduceGoldTime
+	return v,true
+}
+func (this *dbPlayerCatHouseColumn)SetProduceGoldTime(id int32,v int32)(has bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerCatHouseColumn.SetProduceGoldTime")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		log.Error("not exist %v %v",this.m_row.GetPlayerId(), id)
+		return
+	}
+	d.ProduceGoldTime = v
 	this.m_changed = true
 	return true
 }
