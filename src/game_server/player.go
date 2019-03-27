@@ -1154,6 +1154,16 @@ func C2SCatHouseSellHandler(p *Player, msg_data []byte) int32 {
 	return p.cathouse_remove(req.GetCatHouseId(), true)
 }
 
+func C2SCatHouseProduceGoldHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SCatHouseProduceGold
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed err(%s) !", err.Error())
+		return -1
+	}
+	return p.cathouse_produce_gold(req.GetCatHouseId())
+}
+
 func C2SCatHouseGetGoldHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SCatHouseGetGold
 	err := proto.Unmarshal(msg_data, &req)

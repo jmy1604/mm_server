@@ -201,6 +201,7 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseStartLevelup_ProtoID), C2SCatHouseStartLevelupHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseSpeedLevelup_ProtoID), C2SCatHouseSpeedLevelupHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSellCatHouse_ProtoID), C2SCatHouseSellHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseProduceGold_ProtoID), C2SCatHouseProduceGoldHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseGetGold_ProtoID), C2SCatHouseGetGoldHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseSetDone_ProtoID), C2SCatHouseSetDoneHandler)
 
