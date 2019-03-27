@@ -197,6 +197,7 @@ enum E_ERR{
 	CATHOUSE_CANT_SELL							= -101411; // 不能出售猫舍
 	CATHOUSE_CAT_MUST_SAME_COLOR				= -101412; // 猫的颜色不符
 	CATHOUSE_CAT_PRODUCING_GOLD					= -101413; // 猫舍正在产金
+	CATHOUSE_START_PRODUCE_GOLD_FAILED_NO_CAT	= -101414; // 猫舍没有猫不能产金
 	
 	// 商店错误码
 	SHOP_NOT_FOUND								= -101501; // 商店不存在

@@ -277,9 +277,6 @@ func (this *Player) cathouse_add_cat(cat_id int32, building_id int32) int32 {
 	}
 
 	curr_gold := this.get_cathouse_curr_gold(building_id)
-	//this.AddCoin(curr_gold, "add_cat", "cathouse")
-	//this.db.CatHouses.SetCurrGold(building_id, 0)
-
 	cat_ids = append(cat_ids, cat_id)
 	this.db.CatHouses.SetCatIds(building_id, cat_ids)
 	this.db.Cats.SetCathouseId(cat_id, building_id)
@@ -445,6 +442,12 @@ func (this *Player) cathouse_produce_gold(building_id int32) int32 {
 	if is_done == 0 {
 		log.Error("Player[%v] cathouse[%v] not set done", this.Id, building_id)
 		return -1
+	}
+
+	cat_ids, _ := this.db.CatHouses.GetCatIds(building_id)
+	if cat_ids == nil || len(cat_ids) == 0 {
+		log.Error("Player %v cathouse %v not add cat, cant produce gold", this.Id, building_id)
+		return int32(msg_client_message.E_ERR_CATHOUSE_START_PRODUCE_GOLD_FAILED_NO_CAT)
 	}
 
 	produce_time, _ := this.db.CatHouses.GetProduceGoldTime(building_id)
