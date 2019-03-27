@@ -124,9 +124,9 @@ func table_init() error {
 		return errors.New("map chest init failed")
 	}
 
-	if !other_table_mgr.Init("") {
+	/*if !other_table_mgr.Init("") {
 		return errors.New("other table init failed")
-	}
+	}*/
 
 	if !pay_table_mgr.Init("") {
 		return errors.New("pay table init failed")

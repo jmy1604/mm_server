@@ -97,6 +97,7 @@ func add_item_cmd(p *Player, args []string) int32 {
 	} else {
 		p.AddItem(int32(item_id), int32(item_count), "test_add_item", "test_command", false)
 	}
+	p.SendItemsUpdate()
 	return 1
 }
 
@@ -1096,6 +1097,22 @@ func cathouse_sell_cmd(p *Player, args []string) int32 {
 	}
 
 	return p.cathouse_speed_levelup(int32(cathouse_id))
+}
+
+func cathouse_produce_gold_cmd(p *Player, args []string) int32 {
+	if len(args) < 1 {
+		log.Error("参数[%v]不够", len(args))
+		return -1
+	}
+
+	var cathouse_id int
+	var err error
+	cathouse_id, err = strconv.Atoi(args[0])
+	if err != nil {
+		return -1
+	}
+
+	return p.cathouse_produce_gold(int32(cathouse_id))
 }
 
 func cathouse_collect_gold_cmd(p *Player, args []string) int32 {
@@ -2130,6 +2147,7 @@ var test_cmd2funcs = map[string]test_cmd_func{
 	"cathouse_levelup":    cathouse_levelup_cmd,
 	"cathouse_speed":      cathouse_speedup_cmd,
 	"cathouse_sell":       cathouse_sell_cmd,
+	"produce_gold":        cathouse_produce_gold_cmd,
 	"cllect_gold":         cathouse_collect_gold_cmd,
 	"get_dailys":          get_dailys_cmd,
 	"get_achieves":        get_achieves_cmd,
