@@ -52,31 +52,7 @@ func get_cathouse_table_data(cathouse_cid, level int32) *tables.XmlCatHouseItem 
 }
 
 func (this *Player) get_cathouse_curr_gold(building_id int32) int32 {
-
 	now_time := int32(time.Now().Unix())
-	/*last_gold_time, o := this.db.CatHouses.GetLastGetGoldTime(building_id)
-	if !o {
-		return -1
-	}
-	level, _ := this.db.CatHouses.GetLevel(building_id)
-	if level == 0 {
-		return 0
-	}
-	cathouse_cid, _ := this.db.CatHouses.GetCfgId(building_id)
-	cathouse := get_cathouse_table_data(cathouse_cid, level)
-	if cathouse == nil {
-		return -1
-	}
-	gold, _ := this.db.CatHouses.GetCurrGold(building_id)
-	if gold >= cathouse.CoinStorage {
-		return cathouse.CoinStorage
-	}
-
-	max_add := cathouse.CoinStorage - gold
-	cost_seconds := int32(0)
-	if last_gold_time > 0 {
-		cost_seconds = now_time - last_gold_time
-	}*/
 
 	produce_time, _ := this.db.CatHouses.GetProduceGoldTime(building_id)
 	if produce_time <= 0 {
@@ -84,8 +60,8 @@ func (this *Player) get_cathouse_curr_gold(building_id int32) int32 {
 	}
 
 	cost_seconds := now_time - produce_time
-	if cost_seconds > 8*3600 {
-		cost_seconds = 8 * 3600
+	if cost_seconds > global_config.CatHouseProduceGoldMinutes*60 {
+		cost_seconds = global_config.CatHouseProduceGoldMinutes * 60
 	}
 
 	cat_ids, _ := this.db.CatHouses.GetCatIds(building_id)
@@ -111,12 +87,6 @@ func (this *Player) get_cathouse_curr_gold(building_id int32) int32 {
 		log.Debug("!!!!! player[%v] cat[%v] level[%v] growth_rate[%v] initial_rate[%v] coin_ability[%v,%v] cost_seconds[%v]", this.Id, cid, level, cat.GrowthRate, cat.InitialRate, coin_ability, t, cost_seconds)
 	}
 	add_gold := int32(cost_seconds * v / 60)
-	/*if add_gold > max_add {
-		add_gold = max_add
-	}
-	curr_gold := this.db.CatHouses.IncbyCurrGold(building_id, add_gold)
-	this.db.CatHouses.SetLastGetGoldTime(building_id, now_time)
-	return curr_gold*/
 	return add_gold
 }
 
@@ -181,7 +151,8 @@ func (this *Player) send_cathouse_info(building_id int32, on_update bool) {
 
 	level, _ := this.db.CatHouses.GetLevel(building_id)
 	remain_seconds := int32(0)
-	curr_gold, _ := this.db.CatHouses.GetCurrGold(building_id)
+	//curr_gold, _ := this.db.CatHouses.GetCurrGold(building_id)
+	var curr_gold int32
 	if on_update {
 		curr_gold = this.get_cathouse_curr_gold(building_id)
 		_, level, remain_seconds = this.update_cathouse_level(building_id)
@@ -193,7 +164,7 @@ func (this *Player) send_cathouse_info(building_id int32, on_update bool) {
 	if produce_time <= 0 {
 		produce_gold_remain_seconds = -1
 	} else {
-		produce_gold_remain_seconds = GetRemainSeconds(produce_time, 8*3600)
+		produce_gold_remain_seconds = GetRemainSeconds(produce_time, global_config.CatHouseProduceGoldMinutes*60)
 	}
 
 	msg := &msg_client_message.S2CGetCatHouseInfoResult{}
@@ -379,7 +350,7 @@ func (this *Player) get_cathouses_info() int32 {
 			if produce_time <= 0 {
 				produce_gold_remain_seconds = -1
 			} else {
-				produce_gold_remain_seconds = GetRemainSeconds(produce_time, 8*3600)
+				produce_gold_remain_seconds = GetRemainSeconds(produce_time, global_config.CatHouseProduceGoldMinutes*60)
 			}
 			response.Houses[c].ProduceGoldRemainSeconds = produce_gold_remain_seconds
 			c += 1

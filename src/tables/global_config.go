@@ -149,6 +149,8 @@ type GlobalConfig struct {
 	MailNormalExistDays    int32 // 最大无附件邮件保存天数
 	MailAttachExistDays    int32 // 最大附件邮件保存天数
 	MailPlayerSendCooldown int32 // 个人邮件发送间隔(秒)
+
+	CatHouseProduceGoldMinutes int32 // 猫舍产金分钟
 }
 
 func (this *GlobalConfig) Init(conf_file string) bool {

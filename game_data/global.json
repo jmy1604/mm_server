@@ -142,5 +142,7 @@
 	"MailMaxCount":100,
 	"MailNormalExistDays":7,
 	"MailAttachExistDays":15,
-	"MailPlayerSendCooldown":30
+	"MailPlayerSendCooldown":30,
+	
+	"CatHouseProduceGoldMinutes": 10
 }
