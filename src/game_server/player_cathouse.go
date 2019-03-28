@@ -410,8 +410,6 @@ func (this *Player) cathouse_remove_cat(cat_id, building_id int32) int32 {
 	}
 
 	gold := this.get_cathouse_curr_gold(building_id)
-	//this.AddCoin(gold, "remove_cat", "cathouse")
-	//this.db.CatHouses.SetCurrGold(building_id, 0)
 	cats_num := int32(len(cathouse_data.CatIds) - 1)
 	this.db.CatHouses.SetCatIds(building_id, cathouse_data.CatIds[:cats_num])
 	this.db.Cats.SetCathouseId(cat_id, 0)
@@ -470,6 +468,7 @@ func (this *Player) cathouse_produce_gold(building_id int32) int32 {
 	})
 
 	this.send_cathouse_info(building_id, false)
+	this.SendItemsUpdate()
 
 	log.Trace("Player %v cathouse %v start produce gold", this.Id, building_id)
 	return 1
@@ -494,7 +493,6 @@ func (this *Player) cathouse_collect_gold(building_id int32) int32 {
 	}
 
 	gold := this.get_cathouse_curr_gold(building_id)
-	//this.db.CatHouses.SetCurrGold(building_id, 0)
 	this.AddGold(gold, "cathouse_collect_gold", "cathouse")
 	this.db.CatHouses.SetProduceGoldTime(building_id, 0)
 
