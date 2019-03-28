@@ -619,8 +619,6 @@ func (this *Player) cathouse_speed_levelup(building_id int32) int32 {
 
 	// 更新当前猫舍金币
 	this.get_cathouse_curr_gold(building_id)
-	//this.AddCoin(gold, "speedup_levelup", "cathouse")
-	//this.db.CatHouses.SetCurrGold(building_id, 0)
 
 	this.db.CatHouses.SetLevel(building_id, next_level)
 	this.db.CatHouses.SetLevelupStartTime(building_id, 0)
