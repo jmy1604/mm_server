@@ -1188,26 +1188,6 @@ message S2CRetDaySignSumReward {
 	enum EProtocol { None = 0; ProtoID = 10704; }
 }
 
-// ----------------------------------- 引导 -----------------------------------
-
-// 服务器向客户端同步引导数据
-message S2CSyncGuideData {
-	repeated int32 GuideIds 				= 1; // 引导数据
-	enum EProtocol { None = 0; ProtoID = 10800; }
-}
-
-// 客户端向服务器存储引导数据
-message C2SSaveGuideData {
-	int32 GuideId 							= 1; // 引导Id
-	enum EProtocol { None = 0; ProtoID = 10801; }
-}
-
-// 服务器向客户端返回引导存储
-message S2CRetSaveGuideData {
-	int32 GuideId 							= 1; // 引导Id
-	enum EProtocol { None = 0; ProtoID = 10802; }
-}
-
 // ----------------------------------- 建筑 -----------------------------------
 
 // 客户端向服务器请求设置建筑

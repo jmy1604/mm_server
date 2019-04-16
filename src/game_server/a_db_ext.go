@@ -80,38 +80,6 @@ func (this *dbPlayerSignInfoColumn) FillSyncMsg(msg *msg_client_message.S2CSyncS
 	return
 }
 
-func (this *dbPlayerGuidesColumn) ForceAdd(guide_id int32) {
-	this.m_row.m_lock.UnSafeLock("dbPlayerGuidesColumn.ForceAdd")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	_, has := this.m_data[guide_id]
-	if has {
-		return
-	}
-	d := &dbPlayerGuidesData{}
-	d.GuideId = guide_id
-	d.SetUnix = int32(time.Now().Unix())
-	this.m_data[guide_id] = d
-	this.m_changed = true
-	return
-}
-
-func (this *dbPlayerGuidesColumn) FillSyncMsg(msg *msg_client_message.S2CSyncGuideData) {
-	if nil == msg {
-		log.Error("dbPlayerGuidesColumn FillSyncMsg msg nil !")
-		return
-	}
-
-	this.m_row.m_lock.UnSafeRLock("dbPlayerGuidesColumn.FillSyncMsg")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-
-	msg.GuideIds = make([]int32, 0, len(this.m_data))
-	for _, val := range this.m_data {
-		msg.GuideIds = append(msg.GuideIds, val.GuideId)
-	}
-
-	return
-}
-
 func (this *dbPlayerFriendColumn) FillAllListMsg(msg *msg_client_message.S2CRetFriendListResult) {
 	var tmp_info *msg_client_message.FriendInfo
 	this.m_row.m_lock.UnSafeRLock("dbPlayerFriendColumn.FillAllListMsg")

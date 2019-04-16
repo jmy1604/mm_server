@@ -1251,29 +1251,6 @@ func (this* dbPlayerSignInfoData)clone_to(d *dbPlayerSignInfoData){
 	}
 	return
 }
-type dbPlayerGuidesData struct{
-	GuideId int32
-	SetUnix int32
-}
-func (this* dbPlayerGuidesData)from_pb(pb *db.PlayerGuides){
-	if pb == nil {
-		return
-	}
-	this.GuideId = pb.GetGuideId()
-	this.SetUnix = pb.GetSetUnix()
-	return
-}
-func (this* dbPlayerGuidesData)to_pb()(pb *db.PlayerGuides){
-	pb = &db.PlayerGuides{}
-	pb.GuideId = proto.Int32(this.GuideId)
-	pb.SetUnix = proto.Int32(this.SetUnix)
-	return
-}
-func (this* dbPlayerGuidesData)clone_to(d *dbPlayerGuidesData){
-	d.GuideId = this.GuideId
-	d.SetUnix = this.SetUnix
-	return
-}
 type dbPlayerFriendRelativeData struct{
 	LastGiveFriendPointsTime int32
 	GiveNumToday int32
@@ -7353,155 +7330,6 @@ func (this *dbPlayerSignInfoColumn)SetRewardSignSum(v []int32){
 	this.m_changed = true
 	return
 }
-type dbPlayerGuidesColumn struct{
-	m_row *dbPlayerRow
-	m_data map[int32]*dbPlayerGuidesData
-	m_changed bool
-}
-func (this *dbPlayerGuidesColumn)load(data []byte)(err error){
-	if data == nil || len(data) == 0 {
-		this.m_changed = false
-		return nil
-	}
-	pb := &db.PlayerGuidesList{}
-	err = proto.Unmarshal(data, pb)
-	if err != nil {
-		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
-		return
-	}
-	for _, v := range pb.List {
-		d := &dbPlayerGuidesData{}
-		d.from_pb(v)
-		this.m_data[int32(d.GuideId)] = d
-	}
-	this.m_changed = false
-	return
-}
-func (this *dbPlayerGuidesColumn)save( )(data []byte,err error){
-	pb := &db.PlayerGuidesList{}
-	pb.List=make([]*db.PlayerGuides,len(this.m_data))
-	i:=0
-	for _, v := range this.m_data {
-		pb.List[i] = v.to_pb()
-		i++
-	}
-	data, err = proto.Marshal(pb)
-	if err != nil {
-		log.Error("Marshal %v", this.m_row.GetPlayerId())
-		return
-	}
-	this.m_changed = false
-	return
-}
-func (this *dbPlayerGuidesColumn)HasIndex(id int32)(has bool){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerGuidesColumn.HasIndex")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	_, has = this.m_data[id]
-	return
-}
-func (this *dbPlayerGuidesColumn)GetAllIndex()(list []int32){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerGuidesColumn.GetAllIndex")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	list = make([]int32, len(this.m_data))
-	i := 0
-	for k, _ := range this.m_data {
-		list[i] = k
-		i++
-	}
-	return
-}
-func (this *dbPlayerGuidesColumn)GetAll()(list []dbPlayerGuidesData){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerGuidesColumn.GetAll")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	list = make([]dbPlayerGuidesData, len(this.m_data))
-	i := 0
-	for _, v := range this.m_data {
-		v.clone_to(&list[i])
-		i++
-	}
-	return
-}
-func (this *dbPlayerGuidesColumn)Get(id int32)(v *dbPlayerGuidesData){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerGuidesColumn.Get")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	d := this.m_data[id]
-	if d==nil{
-		return nil
-	}
-	v=&dbPlayerGuidesData{}
-	d.clone_to(v)
-	return
-}
-func (this *dbPlayerGuidesColumn)Set(v dbPlayerGuidesData)(has bool){
-	this.m_row.m_lock.UnSafeLock("dbPlayerGuidesColumn.Set")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	d := this.m_data[int32(v.GuideId)]
-	if d==nil{
-		log.Error("not exist %v %v",this.m_row.GetPlayerId(), v.GuideId)
-		return false
-	}
-	v.clone_to(d)
-	this.m_changed = true
-	return true
-}
-func (this *dbPlayerGuidesColumn)Add(v *dbPlayerGuidesData)(ok bool){
-	this.m_row.m_lock.UnSafeLock("dbPlayerGuidesColumn.Add")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	_, has := this.m_data[int32(v.GuideId)]
-	if has {
-		log.Error("already added %v %v",this.m_row.GetPlayerId(), v.GuideId)
-		return false
-	}
-	d:=&dbPlayerGuidesData{}
-	v.clone_to(d)
-	this.m_data[int32(v.GuideId)]=d
-	this.m_changed = true
-	return true
-}
-func (this *dbPlayerGuidesColumn)Remove(id int32){
-	this.m_row.m_lock.UnSafeLock("dbPlayerGuidesColumn.Remove")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	_, has := this.m_data[id]
-	if has {
-		delete(this.m_data,id)
-	}
-	this.m_changed = true
-	return
-}
-func (this *dbPlayerGuidesColumn)Clear(){
-	this.m_row.m_lock.UnSafeLock("dbPlayerGuidesColumn.Clear")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	this.m_data=make(map[int32]*dbPlayerGuidesData)
-	this.m_changed = true
-	return
-}
-func (this *dbPlayerGuidesColumn)NumAll()(n int32){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerGuidesColumn.NumAll")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	return int32(len(this.m_data))
-}
-func (this *dbPlayerGuidesColumn)GetSetUnix(id int32)(v int32 ,has bool){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerGuidesColumn.GetSetUnix")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	d := this.m_data[id]
-	if d==nil{
-		return
-	}
-	v = d.SetUnix
-	return v,true
-}
-func (this *dbPlayerGuidesColumn)SetSetUnix(id int32,v int32)(has bool){
-	this.m_row.m_lock.UnSafeLock("dbPlayerGuidesColumn.SetSetUnix")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	d := this.m_data[id]
-	if d==nil{
-		log.Error("not exist %v %v",this.m_row.GetPlayerId(), id)
-		return
-	}
-	d.SetUnix = v
-	this.m_changed = true
-	return true
-}
 type dbPlayerFriendRelativeColumn struct{
 	m_row *dbPlayerRow
 	m_data *dbPlayerFriendRelativeData
@@ -13095,7 +12923,6 @@ type dbPlayerRow struct {
 	DailyTaskAllDailys dbPlayerDailyTaskAllDailyColumn
 	SevenActivitys dbPlayerSevenActivityColumn
 	SignInfo dbPlayerSignInfoColumn
-	Guidess dbPlayerGuidesColumn
 	FriendRelative dbPlayerFriendRelativeColumn
 	Friends dbPlayerFriendColumn
 	FriendRecommends dbPlayerFriendRecommendColumn
@@ -13188,8 +13015,6 @@ func new_dbPlayerRow(table *dbPlayerTable, PlayerId int32) (r *dbPlayerRow) {
 	this.SevenActivitys.m_data=make(map[int32]*dbPlayerSevenActivityData)
 	this.SignInfo.m_row=this
 	this.SignInfo.m_data=&dbPlayerSignInfoData{}
-	this.Guidess.m_row=this
-	this.Guidess.m_data=make(map[int32]*dbPlayerGuidesData)
 	this.FriendRelative.m_row=this
 	this.FriendRelative.m_data=&dbPlayerFriendRelativeData{}
 	this.Friends.m_row=this
@@ -13269,7 +13094,7 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.m_lock.UnSafeLock("dbPlayerRow.save_data")
 	defer this.m_lock.UnSafeUnlock()
 	if this.m_new {
-		db_args:=new_db_args(65)
+		db_args:=new_db_args(64)
 		db_args.Push(this.m_PlayerId)
 		db_args.Push(this.m_UniqueId)
 		db_args.Push(this.m_Account)
@@ -13414,12 +13239,6 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 			return db_err,false,0,"",nil
 		}
 		db_args.Push(dSignInfo)
-		dGuidess,db_err:=this.Guidess.save()
-		if db_err!=nil{
-			log.Error("insert save Guides failed")
-			return db_err,false,0,"",nil
-		}
-		db_args.Push(dGuidess)
 		dFriendRelative,db_err:=this.FriendRelative.save()
 		if db_err!=nil{
 			log.Error("insert save FriendRelative failed")
@@ -13633,9 +13452,9 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 		args=db_args.GetArgs()
 		state = 1
 	} else {
-		if this.m_UniqueId_changed||this.m_Account_changed||this.m_Name_changed||this.m_Token_changed||this.m_Level_changed||this.Info.m_changed||this.Stages.m_changed||this.ChapterUnLock.m_changed||this.Items.m_changed||this.Areas.m_changed||this.Buildings.m_changed||this.BuildingDepots.m_changed||this.DepotBuildingFormulas.m_changed||this.MakingFormulaBuildings.m_changed||this.Crops.m_changed||this.Cats.m_changed||this.CatHouses.m_changed||this.ShopItems.m_changed||this.ShopLimitedInfos.m_changed||this.Chests.m_changed||this.PayBacks.m_changed||this.Options.m_changed||this.TaskCommon.m_changed||this.Tasks.m_changed||this.FinishedTasks.m_changed||this.DailyTaskAllDailys.m_changed||this.SevenActivitys.m_changed||this.SignInfo.m_changed||this.Guidess.m_changed||this.FriendRelative.m_changed||this.Friends.m_changed||this.FriendRecommends.m_changed||this.FriendAsks.m_changed||this.FriendReqs.m_changed||this.FriendPoints.m_changed||this.FriendChatUnreadIds.m_changed||this.FriendChatUnreadMessages.m_changed||this.FocusPlayers.m_changed||this.BeFocusPlayers.m_changed||this.CustomData.m_changed||this.ChaterOpenRequest.m_changed||this.Expeditions.m_changed||this.HandbookItems.m_changed||this.HeadItems.m_changed||this.Activitys.m_changed||this.SuitAwards.m_changed||this.Zans.m_changed||this.Foster.m_changed||this.FosterCats.m_changed||this.FosterCatOnFriends.m_changed||this.FosterFriendCats.m_changed||this.Chats.m_changed||this.Anouncement.m_changed||this.FirstDrawCards.m_changed||this.TalkForbid.m_changed||this.ServerRewards.m_changed||this.MailCommon.m_changed||this.Mails.m_changed||this.PayCommon.m_changed||this.Pays.m_changed||this.GuideData.m_changed||this.ActivityDatas.m_changed||this.SysMail.m_changed||this.Surface.m_changed{
+		if this.m_UniqueId_changed||this.m_Account_changed||this.m_Name_changed||this.m_Token_changed||this.m_Level_changed||this.Info.m_changed||this.Stages.m_changed||this.ChapterUnLock.m_changed||this.Items.m_changed||this.Areas.m_changed||this.Buildings.m_changed||this.BuildingDepots.m_changed||this.DepotBuildingFormulas.m_changed||this.MakingFormulaBuildings.m_changed||this.Crops.m_changed||this.Cats.m_changed||this.CatHouses.m_changed||this.ShopItems.m_changed||this.ShopLimitedInfos.m_changed||this.Chests.m_changed||this.PayBacks.m_changed||this.Options.m_changed||this.TaskCommon.m_changed||this.Tasks.m_changed||this.FinishedTasks.m_changed||this.DailyTaskAllDailys.m_changed||this.SevenActivitys.m_changed||this.SignInfo.m_changed||this.FriendRelative.m_changed||this.Friends.m_changed||this.FriendRecommends.m_changed||this.FriendAsks.m_changed||this.FriendReqs.m_changed||this.FriendPoints.m_changed||this.FriendChatUnreadIds.m_changed||this.FriendChatUnreadMessages.m_changed||this.FocusPlayers.m_changed||this.BeFocusPlayers.m_changed||this.CustomData.m_changed||this.ChaterOpenRequest.m_changed||this.Expeditions.m_changed||this.HandbookItems.m_changed||this.HeadItems.m_changed||this.Activitys.m_changed||this.SuitAwards.m_changed||this.Zans.m_changed||this.Foster.m_changed||this.FosterCats.m_changed||this.FosterCatOnFriends.m_changed||this.FosterFriendCats.m_changed||this.Chats.m_changed||this.Anouncement.m_changed||this.FirstDrawCards.m_changed||this.TalkForbid.m_changed||this.ServerRewards.m_changed||this.MailCommon.m_changed||this.Mails.m_changed||this.PayCommon.m_changed||this.Pays.m_changed||this.GuideData.m_changed||this.ActivityDatas.m_changed||this.SysMail.m_changed||this.Surface.m_changed{
 			update_string = "UPDATE Players SET "
-			db_args:=new_db_args(65)
+			db_args:=new_db_args(64)
 			if this.m_UniqueId_changed{
 				update_string+="UniqueId=?,"
 				db_args.Push(this.m_UniqueId)
@@ -13862,15 +13681,6 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 					return err,false,0,"",nil
 				}
 				db_args.Push(dSignInfo)
-			}
-			if this.Guidess.m_changed{
-				update_string+="Guidess=?,"
-				dGuidess,err:=this.Guidess.save()
-				if err!=nil{
-					log.Error("insert save Guides failed")
-					return err,false,0,"",nil
-				}
-				db_args.Push(dGuidess)
 			}
 			if this.FriendRelative.m_changed{
 				update_string+="FriendRelative=?,"
@@ -14223,7 +14033,6 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.DailyTaskAllDailys.m_changed = false
 	this.SevenActivitys.m_changed = false
 	this.SignInfo.m_changed = false
-	this.Guidess.m_changed = false
 	this.FriendRelative.m_changed = false
 	this.Friends.m_changed = false
 	this.FriendRecommends.m_changed = false
@@ -14582,14 +14391,6 @@ func (this *dbPlayerTable) check_create_table() (err error) {
 			return
 		}
 	}
-	_, hasGuides := columns["Guidess"]
-	if !hasGuides {
-		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN Guidess LONGBLOB")
-		if err != nil {
-			log.Error("ADD COLUMN Guidess failed")
-			return
-		}
-	}
 	_, hasFriendRelative := columns["FriendRelative"]
 	if !hasFriendRelative {
 		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN FriendRelative LONGBLOB")
@@ -14873,7 +14674,7 @@ func (this *dbPlayerTable) check_create_table() (err error) {
 	return
 }
 func (this *dbPlayerTable) prepare_preload_select_stmt() (err error) {
-	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,Guidess,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,FocusPlayers,BeFocusPlayers,CustomData,ChaterOpenRequest,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface FROM Players")
+	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,FocusPlayers,BeFocusPlayers,CustomData,ChaterOpenRequest,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface FROM Players")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -14881,7 +14682,7 @@ func (this *dbPlayerTable) prepare_preload_select_stmt() (err error) {
 	return
 }
 func (this *dbPlayerTable) prepare_save_insert_stmt()(err error){
-	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Players (PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,Guidess,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,FocusPlayers,BeFocusPlayers,CustomData,ChaterOpenRequest,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Players (PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,FocusPlayers,BeFocusPlayers,CustomData,ChaterOpenRequest,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -14954,7 +14755,6 @@ func (this *dbPlayerTable) Preload() (err error) {
 	var dDailyTaskAllDailys []byte
 	var dSevenActivitys []byte
 	var dSignInfo []byte
-	var dGuidess []byte
 	var dFriendRelative []byte
 	var dFriends []byte
 	var dFriendRecommends []byte
@@ -14992,7 +14792,7 @@ func (this *dbPlayerTable) Preload() (err error) {
 	var dSurface []byte
 		this.m_preload_max_id = 0
 	for r.Next() {
-		err = r.Scan(&PlayerId,&dUniqueId,&dAccount,&dName,&dToken,&dLevel,&dInfo,&dStages,&dChapterUnLock,&dItems,&dAreas,&dBuildings,&dBuildingDepots,&dDepotBuildingFormulas,&dMakingFormulaBuildings,&dCrops,&dCats,&dCatHouses,&dShopItems,&dShopLimitedInfos,&dChests,&dPayBacks,&dOptions,&dTaskCommon,&dTasks,&dFinishedTasks,&dDailyTaskAllDailys,&dSevenActivitys,&dSignInfo,&dGuidess,&dFriendRelative,&dFriends,&dFriendRecommends,&dFriendAsks,&dFriendReqs,&dFriendPoints,&dFriendChatUnreadIds,&dFriendChatUnreadMessages,&dFocusPlayers,&dBeFocusPlayers,&dCustomData,&dChaterOpenRequest,&dExpeditions,&dHandbookItems,&dHeadItems,&dActivitys,&dSuitAwards,&dZans,&dFoster,&dFosterCats,&dFosterCatOnFriends,&dFosterFriendCats,&dChats,&dAnouncement,&dFirstDrawCards,&dTalkForbid,&dServerRewards,&dMailCommon,&dMails,&dPayCommon,&dPays,&dGuideData,&dActivityDatas,&dSysMail,&dSurface)
+		err = r.Scan(&PlayerId,&dUniqueId,&dAccount,&dName,&dToken,&dLevel,&dInfo,&dStages,&dChapterUnLock,&dItems,&dAreas,&dBuildings,&dBuildingDepots,&dDepotBuildingFormulas,&dMakingFormulaBuildings,&dCrops,&dCats,&dCatHouses,&dShopItems,&dShopLimitedInfos,&dChests,&dPayBacks,&dOptions,&dTaskCommon,&dTasks,&dFinishedTasks,&dDailyTaskAllDailys,&dSevenActivitys,&dSignInfo,&dFriendRelative,&dFriends,&dFriendRecommends,&dFriendAsks,&dFriendReqs,&dFriendPoints,&dFriendChatUnreadIds,&dFriendChatUnreadMessages,&dFocusPlayers,&dBeFocusPlayers,&dCustomData,&dChaterOpenRequest,&dExpeditions,&dHandbookItems,&dHeadItems,&dActivitys,&dSuitAwards,&dZans,&dFoster,&dFosterCats,&dFosterCatOnFriends,&dFosterFriendCats,&dChats,&dAnouncement,&dFirstDrawCards,&dTalkForbid,&dServerRewards,&dMailCommon,&dMails,&dPayCommon,&dPays,&dGuideData,&dActivityDatas,&dSysMail,&dSurface)
 		if err != nil {
 			log.Error("Scan err[%v]", err.Error())
 			return
@@ -15119,11 +14919,6 @@ func (this *dbPlayerTable) Preload() (err error) {
 		err = row.SignInfo.load(dSignInfo)
 		if err != nil {
 			log.Error("SignInfo %v", PlayerId)
-			return
-		}
-		err = row.Guidess.load(dGuidess)
-		if err != nil {
-			log.Error("Guidess %v", PlayerId)
 			return
 		}
 		err = row.FriendRelative.load(dFriendRelative)

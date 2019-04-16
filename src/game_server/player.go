@@ -900,7 +900,7 @@ func (this *Player) send_data_on_login(new_player bool) {
 	this.send_stage_info()
 	this.get_formulas()
 	this.pull_formula_building()
-	this.SyncPlayerGuideData()
+	this.guide_data()
 }
 
 func C2SGetInfoHandler(p *Player, msg_data []byte) int32 {
@@ -944,7 +944,7 @@ func C2SGetInfoHandler(p *Player, msg_data []byte) int32 {
 	}
 
 	if req.GetGuide() {
-		p.SyncPlayerGuideData()
+		p.guide_data()
 	}
 
 	if req.GetCatHouse() {
