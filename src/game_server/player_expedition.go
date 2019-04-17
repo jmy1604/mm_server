@@ -104,7 +104,22 @@ func (p *Player) CheckUpdateExpedition() {
 	cur_ids, cur_count := p.db.Expeditions.CheckUpdateExpedition(p.db.Info.GetLvl())
 	log.Info("C2SGetAllExpeditionHandler %v %v", cur_ids, cur_count)
 	if cur_count < global_config.ExpeditionTaskCount {
+		// 新手引导
+		var first_task *tables.XmlExpeditionItem
+		if p.db.ExpeditionCommon.GetNoNewbee() <= 0 && p.db.Expeditions.NumAll() <= 0 {
+			first_task = expedition_table_mgr.Map[global_config.ExpeditionFirstTask]
+			if first_task != nil {
+				p.db.ExpeditionCommon.SetNoNewbee(1)
+				cur_count += 1
+			}
+		}
+
 		new_tasks := expedition_table_mgr.RandNWithExistIds(cur_ids, p.db.Info.GetLvl(), global_config.ExpeditionTaskCount-cur_count)
+
+		if first_task != nil {
+			new_tasks = append(new_tasks, first_task)
+		}
+
 		var tmp_task *dbPlayerExpeditionData
 
 		var rand_val, total_weight int32

@@ -80,6 +80,7 @@ type GlobalConfig struct {
 	ShopStartRefreshTime string
 	ShopRefreshTime      string
 
+	ExpeditionFirstTask       int32 // 第一个引导任务
 	ExpeditionTaskCount       int32 // 日常任务的数目
 	ExpeditionSPEventSec      int32 // 特殊日常任务间隔
 	ExpeditionDayFreeChgCount int32 // 每日免费刷新任务次数

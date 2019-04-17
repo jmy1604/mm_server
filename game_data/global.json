@@ -67,6 +67,7 @@
 	"ShopStartRefreshTime": "2017-Oct-12 08:00:00",
 	"ShopRefreshTime": "Monday 08:00:00",
 	
+	"ExpeditionFirstTask": 22141,
 	"ExpeditionTaskCount":4,
 	"ExpeditionSPEventSec":60,
 	"ExpeditionDayFreeChgCount":4,
