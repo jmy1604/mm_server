@@ -2,5 +2,5 @@
 <Config>
 	<item Id="1" dropID="[10004,1]" cost="[201,1]" FirstDropID="[]" />
 	<item Id="2" dropID="[10005,1]" cost="[202,1]" FirstDropID="[10010,1]" />
-	<item Id="3" dropID="[10006,1]" cost="[3,200]" FirstDropID="[]" />
+	<item Id="3" dropID="[10006,1]" cost="[3,200]" FirstDropID="[10024,1]" />
 </Config>

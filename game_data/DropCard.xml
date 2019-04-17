@@ -120,4 +120,5 @@
 	<item Id="30118" GroupId="30107" Type="306" Weight="100" min="2" max="5" />
 	<item Id="30119" GroupId="30108" Type="307" Weight="100" min="2" max="5" />
 	<item Id="30120" GroupId="30109" Type="308" Weight="100" min="2" max="5" />
+	<item Id="30121" GroupId="10024" Type="10406" Weight="100" min="1" max="1" />
 </Config>
