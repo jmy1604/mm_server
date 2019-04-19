@@ -1238,7 +1238,7 @@ func C2SGetHandbookHandler(p *Player, msg_data []byte) int32 {
 			response.AwardSuitId[i] = suit_ids[i]
 		}
 	}
-	p.Send(uint16(msg_client_message.S2CGetHandbook_ProtoID), response)
+	p.Send(uint16(msg_client_message.S2CGetHandbookResult_ProtoID), response)
 	return 1
 }
 
