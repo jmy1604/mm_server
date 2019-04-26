@@ -227,10 +227,12 @@ func (this *Player) add_all_items() {
 
 func (this *Player) OnCreate() {
 	// 随机初始名称
-	tmp_acc := this.Account
+	/*tmp_acc := this.Account
 	if len(tmp_acc) > 6 {
 		tmp_acc = string([]byte(tmp_acc)[0:6])
-	}
+	}*/
+
+	this.first_gen_achieve_tasks()
 
 	//this.db.SetName(fmt.Sprintf("MM_%s_%d", tmp_acc, this.Id))
 	this.db.Info.SetLvl(1)
@@ -900,6 +902,7 @@ func (this *Player) send_data_on_login(new_player bool) {
 	this.send_stage_info()
 	this.get_formulas()
 	this.pull_formula_building()
+	this.send_task(0)
 	this.guide_data()
 }
 

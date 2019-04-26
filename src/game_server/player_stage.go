@@ -333,6 +333,9 @@ func C2SStagePassBeginHandler(p *Player, msg_data []byte) int32 {
 	response := &msg_client_message.S2CStageBeginResult{}
 	response.StageId = req.GetStageId()
 	p.Send(uint16(msg_client_message.S2CStageBeginResult_ProtoID), response)
+
+	log.Trace("Player %v begin stage %v", p.Id, req.GetStageId())
+
 	return 1
 }
 
@@ -423,7 +426,7 @@ func (p *Player) stage_pass(result int32, stageid int32, score int32, stars int3
 		}
 	}*/
 
-	log.Info("Stage Pass res %v", new_session.ret)
+	log.Trace("Stage Pass res %v", new_session.ret)
 
 	p.SendItemsUpdate()
 	p.SendCatsUpdate()
