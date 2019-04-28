@@ -10,10 +10,12 @@ import (
 	"math/rand"
 	"os"
 	"os/exec"
-	_ "mm_server/proto/gen_go/db_rpc"
+	"mm_server/proto/gen_go/db_rpc"
 	"strings"
 	"sync/atomic"
 	"time"
+	
+	"github.com/golang/protobuf/proto"
 )
 
 type dbArgs struct {

@@ -193,7 +193,7 @@ func (this *FriendRecommendMgr) Random(player_id int32) (ids []int32) {
 
 // ----------------------------------------------------------------------------
 
-func send_search_player_msg(p *Player, players_info []*rpc_proto.H2R_SearchPlayerInfo) {
+func send_search_player_msg(p *Player, players_info []*rpc_proto.G2R_SearchPlayerInfo) {
 	var results []*msg_client_message.FriendInfo
 	if players_info == nil || len(players_info) == 0 {
 		results = make([]*msg_client_message.FriendInfo, 0)

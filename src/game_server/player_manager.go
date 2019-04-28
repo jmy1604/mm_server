@@ -217,7 +217,7 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetSuitHandbookReward_ProtoID), C2SGetSuitHandbookRewardHandler)
 
 	// 排行榜
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRankListRequest_ProtoID), C2SPullRankingListHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRankListRequest_ProtoID), C2SRankingListHandler)
 
 	// 世界聊天
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChatMsgPullRequest_ProtoID), C2SWorldChatMsgPullHandler)

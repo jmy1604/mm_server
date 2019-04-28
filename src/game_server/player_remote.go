@@ -9,6 +9,20 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
+type rpc_func func(int32, []byte) ([]byte, int32)
+type rpc_mfunc func([]int32, []byte) ([]byte, int32)
+type rpc_broadcast_func func(int32, []byte) ([]byte, int32)
+
+var id2rpc_funcs = map[int32]rpc_func{
+	int32(msg_rpc_message.MSGID_G2G_PLAYER_INFO_REQUEST): remote_get_player_info_response,
+}
+
+var id2rpc_mfuncs = map[int32]rpc_mfunc{
+	int32(msg_rpc_message.MSGID_G2G_PLAYER_MULTI_INFO_REQUEST): remote_get_multi_player_info_response,
+}
+
+var id2rpc_broadcast_func = map[int32]rpc_broadcast_func{}
+
 func _marshal_msg(msg proto.Message) (msg_data []byte, err error) {
 	msg_data, err = proto.Marshal(msg)
 	if nil != err {
@@ -176,17 +190,3 @@ func remote_get_multi_player_info_response(to_player_ids []int32, req_data []byt
 	err_code = 1
 	return
 }
-
-type rpc_func func(int32, []byte) ([]byte, int32)
-type rpc_mfunc func([]int32, []byte) ([]byte, int32)
-type rpc_broadcast_func func([]byte)
-
-var id2rpc_funcs = map[int32]rpc_func{
-	int32(msg_rpc_message.MSGID_G2G_PLAYER_INFO_REQUEST): remote_get_player_info_response,
-}
-
-var id2rpc_mfuncs = map[int32]rpc_mfunc{
-	int32(msg_rpc_message.MSGID_G2G_PLAYER_MULTI_INFO_REQUEST): remote_get_multi_player_info_response,
-}
-
-var id2rpc_broadcast_func = map[int32]rpc_broadcast_func{}

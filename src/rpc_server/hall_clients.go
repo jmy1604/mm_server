@@ -6,7 +6,7 @@ import (
 	"mm_server/src/share_data"
 )
 
-type HallRpcClient struct {
+type GameRpcClient struct {
 	server_idx int32
 	server_id  int32
 	server_ip  string
@@ -20,7 +20,7 @@ func GetRpcClientByServerId(server_id int32) *rpc.Client {
 		log.Error("get server info by server_id[%v] from failed", server_id)
 		return nil
 	}
-	r := server.hall_rpc_clients[server_id]
+	r := server.game_rpc_clients[server_id]
 	if r == nil {
 		log.Error("通过ServerID[%v]获取rpc客户端失败", server_id)
 		return nil

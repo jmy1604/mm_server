@@ -4,8 +4,9 @@ md gen_go
 cd gen_go
 
 md server_message
-md db_center
+md db_login
 md db_game
+md db_rpc
 
 cd ../../third_party/protobuf
 

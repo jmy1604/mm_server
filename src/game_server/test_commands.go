@@ -2,12 +2,10 @@ package main
 
 import (
 	"mm_server/libs/log"
-	//"mm_server/libs/timer"
 	"mm_server/libs/utils"
 	"mm_server/proto/gen_go/client_message"
+	"mm_server/src/common"
 	"strconv"
-
-	//"time"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -1722,19 +1720,15 @@ func ranklist_cmd(p *Player, args []string) int32 {
 		}
 	}
 
-	if rank_type == 1 {
-		return p.get_stage_total_score_rank_list(int32(rank_start), int32(rank_num))
-	} else if rank_type == 2 {
-		return p.get_stage_score_rank_list(int32(param), int32(rank_start), int32(rank_num))
-	} else if rank_type == 3 {
-		return p.get_charm_rank_list(int32(rank_start), int32(rank_num))
-	} else if rank_type == 4 {
-		return p.get_cat_ouqi_rank_list(int32(param), int32(rank_start), int32(rank_num))
-	} else if rank_type == 5 {
-		return p.get_zaned_rank_list(int32(rank_start), int32(rank_num))
+	if rank_type != common.RANK_LIST_TYPE_CAT_OUQI {
+		if rank_type == common.RANK_LIST_TYPE_STAGE_TOTAL_SCORE || rank_type == common.RANK_LIST_TYPE_CHARM || rank_type == common.RANK_LIST_TYPE_BE_ZANED {
+			return p.rank_list_get_data(int32(rank_type), int32(rank_start), int32(rank_num), nil)
+		} else {
+			log.Error("rank_type[%v] is invalid")
+			return -1
+		}
 	} else {
-		log.Error("rank_type[%v] is invalid")
-		return -1
+		return p.rank_list_get_data(int32(rank_type), int32(rank_start), int32(rank_num), []int32{int32(param)})
 	}
 }
 

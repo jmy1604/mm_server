@@ -5,45 +5,45 @@ import (
 )
 
 // 修改基本信息
-type H2H_BaseInfo struct {
+type G2G_BaseInfo struct {
 	FromPlayerId int32
 	Nick         string
 	Level        int32
 	Head         string
 }
-type H2H_BaseInfoResult struct {
+type G2G_BaseInfoResult struct {
 	Error int32
 }
 
 // 搜索好友
-type H2H_SearchFriend struct {
+type G2G_SearchFriend struct {
 	PlayerId int32
 }
-type H2H_SearchFriendResult struct {
+type G2G_SearchFriendResult struct {
 	PlayerId   int32
 	PlayerName string
 }
 
 // 添加好友
-type H2H_AddFriend struct {
+type G2G_AddFriend struct {
 	FromPlayerId    int32
 	FromPlayerName  string
 	FromPlayerHead  string
 	FromPlayerLevel int32
 	ToPlayerId      int32
 }
-type H2H_AddFriendResult struct {
+type G2G_AddFriendResult struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 	Error        int32 // 1 对方好友已满
 }
 
 // 同意加为好友
-type H2H_AgreeAddFriend struct {
+type G2G_AgreeAddFriend struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 }
-type H2H_AgreeAddFriendResult struct {
+type G2G_AgreeAddFriendResult struct {
 	FromPlayerId    int32
 	FromPlayerName  string
 	FromPlayerHead  string
@@ -52,20 +52,20 @@ type H2H_AgreeAddFriendResult struct {
 }
 
 // 删除好友
-type H2H_RemoveFriend struct {
+type G2G_RemoveFriend struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 }
-type H2H_RemoveFriendResult struct {
+type G2G_RemoveFriendResult struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 }
 
 // 获取好友数据
-type H2H_GetFriendInfo struct {
+type G2G_GetFriendInfo struct {
 	PlayerId int32
 }
-type H2H_GetFriendInfoResult struct {
+type G2G_GetFriendInfoResult struct {
 	PlayerId   int32
 	PlayerName string
 	Level      int32
@@ -75,12 +75,12 @@ type H2H_GetFriendInfoResult struct {
 }
 
 // 赠送友情点
-type H2H_GiveFriendPoints struct {
+type G2G_GiveFriendPoints struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 	GivePoints   int32
 }
-type H2H_GiveFriendPointsResult struct {
+type G2G_GiveFriendPointsResult struct {
 	FromPlayerId  int32
 	ToPlayerId    int32
 	GivePoints    int32
@@ -90,12 +90,12 @@ type H2H_GiveFriendPointsResult struct {
 }
 
 // 好友聊天
-type H2H_FriendChat struct {
+type G2G_FriendChat struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 	Message      []byte
 }
-type H2H_FriendChatResult struct {
+type G2G_FriendChatResult struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 	Message      []byte
@@ -103,26 +103,26 @@ type H2H_FriendChatResult struct {
 }
 
 // 刷新赠送友情点
-type H2H_RefreshGiveFriendPoints struct {
+type G2G_RefreshGiveFriendPoints struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 }
-type H2H_RefreshGiveFriendPointsResult struct {
+type G2G_RefreshGiveFriendPointsResult struct {
 }
 
 // 赞
-type H2H_ZanPlayer struct {
+type G2G_ZanPlayer struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 }
-type H2H_ZanPlayerResult struct {
+type G2G_ZanPlayerResult struct {
 	FromPlayerId   int32
 	ToPlayerId     int32
 	ToPlayerZanNum int32
 }
 
 // 寄养猫到好友寄养所
-type H2H_FosterCat2Friend struct {
+type G2G_FosterCat2Friend struct {
 	FromPlayerId         int32
 	FromPlayerLevel      int32
 	FromPlayerName       string
@@ -133,39 +133,39 @@ type H2H_FosterCat2Friend struct {
 	FromPlayerCatStar    int32
 	ToFriendId           int32
 }
-type H2H_FosterCat2FriendResult struct {
+type G2G_FosterCat2FriendResult struct {
 	//FromPlayerId    int32
 	//FromPlayerCatId int32
 	//ToFriendId      int32
 }
 
 // 结算给好友寄养所收益
-type H2H_FosterSettlement2Friend struct {
+type G2G_FosterSettlement2Friend struct {
 	FromPlayerId   int32
 	ToPlayerId     int32
 	ToPlayerCatId  int32
 	ToPlayerCatExp int32
 	ToPlayerItems  map[int32]int32
 }
-type H2H_FosterSettlement2FriendResult struct {
+type G2G_FosterSettlement2FriendResult struct {
 	// 不需要返回任何数据
 }
 
 // 结算好友的寄养所
-type H2H_FosterSettlementPlayersCatWithFriend struct {
+type G2G_FosterSettlementPlayersCatWithFriend struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 }
-type H2H_FosterSettlementPlayersCatWithFriendResult struct {
+type G2G_FosterSettlementPlayersCatWithFriendResult struct {
 }
 
 // 获得寄养在好友的猫
-type H2H_FosterGetCatInfoOnFriend struct {
+type G2G_FosterGetCatInfoOnFriend struct {
 	FromPlayerId    int32
 	ToPlayerId      int32
 	FromPlayerCatId int32
 }
-type H2H_FosterGetCatInfoOnFriendResult struct {
+type G2G_FosterGetCatInfoOnFriendResult struct {
 	FromPlayerId     int32
 	FromPlayerCatId  int32
 	ToFriendId       int32
@@ -179,16 +179,16 @@ type H2H_FosterGetCatInfoOnFriendResult struct {
 }
 
 // 获取玩家的寄养数据
-type H2H_FosterGetPlayerFosterData struct {
+type G2G_FosterGetPlayerFosterData struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 }
-type H2H_FosterCat struct {
+type G2G_FosterCat struct {
 	CatTableId int32
 	CatLevel   int32
 	CatStar    int32
 }
-type H2H_FosteredCat struct {
+type G2G_FosteredCat struct {
 	StartCardId    int32
 	RemainSeconds  int32
 	CatTableId     int32
@@ -201,22 +201,22 @@ type H2H_FosteredCat struct {
 	PlayerName     string
 	PlayerHead     string
 }
-type H2H_FosterGetPlayerFosterDataResult struct {
+type G2G_FosterGetPlayerFosterDataResult struct {
 	FromPlayerId      int32
 	ToPlayerId        int32
 	FosterCardId      int32             // 寄养卡ID
 	CardRemainSeconds int32             // 寄养卡剩余时间
-	PlayerCats        []H2H_FosterCat   // 玩家寄养的猫
-	PlayerFriendCats  []H2H_FosteredCat // 玩家好友寄养的猫
+	PlayerCats        []G2G_FosterCat   // 玩家寄养的猫
+	PlayerFriendCats  []G2G_FosteredCat // 玩家好友寄养的猫
 	FosteredSlot      int32             // 好友寄养所总槽位
 }
 
 // 获取有寄养空位的好友数据
-type H2H_FosterGetEmptySlotFriendInfo struct {
+type G2G_FosterGetEmptySlotFriendInfo struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 }
-type H2H_FosterGetEmptySlotFriendInfoResult struct {
+type G2G_FosterGetEmptySlotFriendInfoResult struct {
 	FromPlayerId      int32
 	ToPlayerId        int32
 	ToPlayerName      string
@@ -228,18 +228,18 @@ type H2H_FosterGetEmptySlotFriendInfoResult struct {
 }
 
 // 通知世界聊天
-type H2H_WorldChat struct {
+type G2G_WorldChat struct {
 	FromPlayerId    int32
 	FromPlayerLevel int32
 	FromPlayerName  string
 	FromPlayerHead  string
 	ChatContent     []byte
 }
-type H2H_WorldChatResult struct {
+type G2G_WorldChatResult struct {
 }
 
 // 公告
-type H2H_Anouncement struct {
+type G2G_Anouncement struct {
 	MsgType         int32
 	FromPlayerId    int32
 	FromPlayerLevel int32
@@ -250,36 +250,36 @@ type H2H_Anouncement struct {
 	MsgParam3       int32
 	MsgText         string
 }
-type H2H_AnouncementResult struct {
+type G2G_AnouncementResult struct {
 }
 
 // 拜访玩家基地
-type H2H_VisitPlayer struct {
+type G2G_VisitPlayer struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 }
-type H2H_CropData struct {
+type G2G_CropData struct {
 	CropId        int32
 	RemainSeconds int32
 }
-type H2H_CatHouseData struct {
+type G2G_CatHouseData struct {
 	CatIds        []int32
 	CatHouseLevel int32
 	IsDone        bool
 }
-type H2H_BuildingInfo struct {
+type G2G_BuildingInfo struct {
 	BuildingId      int32
 	BuildingTableId int32
 	CordX           int32
 	CordY           int32
 	Dir             int32
-	CropData        *H2H_CropData
-	CatHouseData    *H2H_CatHouseData
+	CropData        *G2G_CropData
+	CatHouseData    *G2G_CatHouseData
 }
-type H2H_AreaInfo struct {
+type G2G_AreaInfo struct {
 	TableId int32
 }
-type H2H_VisitPlayerResult struct {
+type G2G_VisitPlayerResult struct {
 	FromPlayerId     int32
 	ToPlayerId       int32
 	ToPlayerName     string // 昵称
@@ -289,17 +289,17 @@ type H2H_VisitPlayerResult struct {
 	ToPlayerGold     int32  // 金币
 	ToPlayerDiamond  int32  // 钻石
 	ToPlayerCharm    int32  // 魅力值
-	Buildings        []*H2H_BuildingInfo
-	Areas            []*H2H_AreaInfo
+	Buildings        []*G2G_BuildingInfo
+	Areas            []*G2G_AreaInfo
 }
 
 // 获取玩家宝箱配置ID
-type H2H_GetPlayerChestTableId struct {
+type G2G_GetPlayerChestTableId struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 	ChestId      int32
 }
-type H2H_GetPlayerChestTableIdResult struct {
+type G2G_GetPlayerChestTableIdResult struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 	ChestId      int32
@@ -308,24 +308,24 @@ type H2H_GetPlayerChestTableIdResult struct {
 }
 
 // 打开好友宝箱
-type H2H_OpenFriendChest struct {
+type G2G_OpenFriendChest struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 	ChestId      int32
 }
-type H2H_OpenFriendChestResult struct {
+type G2G_OpenFriendChestResult struct {
 	FromPlayerId int32
 	ToPlayerId   int32
 	ChestTableId int32
 }
 
 // 获取玩家猫的数据
-type H2H_PlayerCatInfo struct {
+type G2G_PlayerCatInfo struct {
 	FromPlayerId  int32
 	ToPlayerId    int32
 	ToPlayerCatId int32
 }
-type H2H_PlayerCatInfoResult struct {
+type G2G_PlayerCatInfoResult struct {
 	FromPlayerId          int32
 	ToPlayerId            int32
 	ToPlayerCatId         int32
@@ -340,38 +340,38 @@ type H2H_PlayerCatInfoResult struct {
 }
 
 func RegisterRpcUserType() {
-	rpc.RegisterUserType(&H2H_BaseInfo{})
-	rpc.RegisterUserType(&H2H_BaseInfoResult{})
-	rpc.RegisterUserType(&H2H_GetFriendInfo{})
-	rpc.RegisterUserType(&H2H_GetFriendInfoResult{})
-	rpc.RegisterUserType(&H2H_SearchFriend{})
-	rpc.RegisterUserType(&H2H_AddFriend{})
-	rpc.RegisterUserType(&H2H_AgreeAddFriend{})
-	rpc.RegisterUserType(&H2H_RemoveFriend{})
-	rpc.RegisterUserType(&H2H_GiveFriendPoints{})
-	rpc.RegisterUserType(&H2H_VisitPlayer{})
-	rpc.RegisterUserType(&H2H_CropData{})
-	rpc.RegisterUserType(&H2H_CatHouseData{})
-	rpc.RegisterUserType(&H2H_BuildingInfo{})
-	rpc.RegisterUserType(&H2H_FriendChat{})
-	rpc.RegisterUserType(&H2H_ZanPlayer{})
-	rpc.RegisterUserType(&H2H_FosterCat2Friend{})
-	rpc.RegisterUserType(&H2H_FosterSettlement2Friend{})
-	rpc.RegisterUserType(&H2H_FosterSettlementPlayersCatWithFriend{})
-	rpc.RegisterUserType(&H2H_FosterGetCatInfoOnFriend{})
-	rpc.RegisterUserType(&H2H_FosterGetPlayerFosterData{})
-	rpc.RegisterUserType(&H2H_FosterCat{})
-	rpc.RegisterUserType(&H2H_FosteredCat{})
-	rpc.RegisterUserType(&H2H_FosterGetPlayerFosterData{})
-	rpc.RegisterUserType(&H2H_FosterGetEmptySlotFriendInfo{})
-	rpc.RegisterUserType(&H2H_FosterGetEmptySlotFriendInfoResult{})
-	rpc.RegisterUserType(&H2H_WorldChat{})
-	rpc.RegisterUserType(&H2H_WorldChatResult{})
-	rpc.RegisterUserType(&H2H_Anouncement{})
-	rpc.RegisterUserType(&H2H_AnouncementResult{})
-	rpc.RegisterUserType(&H2H_VisitPlayerResult{})
-	rpc.RegisterUserType(&H2H_OpenFriendChest{})
-	rpc.RegisterUserType(&H2H_OpenFriendChestResult{})
-	rpc.RegisterUserType(&H2H_PlayerCatInfo{})
-	rpc.RegisterUserType(&H2H_PlayerCatInfoResult{})
+	rpc.RegisterUserType(&G2G_BaseInfo{})
+	rpc.RegisterUserType(&G2G_BaseInfoResult{})
+	rpc.RegisterUserType(&G2G_GetFriendInfo{})
+	rpc.RegisterUserType(&G2G_GetFriendInfoResult{})
+	rpc.RegisterUserType(&G2G_SearchFriend{})
+	rpc.RegisterUserType(&G2G_AddFriend{})
+	rpc.RegisterUserType(&G2G_AgreeAddFriend{})
+	rpc.RegisterUserType(&G2G_RemoveFriend{})
+	rpc.RegisterUserType(&G2G_GiveFriendPoints{})
+	rpc.RegisterUserType(&G2G_VisitPlayer{})
+	rpc.RegisterUserType(&G2G_CropData{})
+	rpc.RegisterUserType(&G2G_CatHouseData{})
+	rpc.RegisterUserType(&G2G_BuildingInfo{})
+	rpc.RegisterUserType(&G2G_FriendChat{})
+	rpc.RegisterUserType(&G2G_ZanPlayer{})
+	rpc.RegisterUserType(&G2G_FosterCat2Friend{})
+	rpc.RegisterUserType(&G2G_FosterSettlement2Friend{})
+	rpc.RegisterUserType(&G2G_FosterSettlementPlayersCatWithFriend{})
+	rpc.RegisterUserType(&G2G_FosterGetCatInfoOnFriend{})
+	rpc.RegisterUserType(&G2G_FosterGetPlayerFosterData{})
+	rpc.RegisterUserType(&G2G_FosterCat{})
+	rpc.RegisterUserType(&G2G_FosteredCat{})
+	rpc.RegisterUserType(&G2G_FosterGetPlayerFosterData{})
+	rpc.RegisterUserType(&G2G_FosterGetEmptySlotFriendInfo{})
+	rpc.RegisterUserType(&G2G_FosterGetEmptySlotFriendInfoResult{})
+	rpc.RegisterUserType(&G2G_WorldChat{})
+	rpc.RegisterUserType(&G2G_WorldChatResult{})
+	rpc.RegisterUserType(&G2G_Anouncement{})
+	rpc.RegisterUserType(&G2G_AnouncementResult{})
+	rpc.RegisterUserType(&G2G_VisitPlayerResult{})
+	rpc.RegisterUserType(&G2G_OpenFriendChest{})
+	rpc.RegisterUserType(&G2G_OpenFriendChestResult{})
+	rpc.RegisterUserType(&G2G_PlayerCatInfo{})
+	rpc.RegisterUserType(&G2G_PlayerCatInfoResult{})
 }

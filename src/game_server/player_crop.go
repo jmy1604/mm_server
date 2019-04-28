@@ -34,7 +34,7 @@ func (this *dbPlayerCropColumn) GetCropInfo(building_id int32) (crop_info *msg_c
 	return
 }
 
-func (this *dbPlayerCropColumn) GetCropInfo4RPC(building_id int32) (crop_info *rpc_proto.H2H_CropData) {
+func (this *dbPlayerCropColumn) GetCropInfo4RPC(building_id int32) (crop_info *rpc_proto.G2G_CropData) {
 	this.m_row.m_lock.UnSafeRLock("dbPlayerCropColumn.GetCropInfo4RPC")
 	defer this.m_row.m_lock.UnSafeRUnlock()
 
@@ -52,7 +52,7 @@ func (this *dbPlayerCropColumn) GetCropInfo4RPC(building_id int32) (crop_info *r
 		return nil
 	}
 
-	crop_info = &rpc_proto.H2H_CropData{
+	crop_info = &rpc_proto.G2G_CropData{
 		CropId:        d.Id,
 		RemainSeconds: GetRemainSeconds(d.PlantTime, crop.Times[1]),
 	}
@@ -131,16 +131,16 @@ func (this *dbPlayerCropColumn) Get4FriendMsg() (crops []*msg_client_message.Fri
 	return
 }
 */
-func (this *dbPlayerCropColumn) Get4RPC() (crops []*rpc_proto.H2H_CropData) {
+func (this *dbPlayerCropColumn) Get4RPC() (crops []*rpc_proto.G2G_CropData) {
 	this.m_row.m_lock.UnSafeLock("dbPlayerCropColumn.Get4RPC")
 	defer this.m_row.m_lock.UnSafeUnlock()
 
 	if this.m_data == nil || len(this.m_data) == 0 {
-		crops = make([]*rpc_proto.H2H_CropData, 0)
+		crops = make([]*rpc_proto.G2G_CropData, 0)
 	}
 
 	log.Debug("Player[%v] crops[%v]", this.m_row.m_PlayerId, this.m_data)
-	crops = make([]*rpc_proto.H2H_CropData, len(this.m_data))
+	crops = make([]*rpc_proto.G2G_CropData, len(this.m_data))
 	c := int32(0)
 	for _, d := range this.m_data {
 		crop := crop_table_mgr.Map[d.Id]
@@ -154,7 +154,7 @@ func (this *dbPlayerCropColumn) Get4RPC() (crops []*rpc_proto.H2H_CropData) {
 			d.PlantTime = 0
 			this.m_changed = true
 		}
-		crops[c] = &rpc_proto.H2H_CropData{
+		crops[c] = &rpc_proto.G2G_CropData{
 			CropId:        d.Id,
 			RemainSeconds: remain_seconds,
 		}

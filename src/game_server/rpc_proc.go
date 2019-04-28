@@ -7,26 +7,26 @@ import (
 )
 
 // ping RPC服务
-type R2H_PingProc struct{}
+type R2G_PingProc struct{}
 
-func (this *R2H_PingProc) Do(args *rpc_proto.R2H_Ping, reply *rpc_proto.R2H_Pong) error {
+func (this *R2G_PingProc) Do(args *rpc_proto.R2G_Ping, reply *rpc_proto.R2G_Pong) error {
 	// 不做任何处理
 	log.Info("收到rpc服务的ping请求")
 	return nil
 }
 
 // 全局调用
-type H2H_GlobalProc struct {
+type G2G_GlobalProc struct {
 }
 
-func (this *H2H_GlobalProc) WorldChat(args *rpc_proto.H2H_WorldChat, result *rpc_proto.H2H_WorldChatResult) error {
+func (this *G2G_GlobalProc) WorldChat(args *rpc_proto.G2G_WorldChat, result *rpc_proto.G2G_WorldChatResult) error {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Stack(err)
 		}
 	}()
 
-	log.Debug("@@@ H2H_GlobalProc::WorldChat Player[%v] world chat content[%v]", args.FromPlayerId, args.ChatContent)
+	log.Debug("@@@ G2G_GlobalProc::WorldChat Player[%v] world chat content[%v]", args.FromPlayerId, args.ChatContent)
 	return nil
 }
 
@@ -38,10 +38,10 @@ func (this *GameServer) init_rpc_service() bool {
 	this.rpc_service = &rpc.Service{}
 
 	// 注册RPC服务
-	if !this.rpc_service.Register(&R2H_PingProc{}) {
+	if !this.rpc_service.Register(&R2G_PingProc{}) {
 		return false
 	}
-	if !this.rpc_service.Register(&H2H_GlobalProc{}) {
+	if !this.rpc_service.Register(&G2G_GlobalProc{}) {
 		return false
 	}
 
@@ -49,9 +49,9 @@ func (this *GameServer) init_rpc_service() bool {
 		return false
 	}
 
-	if !this.rpc_service.Register(&G2H_Proc{}) {
+	/*if !this.rpc_service.Register(&G2G_Proc{}) {
 		return false
-	}
+	}*/
 
 	if this.rpc_service.Listen(config.ListenRpcServerIP) != nil {
 		log.Error("监听rpc服务端口[%v]失败", config.ListenRpcServerIP)

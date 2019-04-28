@@ -22,9 +22,9 @@ func (this *GameServer) init_rpc_client() bool {
 	this.rpc_client = rpc.NewClient()
 	var on_connect rpc.OnConnectFunc = func(args interface{}) {
 		rpc_client := args.(*rpc.Client)
-		proc_string := "H2R_ListenRPCProc.Do"
-		var arg = rpc_proto.H2R_ListenIPNoitfy{config.ListenRpcServerIP, config.ServerId}
-		var result = rpc_proto.H2R_ListenIPResult{}
+		proc_string := "G2R_ListenRPCProc.Do"
+		var arg = rpc_proto.G2R_ListenIPNoitfy{config.ListenRpcServerIP, config.ServerId}
+		var result = rpc_proto.G2R_ListenIPResult{}
 		err := rpc_client.Call(proc_string, arg, &result)
 		if err != nil {
 			log.Error("RPC调用[%v]失败, err:%v", proc_string, err.Error())
@@ -53,35 +53,35 @@ func (this *GameServer) uninit_rpc_client() {
 }
 
 // 游戏服到游戏服调用
-func (this *GameServer) rpc_hall2hall(receive_player_id int32, method string, args interface{}, reply interface{}) error {
+func (this *GameServer) rpc_game2game(receive_player_id int32, method string, args interface{}, reply interface{}) error {
 	if this.rpc_client == nil {
 		err := errors.New("!!!! rpc client is null")
 		return err
 	}
-	transfer_args := &rpc_proto.H2R_Transfer{}
+	transfer_args := &rpc_proto.G2R_Transfer{}
 	transfer_args.Method = method
 	transfer_args.Args = args
 	transfer_args.ReceivePlayerId = receive_player_id
-	transfer_reply := &rpc_proto.H2R_TransferResult{}
+	transfer_reply := &rpc_proto.G2R_TransferResult{}
 	transfer_reply.Result = reply
 
 	log.Debug("@@@@@ #####  transfer_args[%v]  transfer_reply[%v]", transfer_args.Args, transfer_reply.Result)
 
-	err := this.rpc_client.Call("H2H_CallProc.Do", transfer_args, transfer_reply)
+	err := this.rpc_client.Call("G2G_CallProc.Do", transfer_args, transfer_reply)
 	if err != nil {
-		log.Error("RPC @@@ H2H_CallProc.Do(%v,%v) error(%v)", transfer_args, transfer_reply, err.Error())
+		log.Error("RPC @@@ G2G_CallProc.Do(%v,%v) error(%v)", transfer_args, transfer_reply, err.Error())
 	}
 	return err
 }
 
 // 充值记录
-func (p *Player) rpc_charge_save(channel int32, order_id, bundle_id, account string, player_id, pay_time int32, pay_time_str string) (result *rpc_proto.H2R_ChargeSaveResult) {
+func (p *Player) rpc_charge_save(channel int32, order_id, bundle_id, account string, player_id, pay_time int32, pay_time_str string) (result *rpc_proto.G2R_ChargeSaveResult) {
 	rpc_client := get_rpc_client()
 	if rpc_client == nil {
 		return nil
 	}
 
-	var args = rpc_proto.H2R_ChargeSave{
+	var args = rpc_proto.G2R_ChargeSave{
 		Channel:    channel,
 		OrderId:    order_id,
 		BundleId:   bundle_id,
@@ -91,10 +91,56 @@ func (p *Player) rpc_charge_save(channel int32, order_id, bundle_id, account str
 		PayTimeStr: pay_time_str,
 	}
 
-	result = &rpc_proto.H2R_ChargeSaveResult{}
-	err := rpc_client.Call("H2R_GlobalProc.ChargeSave", &args, result)
+	result = &rpc_proto.G2R_ChargeSaveResult{}
+	err := rpc_client.Call("G2R_GlobalProc.ChargeSave", &args, result)
 	if err != nil {
 		log.Error("RPC ### Player[%v] charge save err[%v]", p.Id, err.Error())
 	}
+	return
+}
+
+// 排行榜数据更新
+func (this *Player) rpc_rank_list_update_data(rank_type int32, rank_params []int32) (result *rpc_proto.G2R_RankListDataUpdateResult) {
+	rpc_client := get_rpc_client()
+	if rpc_client == nil {
+		return nil
+	}
+
+	var args = rpc_proto.G2R_RankListDataUpdate{
+		RankType:  rank_type,
+		PlayerId:  this.Id,
+		RankParam: rank_params,
+	}
+
+	result = &rpc_proto.G2R_RankListDataUpdateResult{}
+	err := rpc_client.Call("G2R_RankListProc.UpdateData", &args, result)
+	if err != nil {
+		log.Error("RPC ### Player[%v] update rank type %v data by params %v, err %v", this.Id, args.RankType, args.RankParam, err.Error())
+	}
+
+	return
+}
+
+// 排行榜获取数据
+func (this *Player) rpc_rank_list_get_data(rank_type, start_rank, rank_num int32, rank_param int32) (result *rpc_proto.G2R_RankListGetDataResult) {
+	rpc_client := get_rpc_client()
+	if rpc_client == nil {
+		return nil
+	}
+
+	var args = rpc_proto.G2R_RankListGetData{
+		RankType:  rank_type,
+		PlayerId:  this.Id,
+		StartRank: start_rank,
+		RankNum:   rank_num,
+		RankParam: rank_param,
+	}
+
+	result = &rpc_proto.G2R_RankListGetDataResult{}
+	err := rpc_client.Call("G2R_RankListProc.GetRankItems", &args, result)
+	if err != nil {
+		log.Error("RPC ### Player[%v] get rank type %v items by start_rank(%v) rank_num(%v), err %v", this.Id, rank_type, start_rank, rank_num)
+	}
+
 	return
 }

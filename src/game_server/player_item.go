@@ -3,6 +3,7 @@ package main
 import (
 	"mm_server/libs/log"
 	"mm_server/proto/gen_go/client_message"
+	"mm_server/src/common"
 	"mm_server/src/tables"
 	"sync"
 	"time"
@@ -976,9 +977,9 @@ func (this *Player) SubCharmVal(sub_val int32, reason, mod string) int32 {
 	this.b_base_prop_chg = true
 
 	// update ranking list
-	/*if this.rpc_call_rank_update_charm(cur_charmval) == nil {
+	if this.rpc_rank_list_update_data(common.RANK_LIST_TYPE_CHARM, []int32{cur_charmval}) == nil {
 		log.Warn("Player[%v] update charm[%v] rank list failed", this.Id, cur_charmval)
-	}*/
+	}
 
 	return cur_charmval
 }
@@ -1001,9 +1002,9 @@ func (this *Player) AddCharmVal(add_val int32, reason, mod string) int32 {
 	this.TaskUpdate(tables.TASK_COMPLETE_TYPE_CHARM_VALUE, false, 0, cur_charmval)
 
 	// update ranking list
-	/*if this.rpc_call_rank_update_charm(cur_charmval) == nil {
+	if this.rpc_rank_list_update_data(common.RANK_LIST_TYPE_CHARM, []int32{cur_charmval}) == nil {
 		log.Warn("Player[%v] update charm[%v] rank list failed", this.Id, cur_charmval)
-	}*/
+	}
 
 	return cur_charmval
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand"
 	"mm_server/libs/log"
+	"mm_server/src/common"
 	"mm_server/src/tables"
 
 	"mm_server/proto/gen_go/client_message"
@@ -610,10 +611,10 @@ func (this *dbPlayerCatColumn) CalcOuqi(cat_id int32) int32 {
 }
 
 func (this *Player) update_ouqi(cat_id int32) {
-	//ouqi := this.db.Cats.CalcOuqi(cat_id)
-	/*if this.rpc_call_rank_update_cat_ouqi(cat_id, ouqi) == nil {
+	ouqi := this.db.Cats.CalcOuqi(cat_id)
+	if this.rpc_rank_list_update_data(common.RANK_LIST_TYPE_CAT_OUQI, []int32{cat_id, ouqi}) == nil {
 		log.Warn("Player[%v] remote update cat[%v] ouqi[%v] failed", this.Id, cat_id, ouqi)
-	}*/
+	}
 }
 
 func (this *Player) get_player_cat_info(player_id int32, cat_id int32) int32 {

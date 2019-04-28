@@ -8,6 +8,11 @@ It is generated from these files:
 	db_rpcsvr.proto
 
 It has these top-level messages:
+	PlayerStageTotalScoreHistoryTopData
+	PlayerCharmHistoryTopData
+	PlayerCatOuqiCat
+	PlayerCatOuqiCatList
+	PlayerBeZanedHistoryTopData
 */
 package db
 
@@ -26,11 +31,167 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+type PlayerStageTotalScoreHistoryTopData struct {
+	Rank             *int32 `protobuf:"varint,1,opt,name=Rank" json:"Rank,omitempty"`
+	Score            *int32 `protobuf:"varint,2,opt,name=Score" json:"Score,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *PlayerStageTotalScoreHistoryTopData) Reset()         { *m = PlayerStageTotalScoreHistoryTopData{} }
+func (m *PlayerStageTotalScoreHistoryTopData) String() string { return proto.CompactTextString(m) }
+func (*PlayerStageTotalScoreHistoryTopData) ProtoMessage()    {}
+func (*PlayerStageTotalScoreHistoryTopData) Descriptor() ([]byte, []int) {
+	return fileDescriptor0, []int{0}
+}
+
+func (m *PlayerStageTotalScoreHistoryTopData) GetRank() int32 {
+	if m != nil && m.Rank != nil {
+		return *m.Rank
+	}
+	return 0
+}
+
+func (m *PlayerStageTotalScoreHistoryTopData) GetScore() int32 {
+	if m != nil && m.Score != nil {
+		return *m.Score
+	}
+	return 0
+}
+
+type PlayerCharmHistoryTopData struct {
+	Rank             *int32 `protobuf:"varint,1,opt,name=Rank" json:"Rank,omitempty"`
+	Charm            *int32 `protobuf:"varint,2,opt,name=Charm" json:"Charm,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *PlayerCharmHistoryTopData) Reset()                    { *m = PlayerCharmHistoryTopData{} }
+func (m *PlayerCharmHistoryTopData) String() string            { return proto.CompactTextString(m) }
+func (*PlayerCharmHistoryTopData) ProtoMessage()               {}
+func (*PlayerCharmHistoryTopData) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+
+func (m *PlayerCharmHistoryTopData) GetRank() int32 {
+	if m != nil && m.Rank != nil {
+		return *m.Rank
+	}
+	return 0
+}
+
+func (m *PlayerCharmHistoryTopData) GetCharm() int32 {
+	if m != nil && m.Charm != nil {
+		return *m.Charm
+	}
+	return 0
+}
+
+type PlayerCatOuqiCat struct {
+	CatId            *int32 `protobuf:"varint,1,opt,name=CatId" json:"CatId,omitempty"`
+	Ouqi             *int32 `protobuf:"varint,2,opt,name=Ouqi" json:"Ouqi,omitempty"`
+	UpdateTime       *int32 `protobuf:"varint,3,opt,name=UpdateTime" json:"UpdateTime,omitempty"`
+	HistoryTopRank   *int32 `protobuf:"varint,4,opt,name=HistoryTopRank" json:"HistoryTopRank,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *PlayerCatOuqiCat) Reset()                    { *m = PlayerCatOuqiCat{} }
+func (m *PlayerCatOuqiCat) String() string            { return proto.CompactTextString(m) }
+func (*PlayerCatOuqiCat) ProtoMessage()               {}
+func (*PlayerCatOuqiCat) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+
+func (m *PlayerCatOuqiCat) GetCatId() int32 {
+	if m != nil && m.CatId != nil {
+		return *m.CatId
+	}
+	return 0
+}
+
+func (m *PlayerCatOuqiCat) GetOuqi() int32 {
+	if m != nil && m.Ouqi != nil {
+		return *m.Ouqi
+	}
+	return 0
+}
+
+func (m *PlayerCatOuqiCat) GetUpdateTime() int32 {
+	if m != nil && m.UpdateTime != nil {
+		return *m.UpdateTime
+	}
+	return 0
+}
+
+func (m *PlayerCatOuqiCat) GetHistoryTopRank() int32 {
+	if m != nil && m.HistoryTopRank != nil {
+		return *m.HistoryTopRank
+	}
+	return 0
+}
+
+type PlayerCatOuqiCatList struct {
+	List             []*PlayerCatOuqiCat `protobuf:"bytes,1,rep,name=List" json:"List,omitempty"`
+	XXX_unrecognized []byte              `json:"-"`
+}
+
+func (m *PlayerCatOuqiCatList) Reset()                    { *m = PlayerCatOuqiCatList{} }
+func (m *PlayerCatOuqiCatList) String() string            { return proto.CompactTextString(m) }
+func (*PlayerCatOuqiCatList) ProtoMessage()               {}
+func (*PlayerCatOuqiCatList) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+func (m *PlayerCatOuqiCatList) GetList() []*PlayerCatOuqiCat {
+	if m != nil {
+		return m.List
+	}
+	return nil
+}
+
+type PlayerBeZanedHistoryTopData struct {
+	Rank             *int32 `protobuf:"varint,1,opt,name=Rank" json:"Rank,omitempty"`
+	Zaned            *int32 `protobuf:"varint,2,opt,name=Zaned" json:"Zaned,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *PlayerBeZanedHistoryTopData) Reset()                    { *m = PlayerBeZanedHistoryTopData{} }
+func (m *PlayerBeZanedHistoryTopData) String() string            { return proto.CompactTextString(m) }
+func (*PlayerBeZanedHistoryTopData) ProtoMessage()               {}
+func (*PlayerBeZanedHistoryTopData) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+
+func (m *PlayerBeZanedHistoryTopData) GetRank() int32 {
+	if m != nil && m.Rank != nil {
+		return *m.Rank
+	}
+	return 0
+}
+
+func (m *PlayerBeZanedHistoryTopData) GetZaned() int32 {
+	if m != nil && m.Zaned != nil {
+		return *m.Zaned
+	}
+	return 0
+}
+
+func init() {
+	proto.RegisterType((*PlayerStageTotalScoreHistoryTopData)(nil), "db.PlayerStageTotalScoreHistoryTopData")
+	proto.RegisterType((*PlayerCharmHistoryTopData)(nil), "db.PlayerCharmHistoryTopData")
+	proto.RegisterType((*PlayerCatOuqiCat)(nil), "db.PlayerCatOuqiCat")
+	proto.RegisterType((*PlayerCatOuqiCatList)(nil), "db.PlayerCatOuqiCatList")
+	proto.RegisterType((*PlayerBeZanedHistoryTopData)(nil), "db.PlayerBeZanedHistoryTopData")
+}
+
 func init() { proto.RegisterFile("db_rpcsvr.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 45 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0xe2, 0x4f, 0x49, 0x8a, 0x2f,
-	0x2a, 0x48, 0x2e, 0x2e, 0x2b, 0xd2, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x4a, 0x49, 0x02,
-	0x04, 0x00, 0x00, 0xff, 0xff, 0x09, 0x6f, 0x36, 0x36, 0x15, 0x00, 0x00, 0x00,
+	// 250 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x8c, 0x90, 0x41, 0x4b, 0x03, 0x31,
+	0x10, 0x85, 0x49, 0xbb, 0xbd, 0x8c, 0xa0, 0x12, 0xf6, 0x10, 0x11, 0xa4, 0x44, 0x90, 0x3d, 0xed,
+	0xc1, 0x5f, 0x20, 0x56, 0x51, 0x41, 0xa8, 0x6c, 0xd7, 0x8b, 0x17, 0x99, 0x6d, 0x82, 0x06, 0xdb,
+	0x26, 0x66, 0x47, 0xa1, 0x77, 0x7f, 0xb8, 0xec, 0x64, 0x8b, 0xb2, 0xa7, 0x9e, 0x92, 0xf7, 0xe6,
+	0x9b, 0xc7, 0x63, 0xe0, 0xc8, 0x34, 0xaf, 0x31, 0x2c, 0xdb, 0xef, 0x58, 0x86, 0xe8, 0xc9, 0xcb,
+	0x91, 0x69, 0xf4, 0x1c, 0xce, 0x9f, 0x56, 0xb8, 0xb5, 0x71, 0x41, 0xf8, 0x66, 0x6b, 0x4f, 0xb8,
+	0x5a, 0x2c, 0x7d, 0xb4, 0xf7, 0xae, 0x25, 0x1f, 0xb7, 0xb5, 0x0f, 0x37, 0x48, 0x28, 0x25, 0x64,
+	0x15, 0x6e, 0x3e, 0x94, 0x98, 0x8a, 0x62, 0x52, 0xf1, 0x5f, 0xe6, 0x30, 0x61, 0x54, 0x8d, 0xd8,
+	0x4c, 0x42, 0xdf, 0xc2, 0x49, 0x0a, 0x9c, 0xbd, 0x63, 0x5c, 0xef, 0x17, 0xc3, 0xe8, 0x2e, 0x86,
+	0x85, 0xfe, 0x11, 0x70, 0xdc, 0xe7, 0x20, 0xcd, 0xbf, 0x3e, 0xdd, 0x0c, 0x89, 0x51, 0xa4, 0x07,
+	0xd3, 0xef, 0x27, 0xd1, 0x85, 0x76, 0x40, 0xbf, 0xcf, 0x7f, 0x79, 0x06, 0xf0, 0x1c, 0x0c, 0x92,
+	0xad, 0xdd, 0xda, 0xaa, 0x31, 0x4f, 0xfe, 0x39, 0xf2, 0x02, 0x0e, 0xff, 0xaa, 0x71, 0xa5, 0x8c,
+	0x99, 0x81, 0xab, 0xaf, 0x20, 0x1f, 0xb6, 0x78, 0x74, 0x2d, 0xc9, 0x02, 0xb2, 0xee, 0x55, 0x62,
+	0x3a, 0x2e, 0x0e, 0x2e, 0xf3, 0xd2, 0x34, 0xe5, 0x90, 0xab, 0x98, 0xd0, 0x77, 0x70, 0x9a, 0x26,
+	0xd7, 0xf6, 0x05, 0x37, 0xd6, 0xec, 0x77, 0x11, 0x46, 0x77, 0x17, 0x61, 0xf1, 0x1b, 0x00, 0x00,
+	0xff, 0xff, 0x15, 0x79, 0x7b, 0xf0, 0xbf, 0x01, 0x00, 0x00,
 }

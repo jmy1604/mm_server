@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (this *dbPlayerCatHouseColumn) Get4RPC(building_id int32) (data *rpc_proto.H2H_CatHouseData) {
+func (this *dbPlayerCatHouseColumn) Get4RPC(building_id int32) (data *rpc_proto.G2G_CatHouseData) {
 	this.m_row.m_lock.UnSafeRLock("dbPlayerCatHouseColumn.Get4RPC")
 	defer this.m_row.m_lock.UnSafeRUnlock()
 
@@ -29,7 +29,7 @@ func (this *dbPlayerCatHouseColumn) Get4RPC(building_id int32) (data *rpc_proto.
 		cat_ids = make([]int32, len(d.CatIds))
 		copy(cat_ids, d.CatIds)
 	}
-	data = &rpc_proto.H2H_CatHouseData{
+	data = &rpc_proto.G2G_CatHouseData{
 		CatIds:        cat_ids,
 		CatHouseLevel: d.Level,
 		IsDone:        is_done,

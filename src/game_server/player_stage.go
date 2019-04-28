@@ -5,6 +5,7 @@ import (
 	"mm_server/libs/log"
 	"mm_server/libs/timer"
 	"mm_server/proto/gen_go/client_message"
+	"mm_server/src/common"
 	"mm_server/src/tables"
 	"sync"
 	"time"
@@ -435,6 +436,8 @@ func (p *Player) stage_pass(result int32, stageid int32, score int32, stars int3
 	p.Send(uint16(msg_client_message.S2CStagePass_ProtoID), new_session.ret)
 
 	p.send_stage_info()
+
+	p.rpc_rank_list_update_data(common.RANK_LIST_TYPE_STAGE_TOTAL_SCORE, []int32{score})
 
 	return 1
 }

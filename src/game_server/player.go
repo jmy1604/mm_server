@@ -4,7 +4,7 @@ import (
 	"mm_server/libs/log"
 	"mm_server/proto/gen_go/client_message"
 	"mm_server/proto/gen_go/server_message"
-
+	"mm_server/src/common"
 	"mm_server/src/tables"
 	"sync"
 	"sync/atomic"
@@ -1575,48 +1575,96 @@ func (this *Player) get_zaned_rank_list(rank_start, rank_num int32) int32 {
 	return 1
 }
 
-func C2SPullRankingListHandler(p *Player, msg_data []byte) int32 {
+func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, param []int32) int32 {
+	var res int32 = 0
+	if rank_start <= 0 {
+		log.Warn("Player[%v] get rank list by type[%v] with rank_start[%v] invalid", this.Id, rank_type, rank_start)
+		return -1
+	}
+	if rank_num <= 0 {
+		log.Warn("Player[%v] get rank list by type[%v] with rank_num[%v] invalid", this.Id, rank_type, rank_num)
+		return -1
+	}
+
+	if rank_num > global_config.RankingListOnceGetItemsNum {
+		return int32(msg_client_message.E_ERR_RANK_GET_ITEMS_NUM_OVER_MAX)
+	}
+
+	var rank_param int32
+	if rank_type == common.RANK_LIST_TYPE_CAT_OUQI {
+		if param == nil || len(param) == 0 {
+			return -1
+		}
+		rank_param = param[0]
+	}
+
+	data := this.rpc_rank_list_get_data(rank_type, rank_start, rank_num, rank_param)
+	if data == nil {
+		return -1
+	}
+
+	var rank_items []*msg_client_message.RankItemInfo
+	var self_value, self_value2 int32
+	if rank_type != common.RANK_LIST_TYPE_CAT_OUQI {
+		if data.RankItems != nil {
+			for i, r := range data.RankItems {
+				rr := r.(*common.PlayerCatOuqiRankItem)
+				if rr == nil {
+					continue
+				}
+				rank_items = append(rank_items, &msg_client_message.RankItemInfo{
+					Rank:        data.StartRank + int32(i),
+					PlayerId:    rr.PlayerId,
+					PlayerValue: []int32{rr.CatId, rr.Ouqi},
+				})
+			}
+		}
+		rd := data.SelfValue.(*common.PlayerCatOuqiRankItem)
+		if rd != nil {
+			self_value = rd.CatId
+			self_value2 = rd.Ouqi
+		}
+	} else {
+		if data.RankItems != nil {
+			for i, r := range data.RankItems {
+				rr := r.(*common.PlayerInt32RankItem)
+				if rr == nil {
+					continue
+				}
+				rank_items = append(rank_items, &msg_client_message.RankItemInfo{
+					Rank:        data.StartRank + int32(i),
+					PlayerId:    rr.PlayerId,
+					PlayerValue: []int32{rr.Value},
+				})
+			}
+		}
+		rd := data.SelfValue.(*common.PlayerInt32RankItem)
+		if rd != nil {
+			self_value = rd.Value
+		}
+	}
+
+	response := &msg_client_message.S2CRankListResponse{
+		RankListType:       rank_type,
+		RankItems:          rank_items,
+		SelfHistoryTopRank: 0,
+		SelfRank:           data.SelfRank,
+		SelfValue:          self_value,
+		SelfValue2:         self_value2,
+	}
+	this.Send(uint16(msg_client_message.S2CRankListResponse_ProtoID), response)
+
+	return res
+}
+
+func C2SRankingListHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SRankListRequest
 	err := proto.Unmarshal(msg_data, &req)
 	if err != nil {
 		log.Error("unmarshal msg failed err(%s) !", err.Error())
 		return -1
 	}
-
-	var res int32 = 0
-	rank_type := req.GetRankType()
-	rank_start := req.GetStartRank()
-	if rank_start <= 0 {
-		log.Warn("Player[%v] get rank list by type[%v] with rank_start[%v] invalid", p.Id, rank_type, rank_start)
-		return -1
-	}
-	rank_num := req.GetRankNum()
-	if rank_num <= 0 {
-		log.Warn("Player[%v] get rank list by type[%v] with rank_num[%v] invalid", p.Id, rank_type, rank_num)
-		return -1
-	}
-	/*param := req.GetParam()
-	if rank_type == 1 {
-		// 关卡总分
-		res = p.get_stage_total_score_rank_list(rank_start, rank_num)
-	} else if rank_type == 2 {
-		// 关卡积分
-		res = p.get_stage_score_rank_list(param, rank_start, rank_num)
-	} else if rank_type == 3 {
-		// 魅力
-		res = p.get_charm_rank_list(rank_start, rank_num)
-	} else if rank_type == 4 {
-		// 欧气值
-		res = p.get_cat_ouqi_rank_list(param, rank_start, rank_num)
-	} else if rank_type == 5 {
-		// 被赞
-		res = p.get_zaned_rank_list(rank_start, rank_num)
-	} else {
-		res = -1
-		log.Error("Player[%v] pull rank_type[%v] invalid", p.Id, rank_type)
-	}*/
-
-	return res
+	return p.rank_list_get_data(req.GetRankType(), req.GetStartRank(), req.GetRankNum(), req.GetParams())
 }
 
 func C2SPlayerCatInfoHandler(p *Player, msg_data []byte) int32 {

@@ -33,11 +33,11 @@ func gm_test(id int32, data []byte) (int32, []byte) {
 	}
 
 	var result rpc_proto.GmCommonResponse
-	for _, r := range server.hall_rpc_clients {
+	for _, r := range server.game_rpc_clients {
 		if r.rpc_client != nil {
-			err = r.rpc_client.Call("G2H_Proc.Test", &args, &result)
+			err = r.rpc_client.Call("G2G_Proc.Test", &args, &result)
 			if err != nil {
-				log.Error("gm rpc call G2H_Proc.Test err %v", err.Error())
+				log.Error("gm rpc call G2G_Proc.Test err %v", err.Error())
 				continue
 			}
 		}
@@ -68,11 +68,11 @@ func gm_anouncement(id int32, data []byte) (int32, []byte) {
 	}
 
 	var result rpc_proto.GmCommonResponse
-	for _, r := range server.hall_rpc_clients {
+	for _, r := range server.game_rpc_clients {
 		if r.rpc_client != nil {
-			err = r.rpc_client.Call("G2H_Proc.Anouncement", &args, &result)
+			err = r.rpc_client.Call("G2G_Proc.Anouncement", &args, &result)
 			if err != nil {
-				log.Error("gm rpc call G2H_Proc.Anouncement err %v", err.Error())
+				log.Error("gm rpc call G2G_Proc.Anouncement err %v", err.Error())
 				continue
 			}
 		}
@@ -106,11 +106,11 @@ func gm_mail(id int32, data []byte) (int32, []byte) {
 
 	var result rpc_proto.GmCommonResponse
 	if player_id <= 0 {
-		for _, r := range server.hall_rpc_clients {
+		for _, r := range server.game_rpc_clients {
 			if r.rpc_client != nil {
-				err = r.rpc_client.Call("G2H_Proc.SysMail", &args, &result)
+				err = r.rpc_client.Call("G2G_Proc.SysMail", &args, &result)
 				if err != nil {
-					log.Error("gm rpc call G2H_Proc.SysMail err %v", err.Error())
+					log.Error("gm rpc call G2G_Proc.SysMail err %v", err.Error())
 					continue
 				}
 			}
@@ -121,9 +121,9 @@ func gm_mail(id int32, data []byte) (int32, []byte) {
 			log.Error("gm get rpc client by player id %v failed", player_id)
 			return int32(msg_client_message.E_ERR_PLAYER_NOT_EXIST), nil
 		}
-		err = rpc_client.Call("G2H_Proc.SysMail", &args, &result)
+		err = rpc_client.Call("G2G_Proc.SysMail", &args, &result)
 		if err != nil {
-			log.Error("gm rpc call G2H_Proc.SysMail err %v", err.Error())
+			log.Error("gm rpc call G2G_Proc.SysMail err %v", err.Error())
 			return -1, nil
 		}
 	}
@@ -159,9 +159,9 @@ func gm_player_info(id int32, data []byte) (int32, []byte) {
 	}
 
 	var result rpc_proto.GmPlayerInfoResponse
-	err = rpc_client.Call("G2H_Proc.PlayerInfo", &args, &result)
+	err = rpc_client.Call("G2G_Proc.PlayerInfo", &args, &result)
 	if err != nil {
-		log.Error("gm rpc call G2H_Proc.PlayerInfo err %v", err.Error())
+		log.Error("gm rpc call G2G_Proc.PlayerInfo err %v", err.Error())
 		return -1, nil
 	}
 
@@ -218,10 +218,10 @@ func gm_online_player_num(id int32, data []byte) (int32, []byte) {
 		}
 
 		args.ServerId = sid
-		err = rpc_client.Call("G2H_Proc.OnlinePlayerNum", &args, &result)
+		err = rpc_client.Call("G2G_Proc.OnlinePlayerNum", &args, &result)
 		if err != nil {
 			player_num = append(player_num, []int32{-1, -1}...)
-			log.Error("gm rpc call G2H_Proc.OnlinePlayerNum err %v", err.Error())
+			log.Error("gm rpc call G2G_Proc.OnlinePlayerNum err %v", err.Error())
 			continue
 		}
 
@@ -260,9 +260,9 @@ func gm_month_card_send(id int32, data []byte) (int32, []byte) {
 	}
 
 	var result rpc_proto.GmCommonResponse
-	err = rpc_client.Call("G2H_Proc.MonthCardSend", &args, &result)
+	err = rpc_client.Call("G2G_Proc.MonthCardSend", &args, &result)
 	if err != nil {
-		log.Error("gm rpc call G2H_Proc.MonthCardSend err %v", err.Error())
+		log.Error("gm rpc call G2G_Proc.MonthCardSend err %v", err.Error())
 		return -1, nil
 	}
 
@@ -313,9 +313,9 @@ func gm_ban_player(id int32, data []byte) (int32, []byte) {
 		PlayerId: args.PlayerId,
 	}
 	var get_res rpc_proto.GmGetPlayerUniqueIdResponse
-	err = rpc_client.Call("G2H_Proc.GetPlayerUniqueId", &get_args, &get_res)
+	err = rpc_client.Call("G2G_Proc.GetPlayerUniqueId", &get_args, &get_res)
 	if err != nil {
-		log.Error("gm rpc call G2H.BanPlayer err %v", err.Error())
+		log.Error("gm rpc call G2G.BanPlayer err %v", err.Error())
 		return -1, nil
 	}
 
@@ -330,11 +330,11 @@ func gm_ban_player(id int32, data []byte) (int32, []byte) {
 		BanOrFree:      args.BanOrFree,
 	}
 	var result rpc_proto.GmCommonResponse
-	for _, r := range server.hall_rpc_clients {
+	for _, r := range server.game_rpc_clients {
 		if r.rpc_client != nil {
-			err = r.rpc_client.Call("G2H_Proc.BanPlayer", &ban_args, &result)
+			err = r.rpc_client.Call("G2G_Proc.BanPlayer", &ban_args, &result)
 			if err != nil {
-				log.Error("gm rpc call G2H_Proc.BanPlayer err %v", err.Error())
+				log.Error("gm rpc call G2G_Proc.BanPlayer err %v", err.Error())
 				continue
 			}
 		}

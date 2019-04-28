@@ -2326,11 +2326,12 @@ message RankItemInfo {
 	string PlayerName						= 3; // 玩家昵称
 	int32 PlayerLevel						= 4; // 玩家等级
 	int32 PlayerHead						= 5; // 玩家头像
+	repeated int32 PlayerValue				= 6; // 数值
 }
 
 // 请求排行榜
 message C2SRankListRequest {
-	int32 RankType							= 1; // 排行榜类型    1 竞技场  2 关卡  3 战力
+	int32 RankType							= 1; // 排行榜类型    1 关卡总分  2 魅力  3 欧气  4 被赞
 	int32 StartRank							= 2; // 开始
 	int32 RankNum							= 3; // 数量
 	repeated int32 Params					= 4; // 参数, 跟具体类型有关
