@@ -1605,7 +1605,7 @@ func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, pa
 
 	var rank_items []*msg_client_message.RankItemInfo
 	var self_value, self_value2 int32
-	if rank_type != common.RANK_LIST_TYPE_CAT_OUQI {
+	if rank_type == common.RANK_LIST_TYPE_CAT_OUQI {
 		if data.RankItems != nil {
 			for i, r := range data.RankItems {
 				rr := r.(*common.PlayerCatOuqiRankItem)
@@ -1619,10 +1619,12 @@ func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, pa
 				})
 			}
 		}
-		rd := data.SelfValue.(*common.PlayerCatOuqiRankItem)
-		if rd != nil {
-			self_value = rd.CatId
-			self_value2 = rd.Ouqi
+		if data.SelfValue != nil {
+			rd := data.SelfValue.(*common.PlayerCatOuqiRankItem)
+			if rd != nil {
+				self_value = rd.CatId
+				self_value2 = rd.Ouqi
+			}
 		}
 	} else {
 		if data.RankItems != nil {
@@ -1638,9 +1640,11 @@ func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, pa
 				})
 			}
 		}
-		rd := data.SelfValue.(*common.PlayerInt32RankItem)
-		if rd != nil {
-			self_value = rd.Value
+		if data.SelfValue != nil {
+			rd := data.SelfValue.(*common.PlayerInt32RankItem)
+			if rd != nil {
+				self_value = rd.Value
+			}
 		}
 	}
 
@@ -1653,6 +1657,8 @@ func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, pa
 		SelfValue2:         self_value2,
 	}
 	this.Send(uint16(msg_client_message.S2CRankListResponse_ProtoID), response)
+
+	log.Trace("Player %v get rank list data %v", this.Id, response)
 
 	return res
 }
