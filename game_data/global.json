@@ -73,6 +73,7 @@
 	"ExpeditionDayChgAddCost":50,
 	"ExpeditionDayMaxChgCost":14,
 	"ExpeditionDayStartCount":24,
+	"ExpeditionFirstTask": 22141,
 	
 	"MapBlockRefleshSec":28800,
 	"MapChestRefleshSec":43200,
