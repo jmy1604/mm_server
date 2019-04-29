@@ -1171,65 +1171,6 @@
 					]
 				}
 			]
-		},
-		{
-			"TableName":"OtherServerPlayer",
-			"DBTableName":"OtherServerPlayer",
-			"SingleRow":false,
-			"AutoPrimaryKey":false,
-			"PrimaryKeyName":"PlayerId",
-			"PrimaryKeyType":"int32",
-			"PrimaryKeySize":11,
-			"Columns":[
-				{
-					"ColumnName":"Account",
-					"DBColumnName":"Account",
-					"InUse":true,
-					"Simple":true,
-					"SimpleType":"string",					
-					"Preload":true,
-					"Map":false,
-					"AutoIndex":false,
-					"Fields":[										
-					]		
-				},
-				{
-					"ColumnName":"Name",
-					"DBColumnName":"Name",
-					"InUse":true,
-					"Simple":true,
-					"SimpleType":"string",					
-					"Preload":true,
-					"Map":false,
-					"AutoIndex":false,
-					"Fields":[										
-					]		
-				},
-				{
-					"ColumnName":"Level",
-					"DBColumnName":"Level",
-					"InUse":true,
-					"Simple":true,
-					"SimpleType":"int32",
-					"Preload":true,
-					"Map":false,
-					"AutoIndex":false,
-					"Fields":[
-					]
-				},
-				{
-					"ColumnName":"Head",
-					"DBColumnName":"Head",
-					"InUse":true,
-					"Simple":true,
-					"SimpleType":"string",
-					"Preload":true,
-					"Map":false,
-					"AutoIndex":false,
-					"Fields":[
-					]
-				}
-			]
 		}
 	]
 }

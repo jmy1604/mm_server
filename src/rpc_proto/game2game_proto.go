@@ -2,6 +2,7 @@ package rpc_proto
 
 import (
 	"mm_server/libs/rpc"
+	"mm_server/src/common"
 )
 
 // 修改基本信息
@@ -374,4 +375,7 @@ func RegisterRpcUserType() {
 	rpc.RegisterUserType(&G2G_OpenFriendChestResult{})
 	rpc.RegisterUserType(&G2G_PlayerCatInfo{})
 	rpc.RegisterUserType(&G2G_PlayerCatInfoResult{})
+	rpc.RegisterUserType(&common.PlayerInt32RankItem{})
+	rpc.RegisterUserType(&common.PlayerInt64RankItem{})
+	rpc.RegisterUserType(&common.PlayerCatOuqiRankItem{})
 }

@@ -93,11 +93,11 @@ func (this *RankList) DeleteItem(key interface{}) bool {
 }
 
 var root_rank_item = []utils.SkiplistNode{
-	nil,                           // 0
-	&common.PlayerInt32RankItem{}, // 1
-	&common.PlayerInt32RankItem{}, // 2
-	&common.PlayerInt32RankItem{}, // 3
-	&common.PlayerInt32RankItem{}, // 4
+	nil,                             // 0
+	&common.PlayerInt32RankItem{},   // 1
+	&common.PlayerInt32RankItem{},   // 2
+	&common.PlayerCatOuqiRankItem{}, // 3
+	&common.PlayerInt32RankItem{},   // 4
 }
 
 type RankListManager struct {

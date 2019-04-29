@@ -111,10 +111,186 @@ func (this *G2R_GlobalProc) ChargeSave(args *rpc_proto.G2R_ChargeSave, result *r
 	return nil
 }
 
+// 玩家调用
+type G2R_PlayerProc struct {
+}
+
+// 基本信息更新
+func (this *G2R_PlayerProc) BaseInfoUpdate(args *rpc_proto.G2R_PlayerBaseInfoUpdate, result *rpc_proto.G2R_PlayerBaseInfoUpdateResult) error {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error(err)
+		}
+	}()
+
+	row := dbc.PlayerBaseInfos.GetRow(args.Info.Id)
+	if row == nil {
+		row = dbc.PlayerBaseInfos.AddRow(args.Info.Id)
+	}
+
+	if args.Info.Name != "" {
+		row.SetName(args.Info.Name)
+	}
+
+	if args.Info.Level > 0 {
+		row.SetLevel(args.Info.Level)
+	}
+
+	if args.Info.Head > 0 {
+		row.SetHead(args.Info.Head)
+	}
+
+	return nil
+}
+
+// 获取好友关卡积分
+func (this *G2R_PlayerProc) GetFriendStageScore(args *rpc_proto.G2R_GetFriendStageScore, result *rpc_proto.G2R_GetFriendStageScoreResult) error {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error(err)
+		}
+	}()
+
+	for _, id := range args.FriendIds {
+		row := dbc.PlayerStageTotalScores.GetRow(id)
+		if row == nil {
+			continue
+		}
+		if !row.Stages.HasIndex(args.StageId) {
+			continue
+		}
+		o, name, level, head := get_player_base_info(id)
+		if !o {
+			continue
+		}
+		stage_score, _ := row.Stages.GetTopScore(args.StageId)
+		result.FriendsScoreData = append(result.FriendsScoreData, &rpc_proto.FriendStageScoreData{
+			Id:         args.PlayerId,
+			StageScore: stage_score,
+			Name:       name,
+			Level:      level,
+			Head:       head,
+		})
+	}
+
+	return nil
+}
+
 // 排行榜调用
 type G2R_RankListProc struct {
 }
 
+func _player_stage_total_score_ranklist_update(args *rpc_proto.G2R_RankListDataUpdate, now_time int32) {
+	rank_list_mgr.UpdateItem(common.RANK_LIST_TYPE_STAGE_TOTAL_SCORE, &common.PlayerInt32RankItem{
+		Value:      args.RankParam[0],
+		UpdateTime: now_time,
+		PlayerId:   args.PlayerId,
+	})
+	row := dbc.PlayerStageTotalScores.GetRow(args.PlayerId)
+	if row == nil {
+		row = dbc.PlayerStageTotalScores.AddRow(args.PlayerId)
+	}
+	row.SetScore(args.RankParam[0])
+	row.SetUpdateTime(now_time)
+	curr_rank := rank_list_mgr.GetRankByKey(common.RANK_LIST_TYPE_STAGE_TOTAL_SCORE, args.PlayerId)
+	if curr_rank < row.HistoryTopData.GetRank() {
+		row.HistoryTopData.SetRank(curr_rank)
+		row.HistoryTopData.SetScore(args.RankParam[0])
+	}
+	if len(args.RankParam) >= 3 {
+		stage_id := args.RankParam[1]
+		stage_score := args.RankParam[2]
+		if !row.Stages.HasIndex(stage_id) {
+			row.Stages.Add(&dbPlayerStageTotalScoreStageData{
+				Id:       stage_id,
+				TopScore: stage_score,
+			})
+		} else {
+			row.Stages.SetTopScore(stage_id, stage_score)
+		}
+	}
+}
+
+func _player_charm_ranklist_update(args *rpc_proto.G2R_RankListDataUpdate, now_time int32) {
+	rank_list_mgr.UpdateItem(common.RANK_LIST_TYPE_CHARM, &common.PlayerInt32RankItem{
+		Value:      args.RankParam[0],
+		UpdateTime: now_time,
+		PlayerId:   args.PlayerId,
+	})
+	row := dbc.PlayerCharms.GetRow(args.PlayerId)
+	if row == nil {
+		row = dbc.PlayerCharms.AddRow(args.PlayerId)
+	}
+	row.SetCharmValue(args.RankParam[0])
+	row.SetUpdateTime(now_time)
+	curr_rank := rank_list_mgr.GetRankByKey(common.RANK_LIST_TYPE_CHARM, args.PlayerId)
+	if curr_rank < row.HistoryTopData.GetRank() {
+		row.HistoryTopData.SetRank(curr_rank)
+		row.HistoryTopData.SetCharm(args.RankParam[0])
+	}
+}
+
+func _player_cat_ouqi_ranklist_update(args *rpc_proto.G2R_RankListDataUpdate, now_time int32) {
+	cat_id := args.RankParam[0]
+	ouqi := args.RankParam[1]
+	row := dbc.PlayerCatOuqis.GetRow(args.PlayerId)
+	var item = common.PlayerCatOuqiRankItem{
+		PlayerId: args.PlayerId,
+		CatId:    cat_id,
+	}
+	if ouqi > 0 {
+		rank_list_mgr.UpdateItem(common.RANK_LIST_TYPE_CAT_OUQI, &common.PlayerCatOuqiRankItem{
+			PlayerId:   args.PlayerId,
+			CatId:      cat_id,
+			Ouqi:       ouqi,
+			UpdateTime: now_time,
+		})
+		if row == nil {
+			row = dbc.PlayerCatOuqis.AddRow(args.PlayerId)
+		}
+		if !row.Cats.HasIndex(cat_id) {
+			row.Cats.Add(&dbPlayerCatOuqiCatData{
+				CatId:      cat_id,
+				Ouqi:       ouqi,
+				UpdateTime: now_time,
+			})
+		} else {
+			row.Cats.SetOuqi(cat_id, ouqi)
+			row.Cats.SetUpdateTime(cat_id, now_time)
+		}
+		curr_rank := rank_list_mgr.GetRankByKey(common.RANK_LIST_TYPE_CAT_OUQI, item.GetKey())
+		top_rank, _ := row.Cats.GetHistoryTopRank(cat_id)
+		if curr_rank < top_rank {
+			row.Cats.SetHistoryTopRank(cat_id, curr_rank)
+		}
+	} else {
+		rank_list_mgr.DeleteItem(common.RANK_LIST_TYPE_CAT_OUQI, item.GetKey())
+		if row != nil {
+			row.Cats.Remove(cat_id)
+		}
+	}
+}
+
+func _player_be_zaned_ranklist_update(args *rpc_proto.G2R_RankListDataUpdate, now_time int32) {
+	to_player_id := args.RankParam[0]
+	row := dbc.PlayerBeZaneds.GetRow(to_player_id)
+	if row == nil {
+		row = dbc.PlayerBeZaneds.AddRow(to_player_id)
+	}
+	zaned := row.Zan()
+	rank_list_mgr.UpdateItem(common.RANK_LIST_TYPE_BE_ZANED, &common.PlayerInt32RankItem{
+		Value:      zaned,
+		UpdateTime: now_time,
+		PlayerId:   to_player_id,
+	})
+	curr_rank := rank_list_mgr.GetRankByKey(common.RANK_LIST_TYPE_BE_ZANED, to_player_id)
+	if curr_rank < row.HistoryTopData.GetRank() {
+		row.HistoryTopData.SetRank(curr_rank)
+		row.HistoryTopData.SetZaned(zaned)
+	}
+}
+
+// 更新排行榜
 func (this *G2R_RankListProc) UpdateData(args *rpc_proto.G2R_RankListDataUpdate, result *rpc_proto.G2R_RankListDataUpdateResult) error {
 	defer func() {
 		if err := recover(); err != nil {
@@ -124,95 +300,13 @@ func (this *G2R_RankListProc) UpdateData(args *rpc_proto.G2R_RankListDataUpdate,
 
 	now_time := int32(time.Now().Unix())
 	if args.RankType == common.RANK_LIST_TYPE_STAGE_TOTAL_SCORE {
-		rank_list_mgr.UpdateItem(common.RANK_LIST_TYPE_STAGE_TOTAL_SCORE, &common.PlayerInt32RankItem{
-			Value:      args.RankParam[0],
-			UpdateTime: now_time,
-			PlayerId:   args.PlayerId,
-		})
-		row := dbc.PlayerStageTotalScores.GetRow(args.PlayerId)
-		if row == nil {
-			row = dbc.PlayerStageTotalScores.AddRow(args.PlayerId)
-		}
-		row.SetScore(args.RankParam[0])
-		row.SetUpdateTime(now_time)
-		curr_rank := rank_list_mgr.GetRankByKey(common.RANK_LIST_TYPE_STAGE_TOTAL_SCORE, args.PlayerId)
-		if curr_rank < row.HistoryTopData.GetRank() {
-			row.HistoryTopData.SetRank(curr_rank)
-			row.HistoryTopData.SetScore(args.RankParam[0])
-		}
+		_player_stage_total_score_ranklist_update(args, now_time)
 	} else if args.RankType == common.RANK_LIST_TYPE_CHARM {
-		rank_list_mgr.UpdateItem(common.RANK_LIST_TYPE_CHARM, &common.PlayerInt32RankItem{
-			Value:      args.RankParam[0],
-			UpdateTime: now_time,
-			PlayerId:   args.PlayerId,
-		})
-		row := dbc.PlayerCharms.GetRow(args.PlayerId)
-		if row == nil {
-			row = dbc.PlayerCharms.AddRow(args.PlayerId)
-		}
-		row.SetCharmValue(args.RankParam[0])
-		row.SetUpdateTime(now_time)
-		curr_rank := rank_list_mgr.GetRankByKey(common.RANK_LIST_TYPE_CHARM, args.PlayerId)
-		if curr_rank < row.HistoryTopData.GetRank() {
-			row.HistoryTopData.SetRank(curr_rank)
-			row.HistoryTopData.SetCharm(args.RankParam[0])
-		}
+		_player_charm_ranklist_update(args, now_time)
 	} else if args.RankType == common.RANK_LIST_TYPE_CAT_OUQI {
-		cat_id := args.RankParam[0]
-		ouqi := args.RankParam[1]
-		row := dbc.PlayerCatOuqis.GetRow(args.PlayerId)
-		var item = common.PlayerCatOuqiRankItem{
-			PlayerId: args.PlayerId,
-			CatId:    cat_id,
-		}
-		if ouqi > 0 {
-			rank_list_mgr.UpdateItem(common.RANK_LIST_TYPE_CAT_OUQI, &common.PlayerCatOuqiRankItem{
-				PlayerId:   args.PlayerId,
-				CatId:      cat_id,
-				Ouqi:       ouqi,
-				UpdateTime: now_time,
-			})
-			if row == nil {
-				row = dbc.PlayerCatOuqis.AddRow(args.PlayerId)
-			}
-			if !row.Cats.HasIndex(cat_id) {
-				row.Cats.Add(&dbPlayerCatOuqiCatData{
-					CatId:      cat_id,
-					Ouqi:       ouqi,
-					UpdateTime: now_time,
-				})
-			} else {
-				row.Cats.SetOuqi(cat_id, ouqi)
-				row.Cats.SetUpdateTime(cat_id, now_time)
-			}
-			curr_rank := rank_list_mgr.GetRankByKey(common.RANK_LIST_TYPE_CAT_OUQI, item.GetKey())
-			top_rank, _ := row.Cats.GetHistoryTopRank(cat_id)
-			if curr_rank < top_rank {
-				row.Cats.SetHistoryTopRank(cat_id, curr_rank)
-			}
-		} else {
-			rank_list_mgr.DeleteItem(common.RANK_LIST_TYPE_CAT_OUQI, item.GetKey())
-			if row != nil {
-				row.Cats.Remove(cat_id)
-			}
-		}
+		_player_cat_ouqi_ranklist_update(args, now_time)
 	} else if args.RankType == common.RANK_LIST_TYPE_BE_ZANED {
-		rank_list_mgr.UpdateItem(common.RANK_LIST_TYPE_BE_ZANED, &common.PlayerInt32RankItem{
-			Value:      args.RankParam[0],
-			UpdateTime: now_time,
-			PlayerId:   args.PlayerId,
-		})
-		row := dbc.PlayerBeZaneds.GetRow(args.PlayerId)
-		if row == nil {
-			row = dbc.PlayerBeZaneds.AddRow(args.PlayerId)
-		}
-		row.SetZaned(args.RankParam[0])
-		row.SetUpdateTime(now_time)
-		curr_rank := rank_list_mgr.GetRankByKey(common.RANK_LIST_TYPE_BE_ZANED, args.PlayerId)
-		if curr_rank < row.HistoryTopData.GetRank() {
-			row.HistoryTopData.SetRank(curr_rank)
-			row.HistoryTopData.SetZaned(args.RankParam[0])
-		}
+		_player_be_zaned_ranklist_update(args, now_time)
 	} else {
 		log.Warn("Unknown rank type %v from player %v", args.RankType, args.PlayerId)
 	}
@@ -220,6 +314,7 @@ func (this *G2R_RankListProc) UpdateData(args *rpc_proto.G2R_RankListDataUpdate,
 	return nil
 }
 
+// 获得数据
 func (this *G2R_RankListProc) GetRankItems(args *rpc_proto.G2R_RankListGetData, result *rpc_proto.G2R_RankListGetDataResult) error {
 	defer func() {
 		if err := recover(); err != nil {
@@ -258,6 +353,37 @@ func (this *G2R_RankListProc) GetRankItems(args *rpc_proto.G2R_RankListGetData, 
 		}
 	}
 
+	if rank_items != nil {
+		for _, r := range rank_items {
+			var row *dbPlayerBaseInfoRow
+			if args.RankType != common.RANK_LIST_TYPE_CAT_OUQI {
+				rr := r.(*common.PlayerInt32RankItem)
+				if rr == nil {
+					continue
+				}
+				row = dbc.PlayerBaseInfos.GetRow(rr.PlayerId)
+			} else {
+				rr := r.(*common.PlayerCatOuqiRankItem)
+				if rr == nil {
+					continue
+				}
+				row = dbc.PlayerBaseInfos.GetRow(rr.PlayerId)
+			}
+			if result.PlayerBaseInfos == nil {
+				result.PlayerBaseInfos = make(map[int32]*rpc_proto.PlayerBaseInfo)
+			}
+			if row != nil {
+				result.PlayerBaseInfos[row.GetPlayerId()] = &rpc_proto.PlayerBaseInfo{
+					Id:    row.GetPlayerId(),
+					Name:  row.GetName(),
+					Level: row.GetLevel(),
+					Head:  row.GetHead(),
+				}
+			}
+		}
+	}
+	log.Trace("@@@ Rank List Get Items %v", result)
+
 	return nil
 }
 
@@ -278,6 +404,10 @@ func (this *RpcServer) init_proc_service() bool {
 	}
 
 	if !this.rpc_service.Register(&G2G_CommonProc{}) {
+		return false
+	}
+
+	if !this.rpc_service.Register(&G2R_PlayerProc{}) {
 		return false
 	}
 

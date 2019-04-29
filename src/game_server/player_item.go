@@ -885,11 +885,7 @@ func (this *Player) AddExp(add_val int32, reason, mod string) (int32, int32) {
 	this.b_base_prop_chg = true
 
 	if cur_lvl > old_lvl {
-		//this.UpdateNewTasks(cur_lvl, true)
-		/*result := this.rpc_call_update_base_info()
-		if result.Error < 0 {
-			log.Warn("Player[%v] update base info error[%v]", this.Id, result.Error)
-		}*/
+		this.rpc_player_base_info_update()
 	}
 	return cur_lvl, cur_exp
 }

@@ -821,8 +821,7 @@ message PlayerStageInfo {
 	int32 Score 							= 2; // 我的积分
 	string Name 							= 3; // 玩家名称
 	int32 Lvl 								= 4; // 玩家等级
-	string Icon 							= 5; // 玩家图标
-	string CustomIcon 						= 6; // 玩家自定义图标
+	int32 Head								= 5; // 玩家头像
 }
 
 message S2CStagePass {
@@ -832,14 +831,13 @@ message S2CStagePass {
 	int32 TopScore 							= 4; // 最高积分
 	repeated ItemInfo UseItems 				= 5; // 使用的物品
 	int32 GetCoin 							= 6; // 获取的金币 
-	repeated ItemInfo Getitems 				= 7; // 获得的物品
-	repeated PlayerStageInfo RankItems 		= 8; // 排行榜信息
+	repeated ItemInfo GetItems 				= 7; // 获得的物品
 	repeated PlayerStageInfo FriendItems 	= 9; // 好友信息
 	repeated CatInfo GetCats 				= 10; // 猫
 	repeated DepotBuildingInfo GetBuildings = 11; // 建筑
 	int32 Result 							= 12; // 通关结果  0 失败  1 过关
-	repeated ItemInfo GetitemsFirst 		= 13; // 获得的首通奖励
-	repeated ItemInfo Getitems3Star 		= 14; // 获得的首次3星奖励
+	repeated ItemInfo GetItemsFirst 		= 13; // 获得的首通奖励
+	repeated ItemInfo GetItems3Star 		= 14; // 获得的首次3星奖励
 	int32 CatExtraAddCoin					= 15; // 消除能力额外获得的金币
 	enum EProtocol { None = 0; ProtoID = 10101; }
 }

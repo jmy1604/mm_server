@@ -224,28 +224,28 @@ func (this *Player) ChkFinishStage(stageid, star, score int32, ret_msg *msg_clie
 	var tmp_cat *msg_client_message.CatInfo
 	var tmp_building *msg_client_message.DepotBuildingInfo
 
-	ret_msg.Getitems = make([]*msg_client_message.ItemInfo, 0)
+	ret_msg.GetItems = make([]*msg_client_message.ItemInfo, 0)
 	ret_msg.GetCats = make([]*msg_client_message.CatInfo, 0)
 	ret_msg.GetBuildings = make([]*msg_client_message.DepotBuildingInfo, 0)
 	if bfirst {
-		ret_msg.GetitemsFirst = make([]*msg_client_message.ItemInfo, 0, len(stagecfg.FirstClearReward)/2)
+		ret_msg.GetItemsFirst = make([]*msg_client_message.ItemInfo, 0, len(stagecfg.FirstClearReward)/2)
 		log.Info("首次通关[%d]给予奖励 %v", stageid, stagecfg.FirstClearReward)
 		for i := 0; i < len(stagecfg.FirstClearReward)/2; i++ {
 			tmp_item = &msg_client_message.ItemInfo{}
 			tmp_item.ItemCfgId = stagecfg.FirstClearReward[2*i]
 			tmp_item.ItemNum = stagecfg.FirstClearReward[2*i+1]
-			ret_msg.GetitemsFirst = append(ret_msg.GetitemsFirst, tmp_item)
+			ret_msg.GetItemsFirst = append(ret_msg.GetItemsFirst, tmp_item)
 
 			this.AddItemResource(stagecfg.FirstClearReward[2*i], stagecfg.FirstClearReward[2*i+1], "FirstClearReward", "Stage")
 		}
 	}
 	if /*FINISHE_ALL_STAR == star && (bfirst || cur_stage_db.Stars < FINISHE_ALL_STAR)*/ bfirst_3star {
-		ret_msg.Getitems3Star = make([]*msg_client_message.ItemInfo, 0, len(stagecfg.FirstAllStarReward)/2)
+		ret_msg.GetItems3Star = make([]*msg_client_message.ItemInfo, 0, len(stagecfg.FirstAllStarReward)/2)
 		for i := 0; i < len(stagecfg.FirstAllStarReward)/2; i++ {
 			tmp_item = &msg_client_message.ItemInfo{}
 			tmp_item.ItemCfgId = stagecfg.FirstAllStarReward[2*i]
 			tmp_item.ItemNum = stagecfg.FirstAllStarReward[2*i+1]
-			ret_msg.Getitems3Star = append(ret_msg.Getitems3Star, tmp_item)
+			ret_msg.GetItems3Star = append(ret_msg.GetItems3Star, tmp_item)
 
 			this.AddItemResource(stagecfg.FirstAllStarReward[2*i], stagecfg.FirstAllStarReward[2*i+1], "StageFirstAllStar", "Stage")
 		}
@@ -264,7 +264,7 @@ func (this *Player) ChkFinishStage(stageid, star, score int32, ret_msg *msg_clie
 		ItemCfgId: ITEM_RESOURCE_ID_GOLD,
 		ItemNum:   stagecfg.CoinReward + extra_coin,
 	}
-	ret_msg.Getitems = append(ret_msg.Getitems, coin_item)
+	ret_msg.GetItems = append(ret_msg.GetItems, coin_item)
 
 	var b bool
 	if len(stagecfg.ExtraReward1) == 2 && rand.Int31n(100) < stagecfg.ExtraReward1[1] {
@@ -272,7 +272,7 @@ func (this *Player) ChkFinishStage(stageid, star, score int32, ret_msg *msg_clie
 		b, tmp_item, tmp_cat, tmp_building = this.drop_item_by_id(stagecfg.ExtraReward1[0], false)
 		if b {
 			if tmp_item != nil {
-				ret_msg.Getitems = append(ret_msg.Getitems, tmp_item)
+				ret_msg.GetItems = append(ret_msg.GetItems, tmp_item)
 			}
 			if tmp_cat != nil {
 				ret_msg.GetCats = append(ret_msg.GetCats, tmp_cat)
@@ -289,7 +289,7 @@ func (this *Player) ChkFinishStage(stageid, star, score int32, ret_msg *msg_clie
 		b, tmp_item, tmp_cat, tmp_building = this.drop_item_by_id(stagecfg.ExtraReward2[0], false)
 		if b {
 			if tmp_item != nil {
-				ret_msg.Getitems = append(ret_msg.Getitems, tmp_item)
+				ret_msg.GetItems = append(ret_msg.GetItems, tmp_item)
 			}
 			if tmp_cat != nil {
 				ret_msg.GetCats = append(ret_msg.GetCats, tmp_cat)
@@ -351,6 +351,24 @@ func (this *dbPlayerStageColumn) GetTotalScore() int32 {
 	return total_score
 }
 
+func (this *Player) _get_friend_stage_score(stage_id int32) []*msg_client_message.PlayerStageInfo {
+	result := this.rpc_get_friends_stage_score(stage_id)
+	if result == nil {
+		return nil
+	}
+	var score_list []*msg_client_message.PlayerStageInfo
+	for _, r := range result.FriendsScoreData {
+		score_list = append(score_list, &msg_client_message.PlayerStageInfo{
+			PlayerId: r.Id,
+			Score:    r.StageScore,
+			Name:     r.Name,
+			Lvl:      r.Level,
+			Head:     r.Head,
+		})
+	}
+	return score_list
+}
+
 func (p *Player) stage_pass(result int32, stageid int32, score int32, stars int32, items []*msg_client_message.ItemInfo, bforce bool) int32 {
 	new_session := &StagePassSession{}
 	new_session.SessionId = stage_pass_mgr.GetNextSessionId()
@@ -367,8 +385,7 @@ func (p *Player) stage_pass(result int32, stageid int32, score int32, stars int3
 		tmp_ret.GetBuildings = make([]*msg_client_message.DepotBuildingInfo, 0)
 		tmp_ret.GetCats = make([]*msg_client_message.CatInfo, 0)
 		tmp_ret.GetCoin = 0
-		tmp_ret.Getitems = make([]*msg_client_message.ItemInfo, 0)
-		tmp_ret.RankItems = make([]*msg_client_message.PlayerStageInfo, 0)
+		tmp_ret.GetItems = make([]*msg_client_message.ItemInfo, 0)
 		p.Send(uint16(msg_client_message.S2CStagePass_ProtoID), tmp_ret)
 		return 1
 	}
@@ -412,32 +429,18 @@ func (p *Player) stage_pass(result int32, stageid int32, score int32, stars int3
 		}
 	}
 
-	// 获取好友关卡数据并排序
-	/*r := p.rpc_call_get_friends_stage_info(stageid)
-	if r != nil {
-		for _, info := range r.StageInfos {
-			item := &msg_client_message.PlayerStageInfo{
-				PlayerId: info.PlayerId,
-				Name:     info.Name,
-				Lvl:      info.Level,
-				Icon:     info.Head,
-				Score:    info.TopScore,
-			}
-			new_session.ret.FriendItems = append(new_session.ret.FriendItems, item)
-		}
-	}*/
-
 	log.Trace("Stage Pass res %v", new_session.ret)
 
 	p.SendItemsUpdate()
 	p.SendCatsUpdate()
 	p.SendDepotBuildingUpdate()
 
+	new_session.ret.FriendItems = p._get_friend_stage_score(stageid)
 	p.Send(uint16(msg_client_message.S2CStagePass_ProtoID), new_session.ret)
 
 	p.send_stage_info()
 
-	p.rpc_rank_list_update_data(common.RANK_LIST_TYPE_STAGE_TOTAL_SCORE, []int32{score})
+	p.rpc_rank_list_update_data(common.RANK_LIST_TYPE_STAGE_TOTAL_SCORE, []int32{p.db.Stages.GetTotalScore(), stageid, score})
 
 	return 1
 }

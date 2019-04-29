@@ -227,11 +227,6 @@ func (this *Player) add_all_items() {
 
 func (this *Player) OnCreate() {
 	// 随机初始名称
-	/*tmp_acc := this.Account
-	if len(tmp_acc) > 6 {
-		tmp_acc = string([]byte(tmp_acc)[0:6])
-	}*/
-
 	this.first_gen_achieve_tasks()
 
 	//this.db.SetName(fmt.Sprintf("MM_%s_%d", tmp_acc, this.Id))
@@ -306,16 +301,6 @@ func (this *Player) OnLogin() {
 	atomic.StoreInt32(&this.is_lock, 0)
 	atomic.StoreInt32(&this.is_login, 1)
 
-	/*res2co := &msg_server_message.SetPlayerOnOffline{}
-	res2co.PlayerId = this.Id
-	res2co.OnOffLine = 1
-	center_conn.Send(res2co)*/
-
-	/*result := this.rpc_call_update_base_info()
-	if result.Error < 0 {
-		log.Warn("rpc update player[%v] base info error[%v]", result.Error)
-	}*/
-
 	log.Trace("Player[%v] login", this.Id)
 }
 
@@ -339,11 +324,6 @@ func (this *Player) OnLogout(remove_timer bool) {
 	} else {
 		log.Warn("Player[%v] already loged out", this.Id)
 	}
-
-	/*res2co := &msg_server_message.SetPlayerOnOffline{}
-	res2co.PlayerId = this.Id
-	res2co.OnOffLine = 1
-	center_conn.Send(res2co)*/
 
 	log.Info("玩家[%d] 登出 ！！", this.Id)
 }
@@ -568,16 +548,12 @@ func C2SChgNameHandler(p *Player, msg_data []byte) int32 {
 
 	p.db.SetName(new_name)
 
-	// rpc update base info
-	/*result := p.rpc_call_update_base_info()
-	if result.Error < 0 {
-		log.Warn("Player[%v] update base info error[%v]", p.Id, result.Error)
-	}*/
-
 	msg := &msg_client_message.S2CChgName{}
 	msg.Name = new_name
 	msg.ChgNameCount = cur_chg_count
 	p.Send(uint16(msg_client_message.S2CChgName_ProtoID), msg)
+
+	p.rpc_player_base_info_update()
 
 	return 1
 }
@@ -596,15 +572,11 @@ func C2SChangeHeadHandler(p *Player, msg_data []byte) int32 {
 
 	p.db.Info.SetHead(req.GetNewHead())
 
-	// rpc update base info
-	/*result := p.rpc_call_update_base_info()
-	if result.Error < 0 {
-		log.Warn("Player[%v] update base info error[%v]", p.Id, result.Error)
-	}*/
-
 	response := &msg_client_message.S2CChangeHead{}
 	response.NewHead = req.GetNewHead()
 	p.Send(uint16(msg_client_message.S2CChangeHead_ProtoID), response)
+
+	p.rpc_player_base_info_update()
 
 	return 1
 }
@@ -626,29 +598,12 @@ func C2SZanPlayerHandler(p *Player, msg_data []byte) int32 {
 		return res
 	}
 
-	zan := int32(0)
-	to_player := player_mgr.GetPlayerById(req.GetPlayerId())
-	if to_player != nil {
-		zan = to_player.db.Info.IncbyZan(1)
-	} else {
-		/*result := p.rpc_call_zan_player2(req.GetPlayerId())
-		if result == nil {
-			return -1
-		}
-		zan = result.ToPlayerZanNum*/
-	}
-
 	// update rank list
-	if zan > 0 {
-		/*if p.rpc_call_rank_update_zaned(req.GetPlayerId(), zan) == nil {
-			log.Warn("Player[%v] remote update zan rank list failed", p.Id)
-		}*/
-		p.TaskUpdate(tables.TASK_COMPLETE_TYPE_WON_PRAISE, false, 0, 1)
-	}
+	p.TaskUpdate(tables.TASK_COMPLETE_TYPE_WON_PRAISE, false, 0, 1)
+	p.rpc_rank_list_update_data(common.RANK_LIST_TYPE_BE_ZANED, []int32{req.GetPlayerId()})
 
 	response := &msg_client_message.S2CZanPlayerResult{
 		PlayerId: req.GetPlayerId(),
-		TotalZan: zan,
 	}
 	p.Send(uint16(msg_client_message.S2CZanPlayerResult_ProtoID), response)
 
@@ -1646,6 +1601,16 @@ func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, pa
 				self_value = rd.Value
 			}
 		}
+	}
+
+	for _, item := range rank_items {
+		pb := data.PlayerBaseInfos[item.GetPlayerId()]
+		if pb == nil {
+			continue
+		}
+		item.PlayerName = pb.Name
+		item.PlayerLevel = pb.Level
+		item.PlayerHead = pb.Head
 	}
 
 	response := &msg_client_message.S2CRankListResponse{

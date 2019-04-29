@@ -126,6 +126,22 @@ type G2R_ChargeSave struct {
 type G2R_ChargeSaveResult struct {
 }
 
+// 玩家基础信息
+type PlayerBaseInfo struct {
+	Id    int32
+	Name  string
+	Level int32
+	Head  int32
+}
+
+// 更新玩家基础信息
+type G2R_PlayerBaseInfoUpdate struct {
+	Info *PlayerBaseInfo
+}
+
+type G2R_PlayerBaseInfoUpdateResult struct {
+}
+
 // 排行榜数据更新
 type G2R_RankListDataUpdate struct {
 	RankType  int32
@@ -154,4 +170,24 @@ type G2R_RankListGetDataResult struct {
 	SelfRank           int32
 	SelfValue          interface{}
 	SelfHistoryTopRank int32
+	PlayerBaseInfos    map[int32]*PlayerBaseInfo
+}
+
+// 获取好友关卡积分
+type G2R_GetFriendStageScore struct {
+	PlayerId  int32
+	FriendIds []int32
+	StageId   int32
+}
+
+type FriendStageScoreData struct {
+	Id         int32
+	Name       string
+	Level      int32
+	Head       int32
+	StageScore int32
+}
+
+type G2R_GetFriendStageScoreResult struct {
+	FriendsScoreData []*FriendStageScoreData
 }

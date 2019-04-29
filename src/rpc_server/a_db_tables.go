@@ -268,6 +268,29 @@ func (this* dbPlayerStageTotalScoreHistoryTopDataData)clone_to(d *dbPlayerStageT
 	d.Score = this.Score
 	return
 }
+type dbPlayerStageTotalScoreStageData struct{
+	Id int32
+	TopScore int32
+}
+func (this* dbPlayerStageTotalScoreStageData)from_pb(pb *db.PlayerStageTotalScoreStage){
+	if pb == nil {
+		return
+	}
+	this.Id = pb.GetId()
+	this.TopScore = pb.GetTopScore()
+	return
+}
+func (this* dbPlayerStageTotalScoreStageData)to_pb()(pb *db.PlayerStageTotalScoreStage){
+	pb = &db.PlayerStageTotalScoreStage{}
+	pb.Id = proto.Int32(this.Id)
+	pb.TopScore = proto.Int32(this.TopScore)
+	return
+}
+func (this* dbPlayerStageTotalScoreStageData)clone_to(d *dbPlayerStageTotalScoreStageData){
+	d.Id = this.Id
+	d.TopScore = this.TopScore
+	return
+}
 type dbPlayerCharmHistoryTopDataData struct{
 	Rank int32
 	Charm int32
@@ -443,6 +466,155 @@ func (this *dbPlayerStageTotalScoreHistoryTopDataColumn)SetScore(v int32){
 	this.m_changed = true
 	return
 }
+type dbPlayerStageTotalScoreStageColumn struct{
+	m_row *dbPlayerStageTotalScoreRow
+	m_data map[int32]*dbPlayerStageTotalScoreStageData
+	m_changed bool
+}
+func (this *dbPlayerStageTotalScoreStageColumn)load(data []byte)(err error){
+	if data == nil || len(data) == 0 {
+		this.m_changed = false
+		return nil
+	}
+	pb := &db.PlayerStageTotalScoreStageList{}
+	err = proto.Unmarshal(data, pb)
+	if err != nil {
+		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	for _, v := range pb.List {
+		d := &dbPlayerStageTotalScoreStageData{}
+		d.from_pb(v)
+		this.m_data[int32(d.Id)] = d
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerStageTotalScoreStageColumn)save( )(data []byte,err error){
+	pb := &db.PlayerStageTotalScoreStageList{}
+	pb.List=make([]*db.PlayerStageTotalScoreStage,len(this.m_data))
+	i:=0
+	for _, v := range this.m_data {
+		pb.List[i] = v.to_pb()
+		i++
+	}
+	data, err = proto.Marshal(pb)
+	if err != nil {
+		log.Error("Marshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerStageTotalScoreStageColumn)HasIndex(id int32)(has bool){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerStageTotalScoreStageColumn.HasIndex")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	_, has = this.m_data[id]
+	return
+}
+func (this *dbPlayerStageTotalScoreStageColumn)GetAllIndex()(list []int32){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerStageTotalScoreStageColumn.GetAllIndex")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	list = make([]int32, len(this.m_data))
+	i := 0
+	for k, _ := range this.m_data {
+		list[i] = k
+		i++
+	}
+	return
+}
+func (this *dbPlayerStageTotalScoreStageColumn)GetAll()(list []dbPlayerStageTotalScoreStageData){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerStageTotalScoreStageColumn.GetAll")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	list = make([]dbPlayerStageTotalScoreStageData, len(this.m_data))
+	i := 0
+	for _, v := range this.m_data {
+		v.clone_to(&list[i])
+		i++
+	}
+	return
+}
+func (this *dbPlayerStageTotalScoreStageColumn)Get(id int32)(v *dbPlayerStageTotalScoreStageData){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerStageTotalScoreStageColumn.Get")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		return nil
+	}
+	v=&dbPlayerStageTotalScoreStageData{}
+	d.clone_to(v)
+	return
+}
+func (this *dbPlayerStageTotalScoreStageColumn)Set(v dbPlayerStageTotalScoreStageData)(has bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerStageTotalScoreStageColumn.Set")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	d := this.m_data[int32(v.Id)]
+	if d==nil{
+		log.Error("not exist %v %v",this.m_row.GetPlayerId(), v.Id)
+		return false
+	}
+	v.clone_to(d)
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerStageTotalScoreStageColumn)Add(v *dbPlayerStageTotalScoreStageData)(ok bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerStageTotalScoreStageColumn.Add")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	_, has := this.m_data[int32(v.Id)]
+	if has {
+		log.Error("already added %v %v",this.m_row.GetPlayerId(), v.Id)
+		return false
+	}
+	d:=&dbPlayerStageTotalScoreStageData{}
+	v.clone_to(d)
+	this.m_data[int32(v.Id)]=d
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerStageTotalScoreStageColumn)Remove(id int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerStageTotalScoreStageColumn.Remove")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	_, has := this.m_data[id]
+	if has {
+		delete(this.m_data,id)
+	}
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerStageTotalScoreStageColumn)Clear(){
+	this.m_row.m_lock.UnSafeLock("dbPlayerStageTotalScoreStageColumn.Clear")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data=make(map[int32]*dbPlayerStageTotalScoreStageData)
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerStageTotalScoreStageColumn)NumAll()(n int32){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerStageTotalScoreStageColumn.NumAll")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	return int32(len(this.m_data))
+}
+func (this *dbPlayerStageTotalScoreStageColumn)GetTopScore(id int32)(v int32 ,has bool){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerStageTotalScoreStageColumn.GetTopScore")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		return
+	}
+	v = d.TopScore
+	return v,true
+}
+func (this *dbPlayerStageTotalScoreStageColumn)SetTopScore(id int32,v int32)(has bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerStageTotalScoreStageColumn.SetTopScore")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		log.Error("not exist %v %v",this.m_row.GetPlayerId(), id)
+		return
+	}
+	d.TopScore = v
+	this.m_changed = true
+	return true
+}
 type dbPlayerStageTotalScoreRow struct {
 	m_table *dbPlayerStageTotalScoreTable
 	m_lock       *RWMutex
@@ -458,6 +630,7 @@ type dbPlayerStageTotalScoreRow struct {
 	m_UpdateTime_changed bool
 	m_UpdateTime int32
 	HistoryTopData dbPlayerStageTotalScoreHistoryTopDataColumn
+	Stages dbPlayerStageTotalScoreStageColumn
 }
 func new_dbPlayerStageTotalScoreRow(table *dbPlayerStageTotalScoreTable, PlayerId int32) (r *dbPlayerStageTotalScoreRow) {
 	this := &dbPlayerStageTotalScoreRow{}
@@ -468,6 +641,8 @@ func new_dbPlayerStageTotalScoreRow(table *dbPlayerStageTotalScoreTable, PlayerI
 	this.m_UpdateTime_changed=true
 	this.HistoryTopData.m_row=this
 	this.HistoryTopData.m_data=&dbPlayerStageTotalScoreHistoryTopDataData{}
+	this.Stages.m_row=this
+	this.Stages.m_data=make(map[int32]*dbPlayerStageTotalScoreStageData)
 	return this
 }
 func (this *dbPlayerStageTotalScoreRow) GetPlayerId() (r int32) {
@@ -477,7 +652,7 @@ func (this *dbPlayerStageTotalScoreRow) save_data(release bool) (err error, rele
 	this.m_lock.UnSafeLock("dbPlayerStageTotalScoreRow.save_data")
 	defer this.m_lock.UnSafeUnlock()
 	if this.m_new {
-		db_args:=new_db_args(4)
+		db_args:=new_db_args(5)
 		db_args.Push(this.m_PlayerId)
 		db_args.Push(this.m_Score)
 		db_args.Push(this.m_UpdateTime)
@@ -487,12 +662,18 @@ func (this *dbPlayerStageTotalScoreRow) save_data(release bool) (err error, rele
 			return db_err,false,0,"",nil
 		}
 		db_args.Push(dHistoryTopData)
+		dStages,db_err:=this.Stages.save()
+		if db_err!=nil{
+			log.Error("insert save Stage failed")
+			return db_err,false,0,"",nil
+		}
+		db_args.Push(dStages)
 		args=db_args.GetArgs()
 		state = 1
 	} else {
-		if this.m_Score_changed||this.m_UpdateTime_changed||this.HistoryTopData.m_changed{
+		if this.m_Score_changed||this.m_UpdateTime_changed||this.HistoryTopData.m_changed||this.Stages.m_changed{
 			update_string = "UPDATE PlayerStageTotalScores SET "
-			db_args:=new_db_args(4)
+			db_args:=new_db_args(5)
 			if this.m_Score_changed{
 				update_string+="Score=?,"
 				db_args.Push(this.m_Score)
@@ -510,6 +691,15 @@ func (this *dbPlayerStageTotalScoreRow) save_data(release bool) (err error, rele
 				}
 				db_args.Push(dHistoryTopData)
 			}
+			if this.Stages.m_changed{
+				update_string+="Stages=?,"
+				dStages,err:=this.Stages.save()
+				if err!=nil{
+					log.Error("insert save Stage failed")
+					return err,false,0,"",nil
+				}
+				db_args.Push(dStages)
+			}
 			update_string = strings.TrimRight(update_string, ", ")
 			update_string+=" WHERE PlayerId=?"
 			db_args.Push(this.m_PlayerId)
@@ -521,6 +711,7 @@ func (this *dbPlayerStageTotalScoreRow) save_data(release bool) (err error, rele
 	this.m_Score_changed = false
 	this.m_UpdateTime_changed = false
 	this.HistoryTopData.m_changed = false
+	this.Stages.m_changed = false
 	if release && this.m_loaded {
 		atomic.AddInt32(&this.m_table.m_gc_n, -1)
 		this.m_loaded = false
@@ -644,10 +835,18 @@ func (this *dbPlayerStageTotalScoreTable) check_create_table() (err error) {
 			return
 		}
 	}
+	_, hasStage := columns["Stages"]
+	if !hasStage {
+		_, err = this.m_dbc.Exec("ALTER TABLE PlayerStageTotalScores ADD COLUMN Stages LONGBLOB")
+		if err != nil {
+			log.Error("ADD COLUMN Stages failed")
+			return
+		}
+	}
 	return
 }
 func (this *dbPlayerStageTotalScoreTable) prepare_preload_select_stmt() (err error) {
-	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,Score,UpdateTime,HistoryTopData FROM PlayerStageTotalScores")
+	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,Score,UpdateTime,HistoryTopData,Stages FROM PlayerStageTotalScores")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -655,7 +854,7 @@ func (this *dbPlayerStageTotalScoreTable) prepare_preload_select_stmt() (err err
 	return
 }
 func (this *dbPlayerStageTotalScoreTable) prepare_save_insert_stmt()(err error){
-	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO PlayerStageTotalScores (PlayerId,Score,UpdateTime,HistoryTopData) VALUES (?,?,?,?)")
+	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO PlayerStageTotalScores (PlayerId,Score,UpdateTime,HistoryTopData,Stages) VALUES (?,?,?,?,?)")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -703,9 +902,10 @@ func (this *dbPlayerStageTotalScoreTable) Preload() (err error) {
 	var dScore int32
 	var dUpdateTime int32
 	var dHistoryTopData []byte
+	var dStages []byte
 		this.m_preload_max_id = 0
 	for r.Next() {
-		err = r.Scan(&PlayerId,&dScore,&dUpdateTime,&dHistoryTopData)
+		err = r.Scan(&PlayerId,&dScore,&dUpdateTime,&dHistoryTopData,&dStages)
 		if err != nil {
 			log.Error("Scan err[%v]", err.Error())
 			return
@@ -719,6 +919,11 @@ func (this *dbPlayerStageTotalScoreTable) Preload() (err error) {
 		err = row.HistoryTopData.load(dHistoryTopData)
 		if err != nil {
 			log.Error("HistoryTopData %v", PlayerId)
+			return
+		}
+		err = row.Stages.load(dStages)
+		if err != nil {
+			log.Error("Stages %v", PlayerId)
 			return
 		}
 		row.m_Score_changed=false
@@ -2438,6 +2643,473 @@ func (this *dbPlayerBeZanedTable) GetRow(PlayerId int32) (row *dbPlayerBeZanedRo
 	}
 	return row
 }
+func (this *dbPlayerBaseInfoRow)GetAccount( )(r string ){
+	this.m_lock.UnSafeRLock("dbPlayerBaseInfoRow.GetdbPlayerBaseInfoAccountColumn")
+	defer this.m_lock.UnSafeRUnlock()
+	return string(this.m_Account)
+}
+func (this *dbPlayerBaseInfoRow)SetAccount(v string){
+	this.m_lock.UnSafeLock("dbPlayerBaseInfoRow.SetdbPlayerBaseInfoAccountColumn")
+	defer this.m_lock.UnSafeUnlock()
+	this.m_Account=string(v)
+	this.m_Account_changed=true
+	return
+}
+func (this *dbPlayerBaseInfoRow)GetName( )(r string ){
+	this.m_lock.UnSafeRLock("dbPlayerBaseInfoRow.GetdbPlayerBaseInfoNameColumn")
+	defer this.m_lock.UnSafeRUnlock()
+	return string(this.m_Name)
+}
+func (this *dbPlayerBaseInfoRow)SetName(v string){
+	this.m_lock.UnSafeLock("dbPlayerBaseInfoRow.SetdbPlayerBaseInfoNameColumn")
+	defer this.m_lock.UnSafeUnlock()
+	this.m_Name=string(v)
+	this.m_Name_changed=true
+	return
+}
+func (this *dbPlayerBaseInfoRow)GetLevel( )(r int32 ){
+	this.m_lock.UnSafeRLock("dbPlayerBaseInfoRow.GetdbPlayerBaseInfoLevelColumn")
+	defer this.m_lock.UnSafeRUnlock()
+	return int32(this.m_Level)
+}
+func (this *dbPlayerBaseInfoRow)SetLevel(v int32){
+	this.m_lock.UnSafeLock("dbPlayerBaseInfoRow.SetdbPlayerBaseInfoLevelColumn")
+	defer this.m_lock.UnSafeUnlock()
+	this.m_Level=int32(v)
+	this.m_Level_changed=true
+	return
+}
+func (this *dbPlayerBaseInfoRow)GetHead( )(r int32 ){
+	this.m_lock.UnSafeRLock("dbPlayerBaseInfoRow.GetdbPlayerBaseInfoHeadColumn")
+	defer this.m_lock.UnSafeRUnlock()
+	return int32(this.m_Head)
+}
+func (this *dbPlayerBaseInfoRow)SetHead(v int32){
+	this.m_lock.UnSafeLock("dbPlayerBaseInfoRow.SetdbPlayerBaseInfoHeadColumn")
+	defer this.m_lock.UnSafeUnlock()
+	this.m_Head=int32(v)
+	this.m_Head_changed=true
+	return
+}
+type dbPlayerBaseInfoRow struct {
+	m_table *dbPlayerBaseInfoTable
+	m_lock       *RWMutex
+	m_loaded  bool
+	m_new     bool
+	m_remove  bool
+	m_touch      int32
+	m_releasable bool
+	m_valid   bool
+	m_PlayerId        int32
+	m_Account_changed bool
+	m_Account string
+	m_Name_changed bool
+	m_Name string
+	m_Level_changed bool
+	m_Level int32
+	m_Head_changed bool
+	m_Head int32
+}
+func new_dbPlayerBaseInfoRow(table *dbPlayerBaseInfoTable, PlayerId int32) (r *dbPlayerBaseInfoRow) {
+	this := &dbPlayerBaseInfoRow{}
+	this.m_table = table
+	this.m_PlayerId = PlayerId
+	this.m_lock = NewRWMutex()
+	this.m_Account_changed=true
+	this.m_Name_changed=true
+	this.m_Level_changed=true
+	this.m_Head_changed=true
+	return this
+}
+func (this *dbPlayerBaseInfoRow) GetPlayerId() (r int32) {
+	return this.m_PlayerId
+}
+func (this *dbPlayerBaseInfoRow) save_data(release bool) (err error, released bool, state int32, update_string string, args []interface{}) {
+	this.m_lock.UnSafeLock("dbPlayerBaseInfoRow.save_data")
+	defer this.m_lock.UnSafeUnlock()
+	if this.m_new {
+		db_args:=new_db_args(5)
+		db_args.Push(this.m_PlayerId)
+		db_args.Push(this.m_Account)
+		db_args.Push(this.m_Name)
+		db_args.Push(this.m_Level)
+		db_args.Push(this.m_Head)
+		args=db_args.GetArgs()
+		state = 1
+	} else {
+		if this.m_Account_changed||this.m_Name_changed||this.m_Level_changed||this.m_Head_changed{
+			update_string = "UPDATE PlayerBaseInfos SET "
+			db_args:=new_db_args(5)
+			if this.m_Account_changed{
+				update_string+="Account=?,"
+				db_args.Push(this.m_Account)
+			}
+			if this.m_Name_changed{
+				update_string+="Name=?,"
+				db_args.Push(this.m_Name)
+			}
+			if this.m_Level_changed{
+				update_string+="Level=?,"
+				db_args.Push(this.m_Level)
+			}
+			if this.m_Head_changed{
+				update_string+="Head=?,"
+				db_args.Push(this.m_Head)
+			}
+			update_string = strings.TrimRight(update_string, ", ")
+			update_string+=" WHERE PlayerId=?"
+			db_args.Push(this.m_PlayerId)
+			args=db_args.GetArgs()
+			state = 2
+		}
+	}
+	this.m_new = false
+	this.m_Account_changed = false
+	this.m_Name_changed = false
+	this.m_Level_changed = false
+	this.m_Head_changed = false
+	if release && this.m_loaded {
+		atomic.AddInt32(&this.m_table.m_gc_n, -1)
+		this.m_loaded = false
+		released = true
+	}
+	return nil,released,state,update_string,args
+}
+func (this *dbPlayerBaseInfoRow) Save(release bool) (err error, d bool, released bool) {
+	err,released, state, update_string, args := this.save_data(release)
+	if err != nil {
+		log.Error("save data failed")
+		return err, false, false
+	}
+	if state == 0 {
+		d = false
+	} else if state == 1 {
+		_, err = this.m_table.m_dbc.StmtExec(this.m_table.m_save_insert_stmt, args...)
+		if err != nil {
+			log.Error("INSERT PlayerBaseInfos exec failed %v ", this.m_PlayerId)
+			return err, false, released
+		}
+		d = true
+	} else if state == 2 {
+		_, err = this.m_table.m_dbc.Exec(update_string, args...)
+		if err != nil {
+			log.Error("UPDATE PlayerBaseInfos exec failed %v", this.m_PlayerId)
+			return err, false, released
+		}
+		d = true
+	}
+	return nil, d, released
+}
+func (this *dbPlayerBaseInfoRow) Touch(releasable bool) {
+	this.m_touch = int32(time.Now().Unix())
+	this.m_releasable = releasable
+}
+type dbPlayerBaseInfoRowSort struct {
+	rows []*dbPlayerBaseInfoRow
+}
+func (this *dbPlayerBaseInfoRowSort) Len() (length int) {
+	return len(this.rows)
+}
+func (this *dbPlayerBaseInfoRowSort) Less(i int, j int) (less bool) {
+	return this.rows[i].m_touch < this.rows[j].m_touch
+}
+func (this *dbPlayerBaseInfoRowSort) Swap(i int, j int) {
+	temp := this.rows[i]
+	this.rows[i] = this.rows[j]
+	this.rows[j] = temp
+}
+type dbPlayerBaseInfoTable struct{
+	m_dbc *DBC
+	m_lock *RWMutex
+	m_rows map[int32]*dbPlayerBaseInfoRow
+	m_new_rows map[int32]*dbPlayerBaseInfoRow
+	m_removed_rows map[int32]*dbPlayerBaseInfoRow
+	m_gc_n int32
+	m_gcing int32
+	m_pool_size int32
+	m_preload_select_stmt *sql.Stmt
+	m_preload_max_id int32
+	m_save_insert_stmt *sql.Stmt
+	m_delete_stmt *sql.Stmt
+}
+func new_dbPlayerBaseInfoTable(dbc *DBC) (this *dbPlayerBaseInfoTable) {
+	this = &dbPlayerBaseInfoTable{}
+	this.m_dbc = dbc
+	this.m_lock = NewRWMutex()
+	this.m_rows = make(map[int32]*dbPlayerBaseInfoRow)
+	this.m_new_rows = make(map[int32]*dbPlayerBaseInfoRow)
+	this.m_removed_rows = make(map[int32]*dbPlayerBaseInfoRow)
+	return this
+}
+func (this *dbPlayerBaseInfoTable) check_create_table() (err error) {
+	_, err = this.m_dbc.Exec("CREATE TABLE IF NOT EXISTS PlayerBaseInfos(PlayerId int(11),PRIMARY KEY (PlayerId))ENGINE=InnoDB ROW_FORMAT=DYNAMIC")
+	if err != nil {
+		log.Error("CREATE TABLE IF NOT EXISTS PlayerBaseInfos failed")
+		return
+	}
+	rows, err := this.m_dbc.Query("SELECT COLUMN_NAME,ORDINAL_POSITION FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA=? AND TABLE_NAME='PlayerBaseInfos'", this.m_dbc.m_db_name)
+	if err != nil {
+		log.Error("SELECT information_schema failed")
+		return
+	}
+	columns := make(map[string]int32)
+	for rows.Next() {
+		var column_name string
+		var ordinal_position int32
+		err = rows.Scan(&column_name, &ordinal_position)
+		if err != nil {
+			log.Error("scan information_schema row failed")
+			return
+		}
+		if ordinal_position < 1 {
+			log.Error("col ordinal out of range")
+			continue
+		}
+		columns[column_name] = ordinal_position
+	}
+	_, hasAccount := columns["Account"]
+	if !hasAccount {
+		_, err = this.m_dbc.Exec("ALTER TABLE PlayerBaseInfos ADD COLUMN Account varchar(256)")
+		if err != nil {
+			log.Error("ADD COLUMN Account failed")
+			return
+		}
+	}
+	_, hasName := columns["Name"]
+	if !hasName {
+		_, err = this.m_dbc.Exec("ALTER TABLE PlayerBaseInfos ADD COLUMN Name varchar(256)")
+		if err != nil {
+			log.Error("ADD COLUMN Name failed")
+			return
+		}
+	}
+	_, hasLevel := columns["Level"]
+	if !hasLevel {
+		_, err = this.m_dbc.Exec("ALTER TABLE PlayerBaseInfos ADD COLUMN Level int(11)")
+		if err != nil {
+			log.Error("ADD COLUMN Level failed")
+			return
+		}
+	}
+	_, hasHead := columns["Head"]
+	if !hasHead {
+		_, err = this.m_dbc.Exec("ALTER TABLE PlayerBaseInfos ADD COLUMN Head int(11)")
+		if err != nil {
+			log.Error("ADD COLUMN Head failed")
+			return
+		}
+	}
+	return
+}
+func (this *dbPlayerBaseInfoTable) prepare_preload_select_stmt() (err error) {
+	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,Account,Name,Level,Head FROM PlayerBaseInfos")
+	if err!=nil{
+		log.Error("prepare failed")
+		return
+	}
+	return
+}
+func (this *dbPlayerBaseInfoTable) prepare_save_insert_stmt()(err error){
+	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO PlayerBaseInfos (PlayerId,Account,Name,Level,Head) VALUES (?,?,?,?,?)")
+	if err!=nil{
+		log.Error("prepare failed")
+		return
+	}
+	return
+}
+func (this *dbPlayerBaseInfoTable) prepare_delete_stmt() (err error) {
+	this.m_delete_stmt,err=this.m_dbc.StmtPrepare("DELETE FROM PlayerBaseInfos WHERE PlayerId=?")
+	if err!=nil{
+		log.Error("prepare failed")
+		return
+	}
+	return
+}
+func (this *dbPlayerBaseInfoTable) Init() (err error) {
+	err=this.check_create_table()
+	if err!=nil{
+		log.Error("check_create_table failed")
+		return
+	}
+	err=this.prepare_preload_select_stmt()
+	if err!=nil{
+		log.Error("prepare_preload_select_stmt failed")
+		return
+	}
+	err=this.prepare_save_insert_stmt()
+	if err!=nil{
+		log.Error("prepare_save_insert_stmt failed")
+		return
+	}
+	err=this.prepare_delete_stmt()
+	if err!=nil{
+		log.Error("prepare_save_insert_stmt failed")
+		return
+	}
+	return
+}
+func (this *dbPlayerBaseInfoTable) Preload() (err error) {
+	r, err := this.m_dbc.StmtQuery(this.m_preload_select_stmt)
+	if err != nil {
+		log.Error("SELECT")
+		return
+	}
+	var PlayerId int32
+	var dAccount string
+	var dName string
+	var dLevel int32
+	var dHead int32
+		this.m_preload_max_id = 0
+	for r.Next() {
+		err = r.Scan(&PlayerId,&dAccount,&dName,&dLevel,&dHead)
+		if err != nil {
+			log.Error("Scan err[%v]", err.Error())
+			return
+		}
+		if PlayerId>this.m_preload_max_id{
+			this.m_preload_max_id =PlayerId
+		}
+		row := new_dbPlayerBaseInfoRow(this,PlayerId)
+		row.m_Account=dAccount
+		row.m_Name=dName
+		row.m_Level=dLevel
+		row.m_Head=dHead
+		row.m_Account_changed=false
+		row.m_Name_changed=false
+		row.m_Level_changed=false
+		row.m_Head_changed=false
+		row.m_valid = true
+		this.m_rows[PlayerId]=row
+	}
+	return
+}
+func (this *dbPlayerBaseInfoTable) GetPreloadedMaxId() (max_id int32) {
+	return this.m_preload_max_id
+}
+func (this *dbPlayerBaseInfoTable) fetch_rows(rows map[int32]*dbPlayerBaseInfoRow) (r map[int32]*dbPlayerBaseInfoRow) {
+	this.m_lock.UnSafeLock("dbPlayerBaseInfoTable.fetch_rows")
+	defer this.m_lock.UnSafeUnlock()
+	r = make(map[int32]*dbPlayerBaseInfoRow)
+	for i, v := range rows {
+		r[i] = v
+	}
+	return r
+}
+func (this *dbPlayerBaseInfoTable) fetch_new_rows() (new_rows map[int32]*dbPlayerBaseInfoRow) {
+	this.m_lock.UnSafeLock("dbPlayerBaseInfoTable.fetch_new_rows")
+	defer this.m_lock.UnSafeUnlock()
+	new_rows = make(map[int32]*dbPlayerBaseInfoRow)
+	for i, v := range this.m_new_rows {
+		_, has := this.m_rows[i]
+		if has {
+			log.Error("rows already has new rows %v", i)
+			continue
+		}
+		this.m_rows[i] = v
+		new_rows[i] = v
+	}
+	for i, _ := range new_rows {
+		delete(this.m_new_rows, i)
+	}
+	return
+}
+func (this *dbPlayerBaseInfoTable) save_rows(rows map[int32]*dbPlayerBaseInfoRow, quick bool) {
+	for _, v := range rows {
+		if this.m_dbc.m_quit && !quick {
+			return
+		}
+		err, delay, _ := v.Save(false)
+		if err != nil {
+			log.Error("save failed %v", err)
+		}
+		if this.m_dbc.m_quit && !quick {
+			return
+		}
+		if delay&&!quick {
+			time.Sleep(time.Millisecond * 5)
+		}
+	}
+}
+func (this *dbPlayerBaseInfoTable) Save(quick bool) (err error){
+	removed_rows := this.fetch_rows(this.m_removed_rows)
+	for _, v := range removed_rows {
+		_, err := this.m_dbc.StmtExec(this.m_delete_stmt, v.GetPlayerId())
+		if err != nil {
+			log.Error("exec delete stmt failed %v", err)
+		}
+		v.m_valid = false
+		if !quick {
+			time.Sleep(time.Millisecond * 5)
+		}
+	}
+	this.m_removed_rows = make(map[int32]*dbPlayerBaseInfoRow)
+	rows := this.fetch_rows(this.m_rows)
+	this.save_rows(rows, quick)
+	new_rows := this.fetch_new_rows()
+	this.save_rows(new_rows, quick)
+	return
+}
+func (this *dbPlayerBaseInfoTable) AddRow(PlayerId int32) (row *dbPlayerBaseInfoRow) {
+	this.m_lock.UnSafeLock("dbPlayerBaseInfoTable.AddRow")
+	defer this.m_lock.UnSafeUnlock()
+	row = new_dbPlayerBaseInfoRow(this,PlayerId)
+	row.m_new = true
+	row.m_loaded = true
+	row.m_valid = true
+	_, has := this.m_new_rows[PlayerId]
+	if has{
+		log.Error("已经存在 %v", PlayerId)
+		return nil
+	}
+	this.m_new_rows[PlayerId] = row
+	atomic.AddInt32(&this.m_gc_n,1)
+	return row
+}
+func (this *dbPlayerBaseInfoTable) RemoveRow(PlayerId int32) {
+	this.m_lock.UnSafeLock("dbPlayerBaseInfoTable.RemoveRow")
+	defer this.m_lock.UnSafeUnlock()
+	row := this.m_rows[PlayerId]
+	if row != nil {
+		row.m_remove = true
+		delete(this.m_rows, PlayerId)
+		rm_row := this.m_removed_rows[PlayerId]
+		if rm_row != nil {
+			log.Error("rows and removed rows both has %v", PlayerId)
+		}
+		this.m_removed_rows[PlayerId] = row
+		_, has_new := this.m_new_rows[PlayerId]
+		if has_new {
+			delete(this.m_new_rows, PlayerId)
+			log.Error("rows and new_rows both has %v", PlayerId)
+		}
+	} else {
+		row = this.m_removed_rows[PlayerId]
+		if row == nil {
+			_, has_new := this.m_new_rows[PlayerId]
+			if has_new {
+				delete(this.m_new_rows, PlayerId)
+			} else {
+				log.Error("row not exist %v", PlayerId)
+			}
+		} else {
+			log.Error("already removed %v", PlayerId)
+			_, has_new := this.m_new_rows[PlayerId]
+			if has_new {
+				delete(this.m_new_rows, PlayerId)
+				log.Error("removed rows and new_rows both has %v", PlayerId)
+			}
+		}
+	}
+}
+func (this *dbPlayerBaseInfoTable) GetRow(PlayerId int32) (row *dbPlayerBaseInfoRow) {
+	this.m_lock.UnSafeRLock("dbPlayerBaseInfoTable.GetRow")
+	defer this.m_lock.UnSafeRUnlock()
+	row = this.m_rows[PlayerId]
+	if row == nil {
+		row = this.m_new_rows[PlayerId]
+	}
+	return row
+}
 func (this *dbApplePayRow)GetBundleId( )(r string ){
 	this.m_lock.UnSafeRLock("dbApplePayRow.GetdbApplePayBundleIdColumn")
 	defer this.m_lock.UnSafeRUnlock()
@@ -3446,6 +4118,7 @@ type DBC struct {
 	PlayerCharms *dbPlayerCharmTable
 	PlayerCatOuqis *dbPlayerCatOuqiTable
 	PlayerBeZaneds *dbPlayerBeZanedTable
+	PlayerBaseInfos *dbPlayerBaseInfoTable
 	ApplePays *dbApplePayTable
 	GooglePays *dbGooglePayTable
 }
@@ -3472,6 +4145,12 @@ func (this *DBC)init_tables()(err error){
 	err = this.PlayerBeZaneds.Init()
 	if err != nil {
 		log.Error("init PlayerBeZaneds table failed")
+		return
+	}
+	this.PlayerBaseInfos = new_dbPlayerBaseInfoTable(this)
+	err = this.PlayerBaseInfos.Init()
+	if err != nil {
+		log.Error("init PlayerBaseInfos table failed")
 		return
 	}
 	this.ApplePays = new_dbApplePayTable(this)
@@ -3516,6 +4195,13 @@ func (this *DBC)Preload()(err error){
 		return
 	}else{
 		log.Info("preload PlayerBeZaneds table succeed !")
+	}
+	err = this.PlayerBaseInfos.Preload()
+	if err != nil {
+		log.Error("preload PlayerBaseInfos table failed")
+		return
+	}else{
+		log.Info("preload PlayerBaseInfos table succeed !")
 	}
 	err = this.ApplePays.Preload()
 	if err != nil {
@@ -3562,6 +4248,11 @@ func (this *DBC)Save(quick bool)(err error){
 	err = this.PlayerBeZaneds.Save(quick)
 	if err != nil {
 		log.Error("save PlayerBeZaneds table failed")
+		return
+	}
+	err = this.PlayerBaseInfos.Save(quick)
+	if err != nil {
+		log.Error("save PlayerBaseInfos table failed")
 		return
 	}
 	err = this.ApplePays.Save(quick)

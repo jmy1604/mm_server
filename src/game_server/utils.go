@@ -78,42 +78,6 @@ func GetPlayerBaseInfo(player_id int32) (name string, level int32, head int32) {
 	return
 }
 
-/*func GetFighterInfo(fighter_id int32) (name string, level, head, score, grade, power int32) {
-	p := player_mgr.GetPlayerById(fighter_id)
-	if p != nil {
-		name = p.db.GetName()
-		level = p.db.Info.GetLvl()
-		head = p.db.Info.GetHead()
-		power = p.get_defense_team_power()
-	} else {
-		robot := arena_robot_mgr.Get(fighter_id)
-		if robot == nil {
-			return
-		}
-		name = robot.robot_data.RobotName
-		level = robot.robot_data.RobotLevel
-		head = robot.robot_data.RobotHead
-		power = robot.power
-	}
-	arena_division := arena_division_table_mgr.GetByScore(score)
-	if arena_division != nil {
-		grade = arena_division.Id
-	}
-	return
-}
-
-func GetPlayerCampaignInfo(player_id int32) (name string, level, head, campaign_id int32) {
-	p := player_mgr.GetPlayerById(player_id)
-	if p == nil {
-		return
-	}
-	name = p.db.GetName()
-	level = p.db.Info.GetLvl()
-	head = p.db.Info.GetHead()
-	campaign_id = p.db.CampaignCommon.GetLastestPassedCampaignId()
-	return
-}*/
-
 func Map2ItemInfos(items map[int32]int32) (item_infos []*msg_client_message.ItemInfo) {
 	if items == nil {
 		return

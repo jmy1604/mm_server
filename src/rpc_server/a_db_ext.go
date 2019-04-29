@@ -1,7 +1,10 @@
 package main
 
 import (
+	"mm_server/libs/log"
 	"mm_server/src/common"
+
+	"time"
 )
 
 func (this *dbPlayerStageTotalScoreTable) GetAllId() []int32 {
@@ -50,8 +53,22 @@ func (this *dbPlayerBeZanedTable) GetAllId() []int32 {
 	return ids
 }
 
+func (this *dbPlayerBeZanedRow) Zan() int32 {
+	this.m_lock.Lock("dbPlayerBeZanedRow.Zan")
+	defer this.m_lock.Unlock()
+
+	this.m_Zaned += 1
+	this.m_Zaned_changed = true
+	this.m_UpdateTime = int32(time.Now().Unix())
+	this.m_UpdateTime_changed = true
+	return this.m_Zaned
+}
+
 func (this *DBC) on_preload() (err error) {
+	rank_list_mgr.Init()
+
 	ids := dbc.PlayerStageTotalScores.GetAllId()
+	log.Trace("Player stage total score ids: %v", ids)
 	for _, id := range ids {
 		row := dbc.PlayerStageTotalScores.GetRow(id)
 		if row == nil {
@@ -65,6 +82,7 @@ func (this *DBC) on_preload() (err error) {
 	}
 
 	ids = dbc.PlayerCharms.GetAllId()
+	log.Trace("Player charm ids: %v", ids)
 	for _, id := range ids {
 		row := dbc.PlayerCharms.GetRow(id)
 		if row == nil {
@@ -78,6 +96,7 @@ func (this *DBC) on_preload() (err error) {
 	}
 
 	ids = dbc.PlayerCatOuqis.GetAllId()
+	log.Trace("Player cat ouqi ids: %v", ids)
 	for _, id := range ids {
 		row := dbc.PlayerCatOuqis.GetRow(id)
 		if row == nil {
@@ -100,6 +119,7 @@ func (this *DBC) on_preload() (err error) {
 	}
 
 	ids = dbc.PlayerBeZaneds.GetAllId()
+	log.Trace("Player be zaned ids: %v", ids)
 	for _, id := range ids {
 		row := dbc.PlayerBeZaneds.GetRow(id)
 		if row == nil {

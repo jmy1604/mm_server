@@ -49,6 +49,20 @@
 						{"Type":"int32","Index":1,"Name":"Rank"},
 						{"Type":"int32","Index":2,"Name":"Score"}
 					]
+				},
+				{
+					"DBColumnName":"Stage",
+					"InUse":true,
+					"ColumnName":"Stage",
+					"Simple":false,
+					"SimpleType":"",
+					"Preload":true,
+					"Map":true,
+					"AutoIndex":false,
+					"Fields":[
+						{"Type":"int32","Index":1,"Name":"Id"},
+						{"Type":"int32","Index":2,"Name":"TopScore"}
+					]
 				}
 			]
 		},
@@ -169,6 +183,65 @@
 					"Fields":[
 						{"Type":"int32","Index":1,"Name":"Rank"},
 						{"Type":"int32","Index":2,"Name":"Zaned"}
+					]
+				}
+			]
+		},
+		{
+			"TableName":"PlayerBaseInfo",
+			"DBTableName":"PlayerBaseInfo",
+			"SingleRow":false,
+			"AutoPrimaryKey":false,
+			"PrimaryKeyName":"PlayerId",
+			"PrimaryKeyType":"int32",
+			"PrimaryKeySize":11,
+			"Columns":[
+				{
+					"ColumnName":"Account",
+					"DBColumnName":"Account",
+					"InUse":true,
+					"Simple":true,
+					"SimpleType":"string",					
+					"Preload":true,
+					"Map":false,
+					"AutoIndex":false,
+					"Fields":[										
+					]		
+				},
+				{
+					"ColumnName":"Name",
+					"DBColumnName":"Name",
+					"InUse":true,
+					"Simple":true,
+					"SimpleType":"string",					
+					"Preload":true,
+					"Map":false,
+					"AutoIndex":false,
+					"Fields":[										
+					]		
+				},
+				{
+					"ColumnName":"Level",
+					"DBColumnName":"Level",
+					"InUse":true,
+					"Simple":true,
+					"SimpleType":"int32",
+					"Preload":true,
+					"Map":false,
+					"AutoIndex":false,
+					"Fields":[
+					]
+				},
+				{
+					"ColumnName":"Head",
+					"DBColumnName":"Head",
+					"InUse":true,
+					"Simple":true,
+					"SimpleType":"int32",
+					"Preload":true,
+					"Map":false,
+					"AutoIndex":false,
+					"Fields":[
 					]
 				}
 			]

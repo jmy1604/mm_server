@@ -99,6 +99,31 @@ func (p *Player) rpc_charge_save(channel int32, order_id, bundle_id, account str
 	return
 }
 
+// 更新玩家基本信息
+func (this *Player) rpc_player_base_info_update() bool {
+	rpc_client := get_rpc_client()
+	if rpc_client == nil {
+		return false
+	}
+
+	var args = rpc_proto.G2R_PlayerBaseInfoUpdate{
+		Info: &rpc_proto.PlayerBaseInfo{
+			Id:    this.Id,
+			Name:  this.db.GetName(),
+			Level: this.db.GetLevel(),
+			Head:  this.db.Info.GetHead(),
+		},
+	}
+
+	err := rpc_client.Call("G2R_PlayerProc.BaseInfoUpdate", &args, &rpc_proto.G2R_PlayerBaseInfoUpdateResult{})
+	if err != nil {
+		log.Error("RPC ### Player[%v] update base info err %v", this.Id, err.Error())
+		return false
+	}
+
+	return true
+}
+
 // 排行榜数据更新
 func (this *Player) rpc_rank_list_update_data(rank_type int32, rank_params []int32) (result *rpc_proto.G2R_RankListDataUpdateResult) {
 	rpc_client := get_rpc_client()
@@ -140,6 +165,28 @@ func (this *Player) rpc_rank_list_get_data(rank_type, start_rank, rank_num int32
 	err := rpc_client.Call("G2R_RankListProc.GetRankItems", &args, result)
 	if err != nil {
 		log.Error("RPC ### Player[%v] get rank type %v items by start_rank(%v) rank_num(%v), err %v", this.Id, rank_type, start_rank, rank_num)
+	}
+
+	return
+}
+
+// 获取好友关卡积分
+func (this *Player) rpc_get_friends_stage_score(stage_id int32) (result *rpc_proto.G2R_GetFriendStageScoreResult) {
+	rpc_client := get_rpc_client()
+	if rpc_client == nil {
+		return nil
+	}
+
+	friend_ids := this.db.Friends.GetAllIndex()
+	var args = rpc_proto.G2R_GetFriendStageScore{
+		StageId:   stage_id,
+		FriendIds: friend_ids,
+	}
+
+	result = &rpc_proto.G2R_GetFriendStageScoreResult{}
+	err := rpc_client.Call("G2R_PlayerProc.GetFriendStageScore", &args, result)
+	if err != nil {
+		log.Error("RPC ### Player[%v] get friends %v stage %v score err %v", this.Id, friend_ids, stage_id, err.Error())
 	}
 
 	return
