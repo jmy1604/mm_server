@@ -88,9 +88,6 @@ func main() {
 		http.ListenAndServe("0.0.0.0:6060", nil)
 	}()
 
-	// 排行榜
-	rank_list_mgr.Init()
-
 	// 好友推荐
 	friend_recommend_mgr.Init()
 
