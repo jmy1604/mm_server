@@ -230,7 +230,7 @@ func (this *Player) OnCreate() {
 	this.first_gen_achieve_tasks()
 
 	//this.db.SetName(fmt.Sprintf("MM_%s_%d", tmp_acc, this.Id))
-	this.db.Info.SetLvl(1)
+	this.db.SetLevel(1)
 	this.db.Info.SetCreateUnix(int32(time.Now().Unix()))
 	// 新任务
 	//this.UpdateNewTasks(1, false)
@@ -344,7 +344,7 @@ func (this *Player) send_enter_game(acc string, id int32) {
 
 func (this *Player) send_info() {
 	response := &msg_client_message.S2CPlayerInfoResponse{
-		Level:                 this.db.Info.GetLvl(),
+		Level:                 this.db.GetLevel(),
 		Exp:                   this.db.Info.GetExp(),
 		Gold:                  this.db.Info.GetGold(),
 		Diamond:               this.db.Info.GetDiamond(),
@@ -1279,257 +1279,6 @@ func C2SGetSuitHandbookRewardHandler(p *Player, msg_data []byte) int32 {
 	return 1
 }
 
-func (this *Player) get_stage_total_score_rank_list(rank_start, rank_num int32) int32 {
-	if rank_num > global_config.RankingListOnceGetItemsNum {
-		return int32(msg_client_message.E_ERR_RANK_GET_ITEMS_NUM_OVER_MAX)
-	}
-
-	/*result := this.rpc_call_ranklist_stage_total_score(rank_start, rank_num)
-	if result == nil {
-		log.Error("Player[%v] rpc get stages total score rank list range[%v,%v] failed", this.Id, rank_start, rank_num)
-		return -1
-	}
-
-	var items []*msg_client_message.RankingListItemInfo
-	if result.RankItems == nil {
-		items = make([]*msg_client_message.RankingListItemInfo, 0)
-	} else {
-		now_time := time.Now()
-		items = make([]*msg_client_message.RankingListItemInfo, len(result.RankItems))
-		for i := int32(0); i < int32(len(result.RankItems)); i++ {
-			r := result.RankItems[i]
-			is_friend := this.db.Friends.HasIndex(r.PlayerId)
-			is_zaned := this.is_today_zan(r.PlayerId, now_time)
-			name, level, head := GetPlayerBaseInfo(r.PlayerId)
-			items[i] = &msg_client_message.RankingListItemInfo{
-				Rank:                  rank_start + i,
-				PlayerId:              r.PlayerId,
-				PlayerName:            name,
-				PlayerLevel:           level,
-				PlayerHead:            head,
-				PlayerStageTotalScore: r.TotalScore,
-				IsFriend:              is_friend,
-				IsZaned:               is_zaned,
-			}
-		}
-	}
-
-	response := &msg_client_message.S2CPullRankingListResult{}
-	response.ItemList = items
-	response.RankType = 1
-	response.StartRank = rank_start
-	response.SelfRank = result.SelfRank
-	if result.SelfRank == 0 {
-		response.SelfValue1 = this.db.Stages.GetTotalScore()
-	} else {
-		response.SelfValue1 = result.SelfTotalScore
-	}
-	this.Send(uint16(msg_client_message.S2CPullRankingListResult_ProtoID), response)*/
-
-	return 1
-}
-
-func (this *Player) get_stage_score_rank_list(stage_id, rank_start, rank_num int32) int32 {
-	if rank_num > global_config.RankingListOnceGetItemsNum {
-		return int32(msg_client_message.E_ERR_RANK_GET_ITEMS_NUM_OVER_MAX)
-	}
-
-	/*result := this.rpc_call_ranklist_stage_score(stage_id, rank_start, rank_num)
-	if result == nil {
-		log.Error("Player[%v] rpc get stage[%v] score rank list range[%v,%v] failed", this.Id, stage_id, rank_start, rank_num)
-		return -1
-	}
-
-	var items []*msg_client_message.RankingListItemInfo
-	if result.RankItems == nil {
-		items = make([]*msg_client_message.RankingListItemInfo, 0)
-	} else {
-		now_time := time.Now()
-		items = make([]*msg_client_message.RankingListItemInfo, len(result.RankItems))
-		for i := int32(0); i < int32(len(result.RankItems)); i++ {
-			r := result.RankItems[i]
-			is_friend := this.db.Friends.HasIndex(r.PlayerId)
-			is_zaned := this.is_today_zan(r.PlayerId, now_time)
-			name, level, head := GetPlayerBaseInfo(r.PlayerId)
-			items[i] = &msg_client_message.RankingListItemInfo{
-				Rank:             rank_start + i,
-				PlayerId:         r.PlayerId,
-				PlayerName:       name,
-				PlayerLevel:      level,
-				PlayerHead:       head,
-				PlayerStageId:    r.StageId,
-				PlayerStageScore: r.StageScore,
-				IsFriend:         is_friend,
-				IsZaned:          is_zaned,
-			}
-		}
-	}
-
-	response := &msg_client_message.S2CPullRankingListResult{}
-	response.ItemList = items
-	response.RankType = 2
-	response.StartRank = rank_start
-	response.SelfRank = result.SelfRank
-	if result.SelfRank == 0 {
-		score, _ := this.db.Stages.GetTopScore(stage_id)
-		response.SelfValue1 = score
-	} else {
-		response.SelfValue1 = result.SelfScore
-	}
-
-	this.Send(uint16(msg_client_message.S2CPullRankingListResult_ProtoID), response)*/
-
-	return 1
-}
-
-func (this *Player) get_charm_rank_list(rank_start, rank_num int32) int32 {
-	if rank_num > global_config.RankingListOnceGetItemsNum {
-		return int32(msg_client_message.E_ERR_RANK_GET_ITEMS_NUM_OVER_MAX)
-	}
-
-	/*result := this.rpc_call_ranklist_charm(rank_start, rank_num)
-	if result == nil {
-		log.Error("Player[%v] rpc get charm rank list range[%v,%v] failed", this.Id, rank_start, rank_num)
-		return -1
-	}
-
-	var items []*msg_client_message.RankingListItemInfo
-	if result.RankItems == nil {
-		items = make([]*msg_client_message.RankingListItemInfo, 0)
-	} else {
-		now_time := time.Now()
-		items = make([]*msg_client_message.RankingListItemInfo, len(result.RankItems))
-		for i := int32(0); i < int32(len(result.RankItems)); i++ {
-			r := result.RankItems[i]
-			is_friend := this.db.Friends.HasIndex(r.PlayerId)
-			is_zaned := this.is_today_zan(r.PlayerId, now_time)
-			name, level, head := GetPlayerBaseInfo(r.PlayerId)
-			items[i] = &msg_client_message.RankingListItemInfo{
-				Rank:        rank_start + i,
-				PlayerId:    r.PlayerId,
-				PlayerName:  name,
-				PlayerLevel: level,
-				PlayerHead:  head,
-				PlayerCharm: r.Charm,
-				IsFriend:    is_friend,
-				IsZaned:     is_zaned,
-			}
-		}
-	}
-
-	response := &msg_client_message.S2CPullRankingListResult{}
-	response.ItemList = items
-	response.RankType = 3
-	response.StartRank = rank_start
-	response.SelfRank = result.SelfRank
-	if result.SelfRank == 0 {
-		response.SelfValue1 = this.db.Info.GetCharmVal()
-	} else {
-		response.SelfValue1 = result.SelfCharm
-	}
-
-	this.Send(uint16(msg_client_message.S2CPullRankingListResult_ProtoID), response)*/
-
-	return 1
-}
-
-func (this *Player) get_cat_ouqi_rank_list(param, rank_start, rank_num int32) int32 {
-	if rank_num > global_config.RankingListOnceGetItemsNum {
-		return int32(msg_client_message.E_ERR_RANK_GET_ITEMS_NUM_OVER_MAX)
-	}
-
-	/*result := this.rpc_call_ranklist_cat_ouqi(rank_start, rank_num, param)
-	if result == nil {
-		log.Error("Player[%v] rpc get cat ouqi rank list range[%v,%v] failed", this.Id, rank_start, rank_num)
-		return -1
-	}
-
-	var items []*msg_client_message.RankingListItemInfo
-	if result.RankItems == nil {
-		items = make([]*msg_client_message.RankingListItemInfo, 0)
-	} else {
-		now_time := time.Now()
-		items = make([]*msg_client_message.RankingListItemInfo, len(result.RankItems))
-		for i := int32(0); i < int32(len(result.RankItems)); i++ {
-			r := result.RankItems[i]
-			is_friend := this.db.Friends.HasIndex(r.PlayerId)
-			is_zaned := this.is_today_zan(r.PlayerId, now_time)
-			name, level, head := GetPlayerBaseInfo(r.PlayerId)
-			items[i] = &msg_client_message.RankingListItemInfo{
-				Rank:        rank_start + i,
-				PlayerId:    r.PlayerId,
-				PlayerName:  name,
-				PlayerLevel: level,
-				PlayerHead:  head,
-				CatId:       r.CatId,
-				CatTableId:  r.CatTableId,
-				CatLevel:    r.CatLevel,
-				CatStar:     r.CatStar,
-				CatNick:     r.CatNick,
-				CatOuqi:     r.CatOuqi,
-				IsFriend:    is_friend,
-				IsZaned:     is_zaned,
-			}
-		}
-	}
-	response := &msg_client_message.S2CPullRankingListResult{}
-	response.ItemList = items
-	response.RankType = 4
-	response.StartRank = rank_start
-	response.SelfRank = result.SelfRank
-	response.SelfValue1 = result.SelfCatId
-	response.SelfValue2 = result.SelfCatOuqi
-
-	this.Send(uint16(msg_client_message.S2CPullRankingListResult_ProtoID), response)*/
-
-	return 1
-}
-
-func (this *Player) get_zaned_rank_list(rank_start, rank_num int32) int32 {
-	if rank_num > global_config.RankingListOnceGetItemsNum {
-		return int32(msg_client_message.E_ERR_RANK_GET_ITEMS_NUM_OVER_MAX)
-	}
-
-	/*result := this.rpc_call_ranklist_get_zaned(rank_start, rank_num)
-	if result == nil {
-		log.Error("Player[%v] rpc get zaned rank list range[%v,%v] failed", this.Id, rank_start, rank_num)
-		return -1
-	}
-
-	var items []*msg_client_message.RankingListItemInfo
-	if result.RankItems == nil {
-		items = make([]*msg_client_message.RankingListItemInfo, 0)
-	} else {
-		now_time := time.Now()
-		items = make([]*msg_client_message.RankingListItemInfo, len(result.RankItems))
-		for i := int32(0); i < int32(len(result.RankItems)); i++ {
-			r := result.RankItems[i]
-			is_friend := this.db.Friends.HasIndex(r.PlayerId)
-			is_zaned := this.is_today_zan(r.PlayerId, now_time)
-			name, level, head := GetPlayerBaseInfo(r.PlayerId)
-			items[i] = &msg_client_message.RankingListItemInfo{
-				Rank:        rank_start + i,
-				PlayerId:    r.PlayerId,
-				PlayerName:  name,
-				PlayerLevel: level,
-				PlayerHead:  head,
-				PlayerZaned: r.Zaned,
-				IsFriend:    is_friend,
-				IsZaned:     is_zaned,
-			}
-		}
-	}
-	response := &msg_client_message.S2CPullRankingListResult{}
-	response.ItemList = items
-	response.RankType = 5
-	response.StartRank = rank_start
-	response.SelfRank = result.SelfRank
-	response.SelfValue1 = result.SendZaned
-	this.Send(uint16(msg_client_message.S2CPullRankingListResult_ProtoID), response)*/
-
-	return 1
-}
-
 func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, param []int32) int32 {
 	var res int32 = 0
 	if rank_start <= 0 {
@@ -1575,11 +1324,8 @@ func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, pa
 			}
 		}
 		if data.SelfValue != nil {
-			rd := data.SelfValue.(*common.PlayerCatOuqiRankItem)
-			if rd != nil {
-				self_value = rd.CatId
-				self_value2 = rd.Ouqi
-			}
+			self_value = rank_param
+			self_value2 = data.SelfValue.(int32)
 		}
 	} else {
 		if data.RankItems != nil {
@@ -1596,10 +1342,7 @@ func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, pa
 			}
 		}
 		if data.SelfValue != nil {
-			rd := data.SelfValue.(*common.PlayerInt32RankItem)
-			if rd != nil {
-				self_value = rd.Value
-			}
+			self_value = data.SelfValue.(int32)
 		}
 	}
 
@@ -1616,7 +1359,7 @@ func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, pa
 	response := &msg_client_message.S2CRankListResponse{
 		RankListType:       rank_type,
 		RankItems:          rank_items,
-		SelfHistoryTopRank: 0,
+		SelfHistoryTopRank: data.SelfHistoryTopRank,
 		SelfRank:           data.SelfRank,
 		SelfValue:          self_value,
 		SelfValue2:         self_value2,

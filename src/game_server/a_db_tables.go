@@ -327,7 +327,6 @@ type dbPlayerInfoData struct{
 	MaxUnlockStage int32
 	MaxChapter int32
 	CreateUnix int32
-	Lvl int32
 	Exp int32
 	FirstPayState int32
 	ChangeNameCount int32
@@ -379,7 +378,6 @@ func (this* dbPlayerInfoData)from_pb(pb *db.PlayerInfo){
 	this.MaxUnlockStage = pb.GetMaxUnlockStage()
 	this.MaxChapter = pb.GetMaxChapter()
 	this.CreateUnix = pb.GetCreateUnix()
-	this.Lvl = pb.GetLvl()
 	this.Exp = pb.GetExp()
 	this.FirstPayState = pb.GetFirstPayState()
 	this.ChangeNameCount = pb.GetChangeNameCount()
@@ -434,7 +432,6 @@ func (this* dbPlayerInfoData)to_pb()(pb *db.PlayerInfo){
 	pb.MaxUnlockStage = proto.Int32(this.MaxUnlockStage)
 	pb.MaxChapter = proto.Int32(this.MaxChapter)
 	pb.CreateUnix = proto.Int32(this.CreateUnix)
-	pb.Lvl = proto.Int32(this.Lvl)
 	pb.Exp = proto.Int32(this.Exp)
 	pb.FirstPayState = proto.Int32(this.FirstPayState)
 	pb.ChangeNameCount = proto.Int32(this.ChangeNameCount)
@@ -488,7 +485,6 @@ func (this* dbPlayerInfoData)clone_to(d *dbPlayerInfoData){
 	d.MaxUnlockStage = this.MaxUnlockStage
 	d.MaxChapter = this.MaxChapter
 	d.CreateUnix = this.CreateUnix
-	d.Lvl = this.Lvl
 	d.Exp = this.Exp
 	d.FirstPayState = this.FirstPayState
 	d.ChangeNameCount = this.ChangeNameCount
@@ -2859,19 +2855,6 @@ func (this *dbPlayerInfoColumn)SetCreateUnix(v int32){
 	this.m_row.m_lock.UnSafeLock("dbPlayerInfoColumn.SetCreateUnix")
 	defer this.m_row.m_lock.UnSafeUnlock()
 	this.m_data.CreateUnix = v
-	this.m_changed = true
-	return
-}
-func (this *dbPlayerInfoColumn)GetLvl( )(v int32 ){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerInfoColumn.GetLvl")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	v = this.m_data.Lvl
-	return
-}
-func (this *dbPlayerInfoColumn)SetLvl(v int32){
-	this.m_row.m_lock.UnSafeLock("dbPlayerInfoColumn.SetLvl")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	this.m_data.Lvl = v
 	this.m_changed = true
 	return
 }
@@ -17239,473 +17222,6 @@ func (this *dbServerInfoTable) Save(quick bool) (err error) {
 func (this *dbServerInfoTable) GetRow( ) (row *dbServerInfoRow) {
 	return this.m_row
 }
-func (this *dbOtherServerPlayerRow)GetAccount( )(r string ){
-	this.m_lock.UnSafeRLock("dbOtherServerPlayerRow.GetdbOtherServerPlayerAccountColumn")
-	defer this.m_lock.UnSafeRUnlock()
-	return string(this.m_Account)
-}
-func (this *dbOtherServerPlayerRow)SetAccount(v string){
-	this.m_lock.UnSafeLock("dbOtherServerPlayerRow.SetdbOtherServerPlayerAccountColumn")
-	defer this.m_lock.UnSafeUnlock()
-	this.m_Account=string(v)
-	this.m_Account_changed=true
-	return
-}
-func (this *dbOtherServerPlayerRow)GetName( )(r string ){
-	this.m_lock.UnSafeRLock("dbOtherServerPlayerRow.GetdbOtherServerPlayerNameColumn")
-	defer this.m_lock.UnSafeRUnlock()
-	return string(this.m_Name)
-}
-func (this *dbOtherServerPlayerRow)SetName(v string){
-	this.m_lock.UnSafeLock("dbOtherServerPlayerRow.SetdbOtherServerPlayerNameColumn")
-	defer this.m_lock.UnSafeUnlock()
-	this.m_Name=string(v)
-	this.m_Name_changed=true
-	return
-}
-func (this *dbOtherServerPlayerRow)GetLevel( )(r int32 ){
-	this.m_lock.UnSafeRLock("dbOtherServerPlayerRow.GetdbOtherServerPlayerLevelColumn")
-	defer this.m_lock.UnSafeRUnlock()
-	return int32(this.m_Level)
-}
-func (this *dbOtherServerPlayerRow)SetLevel(v int32){
-	this.m_lock.UnSafeLock("dbOtherServerPlayerRow.SetdbOtherServerPlayerLevelColumn")
-	defer this.m_lock.UnSafeUnlock()
-	this.m_Level=int32(v)
-	this.m_Level_changed=true
-	return
-}
-func (this *dbOtherServerPlayerRow)GetHead( )(r string ){
-	this.m_lock.UnSafeRLock("dbOtherServerPlayerRow.GetdbOtherServerPlayerHeadColumn")
-	defer this.m_lock.UnSafeRUnlock()
-	return string(this.m_Head)
-}
-func (this *dbOtherServerPlayerRow)SetHead(v string){
-	this.m_lock.UnSafeLock("dbOtherServerPlayerRow.SetdbOtherServerPlayerHeadColumn")
-	defer this.m_lock.UnSafeUnlock()
-	this.m_Head=string(v)
-	this.m_Head_changed=true
-	return
-}
-type dbOtherServerPlayerRow struct {
-	m_table *dbOtherServerPlayerTable
-	m_lock       *RWMutex
-	m_loaded  bool
-	m_new     bool
-	m_remove  bool
-	m_touch      int32
-	m_releasable bool
-	m_valid   bool
-	m_PlayerId        int32
-	m_Account_changed bool
-	m_Account string
-	m_Name_changed bool
-	m_Name string
-	m_Level_changed bool
-	m_Level int32
-	m_Head_changed bool
-	m_Head string
-}
-func new_dbOtherServerPlayerRow(table *dbOtherServerPlayerTable, PlayerId int32) (r *dbOtherServerPlayerRow) {
-	this := &dbOtherServerPlayerRow{}
-	this.m_table = table
-	this.m_PlayerId = PlayerId
-	this.m_lock = NewRWMutex()
-	this.m_Account_changed=true
-	this.m_Name_changed=true
-	this.m_Level_changed=true
-	this.m_Head_changed=true
-	return this
-}
-func (this *dbOtherServerPlayerRow) GetPlayerId() (r int32) {
-	return this.m_PlayerId
-}
-func (this *dbOtherServerPlayerRow) save_data(release bool) (err error, released bool, state int32, update_string string, args []interface{}) {
-	this.m_lock.UnSafeLock("dbOtherServerPlayerRow.save_data")
-	defer this.m_lock.UnSafeUnlock()
-	if this.m_new {
-		db_args:=new_db_args(5)
-		db_args.Push(this.m_PlayerId)
-		db_args.Push(this.m_Account)
-		db_args.Push(this.m_Name)
-		db_args.Push(this.m_Level)
-		db_args.Push(this.m_Head)
-		args=db_args.GetArgs()
-		state = 1
-	} else {
-		if this.m_Account_changed||this.m_Name_changed||this.m_Level_changed||this.m_Head_changed{
-			update_string = "UPDATE OtherServerPlayers SET "
-			db_args:=new_db_args(5)
-			if this.m_Account_changed{
-				update_string+="Account=?,"
-				db_args.Push(this.m_Account)
-			}
-			if this.m_Name_changed{
-				update_string+="Name=?,"
-				db_args.Push(this.m_Name)
-			}
-			if this.m_Level_changed{
-				update_string+="Level=?,"
-				db_args.Push(this.m_Level)
-			}
-			if this.m_Head_changed{
-				update_string+="Head=?,"
-				db_args.Push(this.m_Head)
-			}
-			update_string = strings.TrimRight(update_string, ", ")
-			update_string+=" WHERE PlayerId=?"
-			db_args.Push(this.m_PlayerId)
-			args=db_args.GetArgs()
-			state = 2
-		}
-	}
-	this.m_new = false
-	this.m_Account_changed = false
-	this.m_Name_changed = false
-	this.m_Level_changed = false
-	this.m_Head_changed = false
-	if release && this.m_loaded {
-		atomic.AddInt32(&this.m_table.m_gc_n, -1)
-		this.m_loaded = false
-		released = true
-	}
-	return nil,released,state,update_string,args
-}
-func (this *dbOtherServerPlayerRow) Save(release bool) (err error, d bool, released bool) {
-	err,released, state, update_string, args := this.save_data(release)
-	if err != nil {
-		log.Error("save data failed")
-		return err, false, false
-	}
-	if state == 0 {
-		d = false
-	} else if state == 1 {
-		_, err = this.m_table.m_dbc.StmtExec(this.m_table.m_save_insert_stmt, args...)
-		if err != nil {
-			log.Error("INSERT OtherServerPlayers exec failed %v ", this.m_PlayerId)
-			return err, false, released
-		}
-		d = true
-	} else if state == 2 {
-		_, err = this.m_table.m_dbc.Exec(update_string, args...)
-		if err != nil {
-			log.Error("UPDATE OtherServerPlayers exec failed %v", this.m_PlayerId)
-			return err, false, released
-		}
-		d = true
-	}
-	return nil, d, released
-}
-func (this *dbOtherServerPlayerRow) Touch(releasable bool) {
-	this.m_touch = int32(time.Now().Unix())
-	this.m_releasable = releasable
-}
-type dbOtherServerPlayerRowSort struct {
-	rows []*dbOtherServerPlayerRow
-}
-func (this *dbOtherServerPlayerRowSort) Len() (length int) {
-	return len(this.rows)
-}
-func (this *dbOtherServerPlayerRowSort) Less(i int, j int) (less bool) {
-	return this.rows[i].m_touch < this.rows[j].m_touch
-}
-func (this *dbOtherServerPlayerRowSort) Swap(i int, j int) {
-	temp := this.rows[i]
-	this.rows[i] = this.rows[j]
-	this.rows[j] = temp
-}
-type dbOtherServerPlayerTable struct{
-	m_dbc *DBC
-	m_lock *RWMutex
-	m_rows map[int32]*dbOtherServerPlayerRow
-	m_new_rows map[int32]*dbOtherServerPlayerRow
-	m_removed_rows map[int32]*dbOtherServerPlayerRow
-	m_gc_n int32
-	m_gcing int32
-	m_pool_size int32
-	m_preload_select_stmt *sql.Stmt
-	m_preload_max_id int32
-	m_save_insert_stmt *sql.Stmt
-	m_delete_stmt *sql.Stmt
-}
-func new_dbOtherServerPlayerTable(dbc *DBC) (this *dbOtherServerPlayerTable) {
-	this = &dbOtherServerPlayerTable{}
-	this.m_dbc = dbc
-	this.m_lock = NewRWMutex()
-	this.m_rows = make(map[int32]*dbOtherServerPlayerRow)
-	this.m_new_rows = make(map[int32]*dbOtherServerPlayerRow)
-	this.m_removed_rows = make(map[int32]*dbOtherServerPlayerRow)
-	return this
-}
-func (this *dbOtherServerPlayerTable) check_create_table() (err error) {
-	_, err = this.m_dbc.Exec("CREATE TABLE IF NOT EXISTS OtherServerPlayers(PlayerId int(11),PRIMARY KEY (PlayerId))ENGINE=InnoDB ROW_FORMAT=DYNAMIC")
-	if err != nil {
-		log.Error("CREATE TABLE IF NOT EXISTS OtherServerPlayers failed")
-		return
-	}
-	rows, err := this.m_dbc.Query("SELECT COLUMN_NAME,ORDINAL_POSITION FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA=? AND TABLE_NAME='OtherServerPlayers'", this.m_dbc.m_db_name)
-	if err != nil {
-		log.Error("SELECT information_schema failed")
-		return
-	}
-	columns := make(map[string]int32)
-	for rows.Next() {
-		var column_name string
-		var ordinal_position int32
-		err = rows.Scan(&column_name, &ordinal_position)
-		if err != nil {
-			log.Error("scan information_schema row failed")
-			return
-		}
-		if ordinal_position < 1 {
-			log.Error("col ordinal out of range")
-			continue
-		}
-		columns[column_name] = ordinal_position
-	}
-	_, hasAccount := columns["Account"]
-	if !hasAccount {
-		_, err = this.m_dbc.Exec("ALTER TABLE OtherServerPlayers ADD COLUMN Account varchar(256)")
-		if err != nil {
-			log.Error("ADD COLUMN Account failed")
-			return
-		}
-	}
-	_, hasName := columns["Name"]
-	if !hasName {
-		_, err = this.m_dbc.Exec("ALTER TABLE OtherServerPlayers ADD COLUMN Name varchar(256)")
-		if err != nil {
-			log.Error("ADD COLUMN Name failed")
-			return
-		}
-	}
-	_, hasLevel := columns["Level"]
-	if !hasLevel {
-		_, err = this.m_dbc.Exec("ALTER TABLE OtherServerPlayers ADD COLUMN Level int(11)")
-		if err != nil {
-			log.Error("ADD COLUMN Level failed")
-			return
-		}
-	}
-	_, hasHead := columns["Head"]
-	if !hasHead {
-		_, err = this.m_dbc.Exec("ALTER TABLE OtherServerPlayers ADD COLUMN Head varchar(256)")
-		if err != nil {
-			log.Error("ADD COLUMN Head failed")
-			return
-		}
-	}
-	return
-}
-func (this *dbOtherServerPlayerTable) prepare_preload_select_stmt() (err error) {
-	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,Account,Name,Level,Head FROM OtherServerPlayers")
-	if err!=nil{
-		log.Error("prepare failed")
-		return
-	}
-	return
-}
-func (this *dbOtherServerPlayerTable) prepare_save_insert_stmt()(err error){
-	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO OtherServerPlayers (PlayerId,Account,Name,Level,Head) VALUES (?,?,?,?,?)")
-	if err!=nil{
-		log.Error("prepare failed")
-		return
-	}
-	return
-}
-func (this *dbOtherServerPlayerTable) prepare_delete_stmt() (err error) {
-	this.m_delete_stmt,err=this.m_dbc.StmtPrepare("DELETE FROM OtherServerPlayers WHERE PlayerId=?")
-	if err!=nil{
-		log.Error("prepare failed")
-		return
-	}
-	return
-}
-func (this *dbOtherServerPlayerTable) Init() (err error) {
-	err=this.check_create_table()
-	if err!=nil{
-		log.Error("check_create_table failed")
-		return
-	}
-	err=this.prepare_preload_select_stmt()
-	if err!=nil{
-		log.Error("prepare_preload_select_stmt failed")
-		return
-	}
-	err=this.prepare_save_insert_stmt()
-	if err!=nil{
-		log.Error("prepare_save_insert_stmt failed")
-		return
-	}
-	err=this.prepare_delete_stmt()
-	if err!=nil{
-		log.Error("prepare_save_insert_stmt failed")
-		return
-	}
-	return
-}
-func (this *dbOtherServerPlayerTable) Preload() (err error) {
-	r, err := this.m_dbc.StmtQuery(this.m_preload_select_stmt)
-	if err != nil {
-		log.Error("SELECT")
-		return
-	}
-	var PlayerId int32
-	var dAccount string
-	var dName string
-	var dLevel int32
-	var dHead string
-		this.m_preload_max_id = 0
-	for r.Next() {
-		err = r.Scan(&PlayerId,&dAccount,&dName,&dLevel,&dHead)
-		if err != nil {
-			log.Error("Scan err[%v]", err.Error())
-			return
-		}
-		if PlayerId>this.m_preload_max_id{
-			this.m_preload_max_id =PlayerId
-		}
-		row := new_dbOtherServerPlayerRow(this,PlayerId)
-		row.m_Account=dAccount
-		row.m_Name=dName
-		row.m_Level=dLevel
-		row.m_Head=dHead
-		row.m_Account_changed=false
-		row.m_Name_changed=false
-		row.m_Level_changed=false
-		row.m_Head_changed=false
-		row.m_valid = true
-		this.m_rows[PlayerId]=row
-	}
-	return
-}
-func (this *dbOtherServerPlayerTable) GetPreloadedMaxId() (max_id int32) {
-	return this.m_preload_max_id
-}
-func (this *dbOtherServerPlayerTable) fetch_rows(rows map[int32]*dbOtherServerPlayerRow) (r map[int32]*dbOtherServerPlayerRow) {
-	this.m_lock.UnSafeLock("dbOtherServerPlayerTable.fetch_rows")
-	defer this.m_lock.UnSafeUnlock()
-	r = make(map[int32]*dbOtherServerPlayerRow)
-	for i, v := range rows {
-		r[i] = v
-	}
-	return r
-}
-func (this *dbOtherServerPlayerTable) fetch_new_rows() (new_rows map[int32]*dbOtherServerPlayerRow) {
-	this.m_lock.UnSafeLock("dbOtherServerPlayerTable.fetch_new_rows")
-	defer this.m_lock.UnSafeUnlock()
-	new_rows = make(map[int32]*dbOtherServerPlayerRow)
-	for i, v := range this.m_new_rows {
-		_, has := this.m_rows[i]
-		if has {
-			log.Error("rows already has new rows %v", i)
-			continue
-		}
-		this.m_rows[i] = v
-		new_rows[i] = v
-	}
-	for i, _ := range new_rows {
-		delete(this.m_new_rows, i)
-	}
-	return
-}
-func (this *dbOtherServerPlayerTable) save_rows(rows map[int32]*dbOtherServerPlayerRow, quick bool) {
-	for _, v := range rows {
-		if this.m_dbc.m_quit && !quick {
-			return
-		}
-		err, delay, _ := v.Save(false)
-		if err != nil {
-			log.Error("save failed %v", err)
-		}
-		if this.m_dbc.m_quit && !quick {
-			return
-		}
-		if delay&&!quick {
-			time.Sleep(time.Millisecond * 5)
-		}
-	}
-}
-func (this *dbOtherServerPlayerTable) Save(quick bool) (err error){
-	removed_rows := this.fetch_rows(this.m_removed_rows)
-	for _, v := range removed_rows {
-		_, err := this.m_dbc.StmtExec(this.m_delete_stmt, v.GetPlayerId())
-		if err != nil {
-			log.Error("exec delete stmt failed %v", err)
-		}
-		v.m_valid = false
-		if !quick {
-			time.Sleep(time.Millisecond * 5)
-		}
-	}
-	this.m_removed_rows = make(map[int32]*dbOtherServerPlayerRow)
-	rows := this.fetch_rows(this.m_rows)
-	this.save_rows(rows, quick)
-	new_rows := this.fetch_new_rows()
-	this.save_rows(new_rows, quick)
-	return
-}
-func (this *dbOtherServerPlayerTable) AddRow(PlayerId int32) (row *dbOtherServerPlayerRow) {
-	this.m_lock.UnSafeLock("dbOtherServerPlayerTable.AddRow")
-	defer this.m_lock.UnSafeUnlock()
-	row = new_dbOtherServerPlayerRow(this,PlayerId)
-	row.m_new = true
-	row.m_loaded = true
-	row.m_valid = true
-	_, has := this.m_new_rows[PlayerId]
-	if has{
-		log.Error("已经存在 %v", PlayerId)
-		return nil
-	}
-	this.m_new_rows[PlayerId] = row
-	atomic.AddInt32(&this.m_gc_n,1)
-	return row
-}
-func (this *dbOtherServerPlayerTable) RemoveRow(PlayerId int32) {
-	this.m_lock.UnSafeLock("dbOtherServerPlayerTable.RemoveRow")
-	defer this.m_lock.UnSafeUnlock()
-	row := this.m_rows[PlayerId]
-	if row != nil {
-		row.m_remove = true
-		delete(this.m_rows, PlayerId)
-		rm_row := this.m_removed_rows[PlayerId]
-		if rm_row != nil {
-			log.Error("rows and removed rows both has %v", PlayerId)
-		}
-		this.m_removed_rows[PlayerId] = row
-		_, has_new := this.m_new_rows[PlayerId]
-		if has_new {
-			delete(this.m_new_rows, PlayerId)
-			log.Error("rows and new_rows both has %v", PlayerId)
-		}
-	} else {
-		row = this.m_removed_rows[PlayerId]
-		if row == nil {
-			_, has_new := this.m_new_rows[PlayerId]
-			if has_new {
-				delete(this.m_new_rows, PlayerId)
-			} else {
-				log.Error("row not exist %v", PlayerId)
-			}
-		} else {
-			log.Error("already removed %v", PlayerId)
-			_, has_new := this.m_new_rows[PlayerId]
-			if has_new {
-				delete(this.m_new_rows, PlayerId)
-				log.Error("removed rows and new_rows both has %v", PlayerId)
-			}
-		}
-	}
-}
-func (this *dbOtherServerPlayerTable) GetRow(PlayerId int32) (row *dbOtherServerPlayerRow) {
-	this.m_lock.UnSafeRLock("dbOtherServerPlayerTable.GetRow")
-	defer this.m_lock.UnSafeRUnlock()
-	row = this.m_rows[PlayerId]
-	if row == nil {
-		row = this.m_new_rows[PlayerId]
-	}
-	return row
-}
 
 type DBC struct {
 	m_db_name            string
@@ -17727,7 +17243,6 @@ type DBC struct {
 	SysMails *dbSysMailTable
 	BanPlayers *dbBanPlayerTable
 	ServerInfo *dbServerInfoTable
-	OtherServerPlayers *dbOtherServerPlayerTable
 }
 func (this *DBC)init_tables()(err error){
 	this.Global = new_dbGlobalTable(this)
@@ -17770,12 +17285,6 @@ func (this *DBC)init_tables()(err error){
 	err = this.ServerInfo.Init()
 	if err != nil {
 		log.Error("init ServerInfo table failed")
-		return
-	}
-	this.OtherServerPlayers = new_dbOtherServerPlayerTable(this)
-	err = this.OtherServerPlayers.Init()
-	if err != nil {
-		log.Error("init OtherServerPlayers table failed")
 		return
 	}
 	return
@@ -17830,13 +17339,6 @@ func (this *DBC)Preload()(err error){
 	}else{
 		log.Info("preload ServerInfo table succeed !")
 	}
-	err = this.OtherServerPlayers.Preload()
-	if err != nil {
-		log.Error("preload OtherServerPlayers table failed")
-		return
-	}else{
-		log.Info("preload OtherServerPlayers table succeed !")
-	}
 	err = this.on_preload()
 	if err != nil {
 		log.Error("on_preload failed")
@@ -17883,11 +17385,6 @@ func (this *DBC)Save(quick bool)(err error){
 	err = this.ServerInfo.Save(quick)
 	if err != nil {
 		log.Error("save ServerInfo table failed")
-		return
-	}
-	err = this.OtherServerPlayers.Save(quick)
-	if err != nil {
-		log.Error("save OtherServerPlayers table failed")
 		return
 	}
 	return

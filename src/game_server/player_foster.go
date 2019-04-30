@@ -245,7 +245,7 @@ func (this *Player) foster_pull_cats_from_friend() (cats_in_friend []*msg_client
 		var items map[int32]int32
 		friend := player_mgr.GetPlayerById(friend_id)
 		if friend != nil {
-			friend_level = friend.db.Info.GetLvl()
+			friend_level = friend.db.GetLevel()
 			friend_name = friend.db.GetName()
 			friend_head = friend.db.Info.GetHead()
 			start_card, _ = friend.db.FosterFriendCats.GetStartCardId(this.Id)
@@ -741,7 +741,7 @@ func (this *Player) foster_set_cat_friend(friend_id int32, cat_id int32) int32 {
 		cat_table_id, _ := this.db.Cats.GetCfgId(cat_id)
 		cat_level, _ := this.db.Cats.GetLevel(cat_id)
 		cat_star, _ := this.db.Cats.GetStar(cat_id)
-		res := friend.add_friend_cat_in_foster(this.Id, this.db.Info.GetLvl(), this.db.GetName(), this.db.Info.GetHead(), cat_id, cat_table_id, cat_level, cat_star)
+		res := friend.add_friend_cat_in_foster(this.Id, this.db.GetLevel(), this.db.GetName(), this.db.Info.GetHead(), cat_id, cat_table_id, cat_level, cat_star)
 		if res < 0 {
 			log.Error("Player[%v] set cat[%v] to local friend[%v] foster failed", this.Id, cat_id, friend_id)
 			return res
@@ -778,7 +778,7 @@ func (this *Player) foster_set_cat_friend(friend_id int32, cat_id int32) int32 {
 
 // 玩家提供给好友的槽位数
 func (this *Player) fostered_slot_num_for_friend() int32 {
-	lvl := this.db.Info.GetLvl()
+	lvl := this.db.GetLevel()
 	player_level := player_level_table_mgr.Map[lvl]
 	if player_level == nil {
 		return 0
@@ -788,7 +788,7 @@ func (this *Player) fostered_slot_num_for_friend() int32 {
 
 // 寄养到好友的槽位数
 func (this *Player) foster_slot_num_to_friend() int32 {
-	lvl := this.db.Info.GetLvl()
+	lvl := this.db.GetLevel()
 	player_level := player_level_table_mgr.Map[lvl]
 	if player_level == nil {
 		return 0

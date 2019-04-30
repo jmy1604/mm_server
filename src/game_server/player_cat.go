@@ -211,7 +211,7 @@ func (this *Player) feed_cat(cat_id int32, food int32, add_exp int32, is_critica
 
 	// 公告
 	if is_max_level {
-		anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_CAT_FULL_LEVEL, true, this.Id, this.db.GetName(), this.db.Info.GetLvl(), cat.Id, curr_level, 0, "")
+		anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_CAT_FULL_LEVEL, true, this.Id, this.db.GetName(), this.db.GetLevel(), cat.Id, curr_level, 0, "")
 	}
 
 	return curr_level, curr_exp, 1

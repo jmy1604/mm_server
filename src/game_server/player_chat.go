@@ -104,7 +104,7 @@ func (this *Player) chat(channel int32, content []byte, evalue int32) int32 {
 	} else if channel == CHAT_CHANNEL_SYSTEM {
 		extra_value = evalue
 	} else {
-		lvl = this.db.Info.GetLvl()
+		lvl = this.db.GetLevel()
 		name = this.db.GetName()
 	}
 	if !chat_mgr.push_chat_msg(content, extra_value, this.Id, lvl, name, this.db.Info.GetHead()) {

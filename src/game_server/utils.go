@@ -65,15 +65,8 @@ func GetPlayerBaseInfo(player_id int32) (name string, level int32, head int32) {
 	player := player_mgr.GetPlayerById(player_id)
 	if player != nil {
 		name = player.db.GetName()
-		level = player.db.Info.GetLvl()
+		level = player.db.GetLevel()
 		head = player.db.Info.GetHead()
-	} else {
-		row := os_player_mgr.GetPlayer(player_id)
-		if row != nil {
-			name = row.GetName()
-			level = row.GetLevel()
-			head = 0
-		}
 	}
 	return
 }

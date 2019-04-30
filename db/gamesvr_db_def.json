@@ -129,7 +129,6 @@
 						{"Type":"int32","Index":6,"Name":"MaxUnlockStage"},
 						{"Type":"int32","Index":7,"Name":"MaxChapter"},
 						{"Type":"int32","Index":8,"Name":"CreateUnix"},
-						{"Type":"int32","Index":9,"Name":"Lvl"},
 						{"Type":"int32","Index":10,"Name":"Exp"},
 						{"Type":"int32","Index":11,"Name":"FirstPayState"},
 						{"Type":"int32","Index":12,"Name":"ChangeNameCount","Incby":true},

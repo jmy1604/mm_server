@@ -50,7 +50,7 @@ func (this *Player) AddDepotBuilding(building_config_id int32, num int32, reason
 
 	// 公告
 	if build != nil && build.Rarity >= 4 {
-		anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_GET_BUILDING, true, this.Id, this.db.GetName(), this.db.Info.GetLvl(), building_config_id, 0, 0, "")
+		anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_GET_BUILDING, true, this.Id, this.db.GetName(), this.db.GetLevel(), building_config_id, 0, 0, "")
 	}
 
 	return true
@@ -771,7 +771,7 @@ func (this *Player) VisitPlayerBuildings(player_id int32) int32 {
 		area = this.db.Areas.GetAllAreaInfo()
 		player_name = player.db.GetName()
 		player_head = player.db.Info.GetHead()
-		player_level = player.db.Info.GetLvl()
+		player_level = player.db.GetLevel()
 		player_vip_level = player.db.Info.GetVipLvl()
 		player_gold = player.GetGold()
 		player_diamond = player.db.Info.GetDiamond()
@@ -943,12 +943,12 @@ func C2SSetBuildingHandler(p *Player, msg_data []byte) int32 {
 	if 1 == building_cfg.IfFunction {
 		building_count_max = 1
 		if PLAYER_BUILDING_TYPE_CAT_HOME == building_cfg.Type {
-			lvl_cfg := player_level_table_mgr.Map[p.db.Info.GetLvl()]
+			lvl_cfg := player_level_table_mgr.Map[p.db.GetLevel()]
 			if nil != lvl_cfg {
 				building_count_max = lvl_cfg.MaxCattery
 			}
 		} else if PLAYER_BUILDING_TYPE_FARMLAND == building_cfg.Type {
-			lvl_cfg := player_level_table_mgr.Map[p.db.Info.GetLvl()]
+			lvl_cfg := player_level_table_mgr.Map[p.db.GetLevel()]
 			if nil != lvl_cfg {
 				building_count_max = lvl_cfg.MaxFarm
 			}
@@ -963,7 +963,7 @@ func C2SSetBuildingHandler(p *Player, msg_data []byte) int32 {
 	switch building_cfg.UnlockType {
 	case PLAYER_BUILDING_UNLOCK_TYPE_P_LVL:
 		{
-			if p.db.Info.GetLvl() < building_cfg.UnlockLevel {
+			if p.db.GetLevel() < building_cfg.UnlockLevel {
 				return int32(msg_client_message.E_ERR_BUILDING_BUYSET_LESS_P_LVL)
 			}
 		}

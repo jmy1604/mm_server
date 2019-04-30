@@ -13,7 +13,7 @@ import (
 func player_info_cmd(p *Player, args []string) int32 {
 	log.Info("### 玩家基础信息如下：")
 	log.Info("###### Name: %v", p.db.GetName())
-	log.Info("###### Level: %v", p.db.Info.GetLvl())
+	log.Info("###### Level: %v", p.db.GetLevel())
 	log.Info("###### Exp: %v", p.db.Info.GetExp())
 	log.Info("###### Diamond: %v", p.db.Info.GetDiamond())
 	log.Info("###### Gold: %v", p.db.Info.GetGold())
@@ -62,6 +62,7 @@ func set_level_cmd(p *Player, args []string) int32 {
 	}
 
 	p.db.SetLevel(int32(level))
+	p.rpc_player_base_info_update()
 	p.send_info()
 	return 1
 }
@@ -1789,7 +1790,7 @@ func push_sysmsg_cmd(p *Player, args []string) int32 {
 		return -1
 	}
 
-	if !anouncement_mgr.PushNew(int32(msg_type), true, p.Id, p.db.GetName(), int32(p.db.Info.GetLvl()), int32(param), 0, 0, "") {
+	if !anouncement_mgr.PushNew(int32(msg_type), true, p.Id, p.db.GetName(), int32(p.db.GetLevel()), int32(param), 0, 0, "") {
 		return -1
 	}
 
@@ -1802,7 +1803,7 @@ func push_sysmsg_text_cmd(p *Player, args []string) int32 {
 		return -1
 	}
 
-	if !anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_TEXT, true, p.Id, p.db.GetName(), int32(p.db.Info.GetLvl()), 0, 0, 0, args[0]) {
+	if !anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_TEXT, true, p.Id, p.db.GetName(), int32(p.db.GetLevel()), 0, 0, 0, args[0]) {
 		return -1
 	}
 

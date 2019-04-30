@@ -28,7 +28,7 @@ func (this *DBC) on_preload() (err error) {
 		//friend_recommend_mgr.CheckAndAddPlayer(p.Id)
 
 		if p.db.GetLevel() == 0 {
-			p.db.SetLevel(p.db.Info.GetLvl())
+			p.db.SetLevel(p.db.GetLevel())
 		}
 
 		p.load_surface_data()

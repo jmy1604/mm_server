@@ -50,7 +50,7 @@ func (this *Player) UnlockArea(area_id, ifquick int32) (int32, []int32) {
 	}
 
 	if 1 != ifquick {
-		if this.db.Info.GetLvl() < area_unlock_cfg.UnlockLevel {
+		if this.db.GetLevel() < area_unlock_cfg.UnlockLevel {
 			log.Error("Player UnlockArea [%d] need lvl [%d]", area_id, area_unlock_cfg.UnlockLevel)
 			return int32(msg_client_message.E_ERR_BUILDING_AREA_LESS_UNLOCK_LVL), nil
 		}

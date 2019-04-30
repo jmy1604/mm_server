@@ -445,7 +445,7 @@ func (this *Player) agree_add_friend(id int32) int32 {
 		// 加到对方的好友列表
 		data.FriendId = this.Id
 		data.FriendName = this.db.GetName()
-		data.Level = this.db.Info.GetLvl()
+		data.Level = this.db.GetLevel()
 		data.VipLevel = this.db.Info.GetVipLvl()
 		data.Head = this.db.Info.GetHead()
 		data.LastLogin = this.db.Info.GetLastLogin()
@@ -454,7 +454,7 @@ func (this *Player) agree_add_friend(id int32) int32 {
 		// 加到自己的好友列表
 		data.FriendId = id
 		data.FriendName = agree_player.db.GetName()
-		data.Level = agree_player.db.Info.GetLvl()
+		data.Level = agree_player.db.GetLevel()
 		data.VipLevel = agree_player.db.Info.GetVipLvl()
 		data.Head = agree_player.db.Info.GetHead()
 		data.LastLogin = agree_player.db.Info.GetLastLogin()

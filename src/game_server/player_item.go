@@ -470,7 +470,7 @@ func (this *Player) SendDepotBuildingUpdate() {
 // 体力增长计算
 func (this *Player) CalcSpirit() int32 {
 	curr_stamina := this.db.Info.GetSpirit()
-	cp := player_level_table_mgr.Map[this.db.Info.GetLvl()]
+	cp := player_level_table_mgr.Map[this.db.GetLevel()]
 	if cp == nil {
 		return curr_stamina
 	}
@@ -826,7 +826,7 @@ func (this *Player) AddCatWithLevelStarSkill(cat_cid int32, level int32, star in
 
 	// 公告
 	if catcfg.Rarity >= 4 {
-		anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_GET_SSR_CAT, true, this.Id, this.db.GetName(), this.db.Info.GetLvl(), cat_cid, 0, 0, "")
+		anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_GET_SSR_CAT, true, this.Id, this.db.GetName(), this.db.GetLevel(), cat_cid, 0, 0, "")
 	}
 
 	return msg
@@ -848,7 +848,7 @@ func (this *Player) SubCat(cat_id int32, reason, mod string) bool {
 
 // 玩家经验
 func (this *Player) AddExp(add_val int32, reason, mod string) (int32, int32) {
-	old_lvl := this.db.Info.GetLvl()
+	old_lvl := this.db.GetLevel()
 	if add_val < 0 {
 		log.Error("Player AddExp add_val[%d] < 0 ", add_val)
 		return old_lvl, this.db.Info.GetExp()
@@ -875,7 +875,7 @@ func (this *Player) AddExp(add_val int32, reason, mod string) (int32, int32) {
 
 		if blvl_chg {
 			log.Info("玩家[%d] 升级了[%d]", this.Id, cur_lvl)
-			this.db.Info.SetLvl(cur_lvl)
+			this.db.SetLevel(cur_lvl)
 			this.db.Info.SetExp(cur_exp)
 		} else {
 			this.db.Info.SetExp(cur_exp)
@@ -1213,7 +1213,7 @@ func (this *Player) AddItem(itemcfgid, addnum int32, reason, mod string, bslienc
 	// 公告寄养卡
 	foster := foster_table_mgr.Get(itemcfgid)
 	if foster != nil && foster.Rarity >= 4 {
-		anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_GET_FOSTER_CARD, true, this.Id, this.db.GetName(), this.db.Info.GetLvl(), itemcfgid, 0, 0, "")
+		anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_GET_FOSTER_CARD, true, this.Id, this.db.GetName(), this.db.GetLevel(), itemcfgid, 0, 0, "")
 	}
 
 	return msg

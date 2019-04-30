@@ -197,7 +197,7 @@ func (this *Player) exchange_formula(formula_id int32) int32 {
 
 	// 公告
 	if f.Rarity >= 4 {
-		anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_GET_FORMULA, true, this.Id, this.db.GetName(), this.db.Info.GetLvl(), formula_id, 0, 0, "")
+		anouncement_mgr.PushNew(ANOUNCEMENT_TYPE_GET_FORMULA, true, this.Id, this.db.GetName(), this.db.GetLevel(), formula_id, 0, 0, "")
 	}
 
 	log.Debug("Player[%v] exchanged formula[%v]", this.Id, formula_id)

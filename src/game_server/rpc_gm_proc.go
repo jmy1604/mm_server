@@ -95,7 +95,7 @@ func (this *G2H_Proc) PlayerInfo(args *rpc_proto.GmPlayerInfoCmd, result *rpc_pr
 	result.IsLogin = atomic.LoadInt32(&p.is_login)
 	result.LastLoginTime = p.db.Info.GetLastLogin()
 	result.LogoutTime = p.db.Info.GetLastLogout()
-	result.Level = p.db.Info.GetLvl()
+	result.Level = p.db.GetLevel()
 	result.VipLevel = p.db.Info.GetVipLvl()
 	result.Gold = p.db.Info.GetGold()
 	result.Diamond = p.db.Info.GetDiamond()

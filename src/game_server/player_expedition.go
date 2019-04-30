@@ -101,7 +101,7 @@ func (this *Player) OnLoginExpeditionChk() {
 
 func (p *Player) CheckUpdateExpedition() {
 	cur_unix := int32(time.Now().Unix())
-	cur_ids, cur_count := p.db.Expeditions.CheckUpdateExpedition(p.db.Info.GetLvl())
+	cur_ids, cur_count := p.db.Expeditions.CheckUpdateExpedition(p.db.GetLevel())
 	log.Info("C2SGetAllExpeditionHandler %v %v", cur_ids, cur_count)
 	if cur_count < global_config.ExpeditionTaskCount {
 		// 新手引导
@@ -114,7 +114,7 @@ func (p *Player) CheckUpdateExpedition() {
 			}
 		}
 
-		new_tasks := expedition_table_mgr.RandNWithExistIds(cur_ids, p.db.Info.GetLvl(), global_config.ExpeditionTaskCount-cur_count)
+		new_tasks := expedition_table_mgr.RandNWithExistIds(cur_ids, p.db.GetLevel(), global_config.ExpeditionTaskCount-cur_count)
 
 		if first_task != nil {
 			new_tasks = append(new_tasks, first_task)

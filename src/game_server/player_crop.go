@@ -244,8 +244,8 @@ func (this *Player) plant_crop(crop_id int32, dst_building_id int32) int32 {
 	}
 
 	// 作物是否解锁
-	if crop.Level > this.db.Info.GetLvl() {
-		log.Error("Player[%v] level[%v] not enough to unlock crop[%v], need level[%v]", this.Id, this.db.Info.GetLvl(), crop.Level)
+	if crop.Level > this.db.GetLevel() {
+		log.Error("Player[%v] level[%v] not enough to unlock crop[%v], need level[%v]", this.Id, this.db.GetLevel(), crop.Level)
 		return int32(msg_client_message.E_ERR_CROP_IS_NO_UNLOCK)
 	}
 
