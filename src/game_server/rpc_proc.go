@@ -30,6 +30,30 @@ func (this *G2G_GlobalProc) WorldChat(args *rpc_proto.G2G_WorldChat, result *rpc
 	return nil
 }
 
+// 玩家调用
+type R2G_PlayerProc struct {
+}
+
+func (this *R2G_PlayerProc) GetPlayerBaseInfo(args *rpc_proto.R2G_GetPlayerBaseInfo, result *rpc_proto.R2G_GetPlayerBaseInfoResult) error {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Stack(err)
+		}
+	}()
+
+	p := player_mgr.GetPlayerById(args.PlayerId)
+
+	if result.BaseInfo == nil {
+		result.BaseInfo = &rpc_proto.PlayerBaseInfo{}
+	}
+	result.BaseInfo.Id = args.PlayerId
+	result.BaseInfo.Name = p.db.GetName()
+	result.BaseInfo.Level = p.db.GetLevel()
+	result.BaseInfo.Head = p.db.Info.GetHead()
+
+	return nil
+}
+
 // 初始化rpc服务
 func (this *GameServer) init_rpc_service() bool {
 	if this.rpc_service != nil {
@@ -49,9 +73,9 @@ func (this *GameServer) init_rpc_service() bool {
 		return false
 	}
 
-	/*if !this.rpc_service.Register(&G2G_Proc{}) {
+	if !this.rpc_service.Register(&R2G_PlayerProc{}) {
 		return false
-	}*/
+	}
 
 	if this.rpc_service.Listen(config.ListenRpcServerIP) != nil {
 		log.Error("监听rpc服务端口[%v]失败", config.ListenRpcServerIP)

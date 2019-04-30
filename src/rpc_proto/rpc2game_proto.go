@@ -92,3 +92,12 @@ type R2G_RanklistPlayerFirstRank struct {
 }
 type R2G_RanklistPlayerFirstRankResult struct {
 }
+
+// 获取玩家基本信息
+type R2G_GetPlayerBaseInfo struct {
+	PlayerId int32
+}
+
+type R2G_GetPlayerBaseInfoResult struct {
+	BaseInfo *PlayerBaseInfo
+}

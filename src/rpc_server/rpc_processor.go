@@ -355,31 +355,33 @@ func (this *G2R_RankListProc) GetRankItems(args *rpc_proto.G2R_RankListGetData, 
 
 	if rank_items != nil {
 		for _, r := range rank_items {
-			var row *dbPlayerBaseInfoRow
+			var player_id int32
 			if args.RankType != common.RANK_LIST_TYPE_CAT_OUQI {
 				rr := r.(*common.PlayerInt32RankItem)
 				if rr == nil {
 					continue
 				}
-				row = dbc.PlayerBaseInfos.GetRow(rr.PlayerId)
+				player_id = rr.PlayerId
 			} else {
 				rr := r.(*common.PlayerCatOuqiRankItem)
 				if rr == nil {
 					continue
 				}
-				row = dbc.PlayerBaseInfos.GetRow(rr.PlayerId)
+				player_id = rr.PlayerId
 			}
+
 			if result.PlayerBaseInfos == nil {
 				result.PlayerBaseInfos = make(map[int32]*rpc_proto.PlayerBaseInfo)
 			}
-			if row != nil {
-				result.PlayerBaseInfos[row.GetPlayerId()] = &rpc_proto.PlayerBaseInfo{
-					Id:    row.GetPlayerId(),
-					Name:  row.GetName(),
-					Level: row.GetLevel(),
-					Head:  row.GetHead(),
-				}
+
+			_, name, level, head := get_player_base_info(player_id)
+			result.PlayerBaseInfos[player_id] = &rpc_proto.PlayerBaseInfo{
+				Id:    player_id,
+				Name:  name,
+				Level: level,
+				Head:  head,
 			}
+
 		}
 	}
 	log.Trace("@@@ Rank List Get Items %v", result)
