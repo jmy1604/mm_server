@@ -322,7 +322,17 @@ func (this *G2R_RankListProc) GetRankItems(args *rpc_proto.G2R_RankListGetData, 
 		}
 	}()
 
-	rank_items, self_rank, self_value := rank_list_mgr.GetItemsByRange(args.RankType, args.PlayerId, args.StartRank, args.RankNum)
+	var key interface{}
+	if args.RankType == common.RANK_LIST_TYPE_CAT_OUQI {
+		var item = common.PlayerCatOuqiRankItem{
+			PlayerId: args.PlayerId,
+			CatId:    args.RankParam,
+		}
+		key = item.GetKey()
+	} else {
+		key = args.PlayerId
+	}
+	rank_items, self_rank, self_value := rank_list_mgr.GetItemsByRange(args.RankType, key, args.StartRank, args.RankNum)
 	result.RankType = args.RankType
 	result.PlayerId = args.PlayerId
 	result.StartRank = args.StartRank
