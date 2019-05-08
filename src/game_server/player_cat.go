@@ -605,9 +605,10 @@ func (this *dbPlayerCatColumn) CalcOuqi(cat_id int32) int32 {
 	if cat.SkillLevelScores != nil && len(cat.SkillLevelScores) >= int(d.Star) && d.Star >= 1 {
 		add_skill_ouqi = cat.SkillLevelScores[d.SkillLevel-1]
 	}
-	ouqi := get_cat_coin_ability(cat, d) + get_cat_match_ability(cat, d) + get_cat_explore_ability(cat, d) + add_skill_ouqi
 
-	return ouqi
+	//ouqi := get_cat_coin_ability(cat, d) + get_cat_match_ability(cat, d) + get_cat_explore_ability(cat, d) + add_skill_ouqi
+
+	return d.CoinAbility + d.MatchAbility + d.Exp + add_skill_ouqi
 }
 
 func (this *Player) update_ouqi(cat_id int32) {
