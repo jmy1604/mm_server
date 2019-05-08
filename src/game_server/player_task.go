@@ -2,11 +2,11 @@ package main
 
 import (
 	"mm_server/libs/log"
-	//"mm_server/libs/utils"
+	"mm_server/libs/utils"
 	"mm_server/proto/gen_go/client_message"
 	"mm_server/src/tables"
 
-	//"time"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 )
@@ -155,15 +155,14 @@ func (this *Player) fill_task_msg(task_type int32) (task_list []*msg_client_mess
 }
 
 func (this *Player) ChkPlayerDailyTask() int32 {
-	/*remain_seconds := utils.GetRemainSeconds2NextDayTime(this.db.TaskCommon.GetLastRefreshTime(), global_config.DailyTaskRefreshTime)
+	remain_seconds := utils.GetRemainSeconds2NextDayTime(this.db.TaskCommon.GetLastRefreshTime(), global_config.DailyTaskRefreshTime)
 	if remain_seconds <= 0 {
 		this.db.Tasks.ResetDailyTask()
 		now_time := int32(time.Now().Unix())
 		this.db.TaskCommon.SetLastRefreshTime(now_time)
 		remain_seconds = utils.GetRemainSeconds2NextDayTime(now_time, global_config.DailyTaskRefreshTime)
 	}
-	return remain_seconds*/
-	return 1
+	return remain_seconds
 }
 
 func (this *Player) check_and_send_daily_task() {

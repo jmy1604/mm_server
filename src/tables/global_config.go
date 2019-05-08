@@ -152,6 +152,8 @@ type GlobalConfig struct {
 	MailPlayerSendCooldown int32 // 个人邮件发送间隔(秒)
 
 	CatHouseProduceGoldMinutes int32 // 猫舍产金分钟
+
+	DailyTaskRefreshTime string // 每日任务刷新时间
 }
 
 func (this *GlobalConfig) Init(conf_file string) bool {

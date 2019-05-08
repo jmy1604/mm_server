@@ -144,5 +144,7 @@
 	"MailAttachExistDays":15,
 	"MailPlayerSendCooldown":30,
 	
-	"CatHouseProduceGoldMinutes": 10
+	"CatHouseProduceGoldMinutes": 10,
+	
+	"DailyTaskRefreshTime": "04:00:00"
 }
