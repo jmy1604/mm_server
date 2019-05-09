@@ -9,12 +9,14 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
-type rpc_func func(int32, []byte) ([]byte, int32)
+type rpc_func func(int32, int32, []byte) ([]byte, int32)
 type rpc_mfunc func([]int32, []byte) ([]byte, int32)
 type rpc_broadcast_func func(int32, []byte) ([]byte, int32)
 
 var id2rpc_funcs = map[int32]rpc_func{
-	int32(msg_rpc_message.MSGID_G2G_PLAYER_INFO_REQUEST): remote_get_player_info_response,
+	int32(msg_rpc_message.MSGID_G2G_PLAYER_INFO_REQUEST):  remote_get_player_info_response,
+	int32(msg_rpc_message.MSGID_G2G_FRIEND_ASK_REQUEST):   remote_add_friend_by_id_response,
+	int32(msg_rpc_message.MSGID_G2G_FRIEND_AGREE_REQUEST): remote_agree_add_friend_response,
 }
 
 var id2rpc_mfuncs = map[int32]rpc_mfunc{
@@ -74,7 +76,7 @@ func remote_get_player_info(from_player_id, to_player_id int32) (resp *msg_rpc_m
 }
 
 // 获取玩家信息返回
-func remote_get_player_info_response(to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
+func remote_get_player_info_response(from_player_id int32, to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
 	var req msg_rpc_message.G2GPlayerInfoRequest
 	err := _unmarshal_msg(req_data, &req)
 	if err != nil {

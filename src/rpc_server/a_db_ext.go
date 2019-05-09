@@ -7,6 +7,18 @@ import (
 	"time"
 )
 
+func (this *dbPlayerBaseInfoTable) GetAllId() []int32 {
+	this.m_lock.RLock("dbPlayerBaseInfoTable.GetAllId")
+	defer this.m_lock.RUnlock()
+
+	var ids []int32
+	for id, _ := range this.m_rows {
+		ids = append(ids, id)
+	}
+
+	return ids
+}
+
 func (this *dbPlayerStageTotalScoreTable) GetAllId() []int32 {
 	this.m_lock.RLock("dbPlayerStageTotalScoreTable.GetAllId")
 	defer this.m_lock.RUnlock()
@@ -130,6 +142,15 @@ func (this *DBC) on_preload() (err error) {
 			PlayerId:   row.GetPlayerId(),
 			UpdateTime: row.GetUpdateTime(),
 		})
+	}
+
+	ids = dbc.PlayerBaseInfos.GetAllId()
+	for _, id := range ids {
+		row := dbc.PlayerBaseInfos.GetRow(id)
+		if row == nil {
+			continue
+		}
+		player_mgr.Add(row.GetName(), id)
 	}
 
 	return

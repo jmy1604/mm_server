@@ -6,18 +6,6 @@ type R2G_Ping struct {
 type R2G_Pong struct {
 }
 
-// 查找玩家数据
-type R2G_SearchPlayer struct {
-	Id int32
-}
-type R2G_SearchPlayerResult struct {
-	Nick      string
-	Head      string
-	Level     int32
-	VipLevel  int32
-	LastLogin int32
-}
-
 // 申请好友
 type R2G_AddFriendById struct {
 	PlayerId    int32

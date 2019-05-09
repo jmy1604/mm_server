@@ -7,6 +7,7 @@ import (
 	"mm_server/libs/rpc"
 	"mm_server/src/common"
 	"mm_server/src/rpc_proto"
+	"strconv"
 	"time"
 )
 
@@ -399,6 +400,36 @@ func (this *G2R_RankListProc) GetRankItems(args *rpc_proto.G2R_RankListGetData, 
 	return nil
 }
 
+type G2R_FriendProc struct {
+}
+
+func (this *G2R_FriendProc) SearchFriends(args *rpc_proto.G2R_SearchFriend, result *rpc_proto.G2R_SearchFriendResult) error {
+	id, err := strconv.Atoi(args.Key)
+	if err == nil {
+		row := dbc.PlayerBaseInfos.GetRow(int32(id))
+		result.Players = append(result.Players, &rpc_proto.SearchPlayerInfo{
+			Id:    int32(id),
+			Nick:  row.GetName(),
+			Level: row.GetLevel(),
+			Head:  row.GetHead(),
+		})
+	}
+
+	id = int(player_mgr.GetId(args.Key))
+	if id > 0 {
+		row := dbc.PlayerBaseInfos.GetRow(int32(id))
+		result.Players = append(result.Players, &rpc_proto.SearchPlayerInfo{
+			Id:    int32(id),
+			Nick:  row.GetName(),
+			Level: row.GetLevel(),
+			Head:  row.GetHead(),
+		})
+	}
+
+	log.Trace("@@@ Searched Friends %v by key %v", result.Players, args.Key)
+	return nil
+}
+
 // 初始化
 func (this *RpcServer) init_proc_service() bool {
 	this.rpc_service = &rpc.Service{}
@@ -424,6 +455,10 @@ func (this *RpcServer) init_proc_service() bool {
 	}
 
 	if !this.rpc_service.Register(&G2R_RankListProc{}) {
+		return false
+	}
+
+	if !this.rpc_service.Register(&G2R_FriendProc{}) {
 		return false
 	}
 

@@ -1962,7 +1962,7 @@ message S2CAgreeFriendResult {
 	string Name 							= 2; // 好友名称
 	int32 Score 							= 3; // 好友积分
 	int32 Level								= 4; // 等级
-	string Head								= 5; // 头像
+	int32 Head								= 5; // 头像
 	int32 VipLevel		  					= 6; // VIP等级
 	int32 LastLogin							= 7; // 上次登陆时间
 	enum EProtocol { None = 0; ProtoID = 11611; }

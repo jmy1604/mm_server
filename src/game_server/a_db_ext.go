@@ -154,19 +154,18 @@ func (this *dbPlayerFriendReqColumn) FillAllListMsg(msg *msg_client_message.S2CR
 	return
 }
 
-func (this *dbPlayerFriendReqColumn) CheckAndAdd(player_id int32, player_name string) int32 {
+func (this *dbPlayerFriendReqColumn) CheckAndAdd(player_id int32) int32 {
 	this.m_row.m_lock.UnSafeLock("dbPlayerFriendReqColumn.CheckAndAdd")
 	defer this.m_row.m_lock.UnSafeUnlock()
 
 	d := this.m_data[player_id]
 	if d != nil {
-		log.Warn("!!! Player[%v,%v] already in request list of player[%v]", player_id, player_name, this.m_row.GetPlayerId())
+		log.Warn("!!! Player[%v] already in request list of player[%v]", player_id, this.m_row.GetPlayerId())
 		return int32(msg_client_message.E_ERR_FRIEND_THE_PLAYER_REQUESTED)
 	}
 
 	d = &dbPlayerFriendReqData{}
 	d.PlayerId = player_id
-	d.PlayerName = player_name
 	this.m_data[player_id] = d
 	this.m_changed = true
 	return 1

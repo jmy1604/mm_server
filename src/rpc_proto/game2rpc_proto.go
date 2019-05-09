@@ -29,19 +29,23 @@ type G2R_ListenIPNoitfy struct {
 type G2R_ListenIPResult struct {
 }
 
+type G2R_SearchFriend struct {
+	Key string
+}
+
 // 玩家搜索好友数据
-type G2R_SearchPlayerInfo struct {
+type SearchPlayerInfo struct {
 	Id        int32
 	Nick      string
 	Level     int32
 	VipLevel  int32
-	Head      string
+	Head      int32
 	LastLogin int32
 }
 
 // 搜索好友结果
 type G2R_SearchFriendResult struct {
-	Players []*G2R_SearchPlayerInfo
+	Players []*SearchPlayerInfo
 }
 
 // 好友申请

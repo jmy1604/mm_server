@@ -26,7 +26,7 @@ func (this *G2G_CommonProc) Get(arg *rpc_proto.G2G_GetRequest, result *rpc_proto
 		return
 	}
 
-	result.Data.ResultData, result.Data.ErrorCode = handler(arg.ObjectId, arg.MsgData)
+	result.Data.ResultData, result.Data.ErrorCode = handler(arg.FromPlayerId, arg.ObjectId, arg.MsgData)
 
 	log.Trace("RPC G2G_CommonProc.Get(%v,%v)", arg, result)
 

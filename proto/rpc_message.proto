@@ -11,8 +11,6 @@ enum MSGID {
 	G2G_PLAYER_MULTI_INFO_REQUEST			= 10; // 请求多个玩家信息
 	G2G_PLAYER_MULTI_INFO_RESPONSE			= 11; // 请求多个玩家信息返回
 	
-	G2G_FRIEND_INFO_REQUEST 				= 100; // 好友信息请求
-	G2G_FRIEND_INFO_RESPONSE 				= 101; // 好友信息返回
 	G2G_FRIEND_ASK_REQUEST					= 102; // 添加好友请求
 	G2G_FRIEND_ASK_RESPONSE					= 103; // 添加好友返回
 	G2G_FRIEND_AGREE_REQUEST 				= 104; // 同意添加好友请求
@@ -71,22 +69,26 @@ message G2GPlayerMultiInfoResponse {
 	repeated PlayerInfo PlayerInfos			= 1;
 }
 
-// 好友信息请求
-message G2GFriendInfoRequest {
-	int32 FriendId							= 1;
-}
-
-// 好友信息返回
-message G2GFriendInfoResponse {
-	
-}
-
 // 添加好友请求
 message G2GFriendAskRequest {
-	int32 FriendId							= 1;
 }
 
 // 添加好友返回
-message G2GFriendAskResponse {
-	
+message G2GFriendAskResponse {	
+}
+
+// 好友同意
+message G2GFriendAgreeRequest {
+}
+
+// 好友同意返回
+message G2GFriendAgreeResponse {
+}
+
+// 好友删除
+message G2GFriendRemoveRequest {
+}
+
+// 好友删除返回
+message G2GFriendRemoveResponse {
 }

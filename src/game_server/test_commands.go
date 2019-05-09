@@ -1174,30 +1174,15 @@ func get_daily_reward_cmd(p *Player, args []string) int32 {
 	return p.task_get_reward(int32(task_id))
 }
 
-func search_friend_id_cmd(p *Player, args []string) int32 {
+func search_friend_cmd(p *Player, args []string) int32 {
 	if len(args) < 1 {
 		log.Error("参数[%v]不够", len(args))
 		return -1
 	}
 
-	var friend_id int
-	var err error
-	friend_id, err = strconv.Atoi(args[0])
-	if err != nil {
-		log.Error("好友ID[%v]转换失败[%v]", args[0], err.Error())
-		return -1
-	}
+	key := args[0]
 
-	return p.search_friend_by_id(int32(friend_id))
-}
-
-func search_friend_name_cmd(p *Player, args []string) int32 {
-	if len(args) < 1 {
-		log.Error("参数[%v]不够", len(args))
-		return -1
-	}
-
-	return p.search_friend(args[0])
+	return p.search_friend(key)
 }
 
 func add_friend_cmd(p *Player, args []string) int32 {
@@ -2087,70 +2072,66 @@ func pull_personal_space_leave_msg_comment_cmd(p *Player, args []string) int32 {
 type test_cmd_func func(*Player, []string) int32
 
 var test_cmd2funcs = map[string]test_cmd_func{
-	"player_info":         player_info_cmd,
-	"add_exp":             add_exp_cmd,
-	"set_level":           set_level_cmd,
-	"add_item":            add_item_cmd,
-	"add_all_item":        add_all_item_cmd,
-	"use_item":            use_item_cmd,
-	"list_item":           list_item_cmd,
-	"add_coin":            add_coin_cmd,
-	"set_coin":            set_coin_cmd,
-	"add_diamond":         add_diamond_cmd,
-	"set_diamond":         set_diamond_cmd,
-	"add_cat":             add_cat_cmd,
-	"add_cat2":            add_cat_with_level_star_skill_cmd,
-	"add_catfood":         add_cat_food_cmd,
-	"add_friendpoints":    add_friend_points_cmd,
-	"add_soulstone":       add_soul_stone_cmd,
-	"add_charm":           add_charm_cmd,
-	"add_charmmedal":      add_charm_medal_cmd,
-	"add_zan":             add_zan_cmd,
-	"add_star":            add_star_cmd,
-	"draw_card":           draw_card_cmd,
-	"drop_items":          drop_items_cmd,
-	"compose_cat":         compose_cat_cmd,
-	"shop_items":          get_shop_items_cmd,
-	"refresh_shop":        refresh_shop_cmd,
-	"buy_item":            buy_shop_item_cmd,
-	"sell_item":           sell_item_cmd,
-	"feed_cat":            cat_feed_cmd,
-	"upstar":              cat_upstar_cmd,
-	"upskill":             cat_upskill_cmd,
-	"list_cat":            list_cat_cmd,
-	"see_cat":             see_cat_cmd,
-	"making_buildings":    get_making_buildings_cmd,
-	"get_formulas":        get_formulas_cmd,
-	"exchange_formula":    exchange_formulas_cmd,
-	"make_formula":        making_formula_building_cmd,
-	"buy_slot":            buy_formula_slot_cmd,
-	"speedup_slot":        speedup_making_formula_building_cmd,
-	"get_completed":       get_completed_formula_building_cmd,
-	"cancel_making":       cancel_making_formula_building_cmd,
-	"get_crops":           get_crops_cmd,
-	"plant_crop":          plant_crop_cmd,
-	"speedup_crop":        speedup_crop_cmd,
-	"harvest_crop":        harvest_crop_cmd,
-	"add_depot_building":  add_depot_building_cmd, // 添加仓库建筑
-	"all_depot_building":  all_depot_building_cmd, // 增加所有仓库建筑
-	"list_depot_building": list_depot_building_cmd,
-	"set_building":        set_building_cmd, // 放置建筑，仅用作测试
-	"list_building":       list_building_cmd,
-	"set_cat":             add_cathouse_cat_cmd,
-	"out_cat":             remove_cathouse_cat_cmd,
-	"list_cathouse":       list_cathouses_cmd,
-	"cathouse_levelup":    cathouse_levelup_cmd,
-	"cathouse_speed":      cathouse_speedup_cmd,
-	"cathouse_sell":       cathouse_sell_cmd,
-	"produce_gold":        cathouse_produce_gold_cmd,
-	"cllect_gold":         cathouse_collect_gold_cmd,
-	"get_dailys":          get_dailys_cmd,
-	"get_achieves":        get_achieves_cmd,
-	//"complete_task":             complete_task_cmd,
-	//"daily_reward":              get_daily_reward_cmd,
-	//"achieve_reward":            get_achieve_reward_cmd,
-	"search_friend":             search_friend_id_cmd,
-	"search_friend_name":        search_friend_name_cmd,
+	"player_info":               player_info_cmd,
+	"add_exp":                   add_exp_cmd,
+	"set_level":                 set_level_cmd,
+	"add_item":                  add_item_cmd,
+	"add_all_item":              add_all_item_cmd,
+	"use_item":                  use_item_cmd,
+	"list_item":                 list_item_cmd,
+	"add_coin":                  add_coin_cmd,
+	"set_coin":                  set_coin_cmd,
+	"add_diamond":               add_diamond_cmd,
+	"set_diamond":               set_diamond_cmd,
+	"add_cat":                   add_cat_cmd,
+	"add_cat2":                  add_cat_with_level_star_skill_cmd,
+	"add_catfood":               add_cat_food_cmd,
+	"add_friendpoints":          add_friend_points_cmd,
+	"add_soulstone":             add_soul_stone_cmd,
+	"add_charm":                 add_charm_cmd,
+	"add_charmmedal":            add_charm_medal_cmd,
+	"add_zan":                   add_zan_cmd,
+	"add_star":                  add_star_cmd,
+	"draw_card":                 draw_card_cmd,
+	"drop_items":                drop_items_cmd,
+	"compose_cat":               compose_cat_cmd,
+	"shop_items":                get_shop_items_cmd,
+	"refresh_shop":              refresh_shop_cmd,
+	"buy_item":                  buy_shop_item_cmd,
+	"sell_item":                 sell_item_cmd,
+	"feed_cat":                  cat_feed_cmd,
+	"upstar":                    cat_upstar_cmd,
+	"upskill":                   cat_upskill_cmd,
+	"list_cat":                  list_cat_cmd,
+	"see_cat":                   see_cat_cmd,
+	"making_buildings":          get_making_buildings_cmd,
+	"get_formulas":              get_formulas_cmd,
+	"exchange_formula":          exchange_formulas_cmd,
+	"make_formula":              making_formula_building_cmd,
+	"buy_slot":                  buy_formula_slot_cmd,
+	"speedup_slot":              speedup_making_formula_building_cmd,
+	"get_completed":             get_completed_formula_building_cmd,
+	"cancel_making":             cancel_making_formula_building_cmd,
+	"get_crops":                 get_crops_cmd,
+	"plant_crop":                plant_crop_cmd,
+	"speedup_crop":              speedup_crop_cmd,
+	"harvest_crop":              harvest_crop_cmd,
+	"add_depot_building":        add_depot_building_cmd, // 添加仓库建筑
+	"all_depot_building":        all_depot_building_cmd, // 增加所有仓库建筑
+	"list_depot_building":       list_depot_building_cmd,
+	"set_building":              set_building_cmd, // 放置建筑，仅用作测试
+	"list_building":             list_building_cmd,
+	"set_cat":                   add_cathouse_cat_cmd,
+	"out_cat":                   remove_cathouse_cat_cmd,
+	"list_cathouse":             list_cathouses_cmd,
+	"cathouse_levelup":          cathouse_levelup_cmd,
+	"cathouse_speed":            cathouse_speedup_cmd,
+	"cathouse_sell":             cathouse_sell_cmd,
+	"produce_gold":              cathouse_produce_gold_cmd,
+	"cllect_gold":               cathouse_collect_gold_cmd,
+	"get_dailys":                get_dailys_cmd,
+	"get_achieves":              get_achieves_cmd,
+	"search_friend":             search_friend_cmd,
 	"add_friend":                add_friend_cmd,
 	"agree_friend":              agree_friend_cmd,
 	"refuse_friend":             refuse_friend_cmd,

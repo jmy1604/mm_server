@@ -191,3 +191,23 @@ func (this *Player) rpc_get_friends_stage_score(stage_id int32) (result *rpc_pro
 
 	return
 }
+
+// 查找好友
+func (this *Player) rpc_search_friends(key string) (result *rpc_proto.G2R_SearchFriendResult) {
+	rpc_client := get_rpc_client()
+	if rpc_client == nil {
+		return nil
+	}
+
+	var args = rpc_proto.G2R_SearchFriend{
+		Key: key,
+	}
+
+	result = &rpc_proto.G2R_SearchFriendResult{}
+	err := rpc_client.Call("G2R_FriendProc.SearchFriends", &args, result)
+	if err != nil {
+		log.Error("RPC ### Player[%v] search friends err %v", this.Id, err.Error())
+	}
+
+	return
+}

@@ -255,9 +255,7 @@ func (this *PlayerManager) RegMsgHandler() {
 
 	// 好友
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendSearch_ProtoID), C2SFriendSearchHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFriendSearchById_ProtoID), C2SFriendSearchByIdHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SAddFriendByPId_ProtoID), C2SAddFriendByIdHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SAddFriendByName_ProtoID), C2SAddFriendByNameHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRefuseFriend_ProtoID), C2SRefuseAddFriendHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SRemoveFriend_ProtoID), C2SFriendRemoveHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetFriendList_ProtoID), C2SGetFriendListHandler)
