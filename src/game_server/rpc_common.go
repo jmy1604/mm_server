@@ -49,7 +49,7 @@ func (this *G2G_CommonProc) MultiGet(arg *rpc_proto.G2G_MultiGetRequest, result 
 		return
 	}
 
-	result.Data.ResultData, result.Data.ErrorCode = handler(arg.ObjectIds, arg.MsgData)
+	result.Data.ResultData, result.Data.ErrorCode = handler(arg.FromPlayerId, arg.ObjectIds, arg.MsgData)
 
 	log.Trace("RPC G2G_CommonProc.MultiGet(%v,%v)", arg, result)
 

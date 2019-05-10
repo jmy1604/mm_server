@@ -87,7 +87,7 @@ func Map2ItemInfos(items map[int32]int32) (item_infos []*msg_client_message.Item
 // 分离本服务器与其他服务器的玩家ID，返回值表示索引之前包括该索引都是本服务器的玩家
 func SplitLocalAndRemotePlayers(player_ids []int32) int32 {
 	if player_ids == nil || len(player_ids) == 0 {
-		return 0
+		return -1
 	}
 
 	var found_local bool

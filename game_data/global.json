@@ -104,11 +104,7 @@
 	
 	"FriendMaxNum": 30,
 	"FriendRecommendNum": 10,
-	"FriendGivePointsRefreshTime":{
-		"Hour": 5,
-		"Minute": 30,
-		"Second": 0
-	},
+	"FriendGivePointsRefreshTime": "05:30:00",
 	"FriendGivePointsPlayerNumOneDay": 100,
 	
 	"MaxDayBuyTiLiCount":5,

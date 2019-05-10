@@ -829,7 +829,6 @@ func (this *Player) foster_get_empty_slot_friends() int32 {
 				if d != nil {
 					friends = append(friends, d)
 				}
-				d.FosterCardId = friend.db.Foster.GetEquippedCardId()
 			} else {
 				/*result := this.rpc_call_foster_get_empty_slot_friend_info2(friend_ids[i])
 				if result == nil {

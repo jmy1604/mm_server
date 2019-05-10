@@ -211,3 +211,23 @@ func (this *Player) rpc_search_friends(key string) (result *rpc_proto.G2R_Search
 
 	return
 }
+
+// 获取多个玩家基础信息
+func (this *Player) rpc_get_players_base_info(player_ids []int32) (result *rpc_proto.G2R_GetPlayersBaseInfoResult) {
+	rpc_client := get_rpc_client()
+	if rpc_client == nil {
+		return nil
+	}
+
+	var args = rpc_proto.G2R_GetPlayersBaseInfo{
+		PlayerIds: player_ids,
+	}
+
+	result = &rpc_proto.G2R_GetPlayersBaseInfoResult{}
+	err := rpc_client.Call("G2R_GetPlayersBaseInfoResult", &args, result)
+	if err != nil {
+		log.Error("RPC ### Player %v get players %v base info err %v", this.Id, player_ids, err.Error())
+	}
+
+	return
+}

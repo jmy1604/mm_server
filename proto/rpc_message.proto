@@ -11,6 +11,8 @@ enum MSGID {
 	G2G_PLAYER_MULTI_INFO_REQUEST			= 10; // 请求多个玩家信息
 	G2G_PLAYER_MULTI_INFO_RESPONSE			= 11; // 请求多个玩家信息返回
 	
+	G2G_FRIENDS_INFO_REQUEST				= 100; // 请求多个好友信息
+	G2G_FRIENDS_INFO_RESPONSE				= 101; // 请求多个好友信息返回
 	G2G_FRIEND_ASK_REQUEST					= 102; // 添加好友请求
 	G2G_FRIEND_ASK_RESPONSE					= 103; // 添加好友返回
 	G2G_FRIEND_AGREE_REQUEST 				= 104; // 同意添加好友请求
@@ -24,6 +26,8 @@ enum MSGID {
 	G2G_FRIEND_GIVE_POINTS_RESPONSE 		= 112; // 赠送友情点返回
 	G2G_FRIEND_GET_POINTS_REQUEST			= 113; // 领取友情点请求
 	G2G_FRIEND_GET_POINTS_RESPONSE			= 114; // 领取友情点返回
+	G2G_FRIENDS_REFRESH_GIVE_POINTS_REQUEST	= 115; // 刷新赠送好友点数
+	G2G_FRIENDS_REFRESH_GIVE_POINTS_RESPONSE = 116; // 刷新赠送好友点数返回
 }
 
 // 玩家信息请求
@@ -91,4 +95,45 @@ message G2GFriendRemoveRequest {
 
 // 好友删除返回
 message G2GFriendRemoveResponse {
+}
+
+// 多个好友信息
+message G2GFriendsInfoRequest {
+}
+
+// 好友信息
+message FriendInfo {
+	int32 PlayerId 							= 1; // 好友玩家Id
+	string Name 							= 2; // 好友昵称
+	int32 Head 								= 3; // 好友头像
+	int32 Level 							= 4; // 等级
+	int32 VipLevel 							= 5; // vip等级
+	int32 LastLogin 						= 6; // 上次登录时间
+	int32 FriendPoints 						= 7; // 友情点
+	int32 LeftGiveSeconds 					= 8; // 剩余赠送时间
+	int32 UnreadMessageNum 					= 9; // 未读消息数量
+	int32 Zan								= 10; // 赞
+	bool IsZanToday							= 11; // 今天是否赞过
+	bool IsOnline							= 12; // 是否在线
+}
+
+// 多个好友信息返回
+message G2GFriendsInfoResponse {
+	repeated FriendInfo Friends 			= 1;
+}
+
+// 刷新赠送好友点数
+message G2GFriendsRefreshGivePointsRequest {
+}
+
+message G2GFriendsRefreshGivePointsResponse {
+}
+
+// 赠送好友点数
+message G2GFriendGivePointsRequest {
+}
+
+message G2GFriendGivePointsResponse {
+	int32 LastSave							= 1;
+	int32 RemainSeconds						= 2;
 }

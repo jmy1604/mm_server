@@ -1876,7 +1876,6 @@ message FriendInfo {
 	int32 Zan								= 10; // 赞
 	bool IsZanToday							= 11; // 今天是否赞过
 	bool IsOnline							= 12; // 是否在线
-	int32 FosterCardId						= 13; // 寄养卡ID
 }
 
 // 按昵称查找好友信息
@@ -1908,11 +1907,11 @@ message FriendReq {
 	string Name 							= 2; // 好友名称
 	int32 Score 							= 3; // 好友积分
 	int32 Head								= 4; // 好友头像
+	int32 Level								= 5; // 等级
 }
 
 // 服务器向客户端返回好友列表
 message S2CRetFriendListResult {
-	int32 FriendType 						= 1; // 好友类型
 	repeated FriendInfo FriendList 			= 2; // 好友列表
 	repeated FriendReq Reqs 				= 3; // 加好友请求
 	int32 LeftGivePointsNum					= 4; // 剩余赠送次数

@@ -144,6 +144,30 @@ func (this *G2R_PlayerProc) BaseInfoUpdate(args *rpc_proto.G2R_PlayerBaseInfoUpd
 	return nil
 }
 
+// 多个玩家基本信息获取
+func (this *G2R_PlayerProc) GetPlayersBaseInfo(args *rpc_proto.G2R_GetPlayersBaseInfo, result *rpc_proto.G2R_GetPlayersBaseInfoResult) error {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error(err)
+		}
+	}()
+
+	for i := 0; i < len(args.PlayerIds); i++ {
+		row := dbc.PlayerBaseInfos.GetRow(args.PlayerIds[i])
+		if row == nil {
+			continue
+		}
+		result.PlayersInfo = append(result.PlayersInfo, &rpc_proto.PlayerBaseInfo{
+			Id:    args.PlayerIds[i],
+			Name:  row.GetName(),
+			Level: row.GetLevel(),
+			Head:  row.GetHead(),
+		})
+	}
+
+	return nil
+}
+
 // 获取好友关卡积分
 func (this *G2R_PlayerProc) GetFriendStageScore(args *rpc_proto.G2R_GetFriendStageScore, result *rpc_proto.G2R_GetFriendStageScoreResult) error {
 	defer func() {

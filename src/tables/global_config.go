@@ -113,10 +113,10 @@ type GlobalConfig struct {
 	AnouncementSendMaxNum   int32 // 公告一次发送最大数量
 	AnouncementExistTime    int32 // 公告存在时间
 
-	FriendMaxNum                    int32    // 最大好友数
-	FriendRecommendNum              int32    // 好友推荐数
-	FriendGivePointsRefreshTime     TimeData // 赠送友情点刷新时间
-	FriendGivePointsPlayerNumOneDay int32    // 好友赠送点数每天最大人数
+	FriendMaxNum                    int32  // 最大好友数
+	FriendRecommendNum              int32  // 好友推荐数
+	FriendGivePointsRefreshTime     string // 赠送友情点刷新时间
+	FriendGivePointsPlayerNumOneDay int32  // 好友赠送点数每天最大人数
 
 	MaxDayBuyTiLiCount int32 // 每天最大购买体力的次数
 	DayBuyTiliAdd      int32 // 每次购买体力的体力增加值

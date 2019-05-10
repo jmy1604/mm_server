@@ -195,3 +195,12 @@ type FriendStageScoreData struct {
 type G2R_GetFriendStageScoreResult struct {
 	FriendsScoreData []*FriendStageScoreData
 }
+
+// 获得多个玩家基础信息
+type G2R_GetPlayersBaseInfo struct {
+	PlayerIds []int32
+}
+
+type G2R_GetPlayersBaseInfoResult struct {
+	PlayersInfo []*PlayerBaseInfo
+}
