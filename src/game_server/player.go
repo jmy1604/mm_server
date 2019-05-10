@@ -56,8 +56,7 @@ type Player struct {
 	cur_area_map_lock            *sync.RWMutex
 	cur_building_map             map[int32]int32
 	cur_open_pos_map             map[int32]int32
-	//cur_area_use_count      map[int32]int32
-	cur_areablocknum_map map[int32]int32
+	cur_areablocknum_map         map[int32]int32
 
 	b_base_prop_chg bool
 
@@ -65,9 +64,9 @@ type Player struct {
 
 	new_unlock_chapter_id int32
 
-	used_drop_ids map[int32]int32 // 抽卡掉落ID统计
-	//world_chat_data  PlayerWorldChatData   // 世界聊天缓存数据
+	used_drop_ids    map[int32]int32       // 抽卡掉落ID统计
 	world_chat_data  PlayerChatData        // 世界聊天缓存数据
+	system_chat_data PlayerChatData        // 系统聊天缓存数据
 	anouncement_data PlayerAnouncementData // 公告缓存数据
 
 	stage_id     int32
@@ -88,9 +87,7 @@ func new_player(id int32, uid, account, token string, db *dbPlayerRow) *Player {
 	ret_p.UniqueId = uid
 	ret_p.Id = id
 	ret_p.Account = account
-	//ret_p.Token = token
 	ret_p.db = db
-
 	ret_p._init()
 
 	return ret_p
@@ -133,8 +130,6 @@ func (this *Player) add_msg_data(msg_code uint16, data []byte) {
 		log.Error("Player add_msg_data !")
 		return
 	}
-
-	//log.Info("add_msg_data %d, %v at %d", msg_code, data, this.cur_msg_items_len)
 
 	this.msg_items_lock.Lock()
 	defer this.msg_items_lock.Unlock()
@@ -229,11 +224,8 @@ func (this *Player) OnCreate() {
 	// 随机初始名称
 	this.first_gen_achieve_tasks()
 
-	//this.db.SetName(fmt.Sprintf("MM_%s_%d", tmp_acc, this.Id))
 	this.db.SetLevel(1)
 	this.db.Info.SetCreateUnix(int32(time.Now().Unix()))
-	// 新任务
-	//this.UpdateNewTasks(1, false)
 
 	// 给予初始金币
 	this.db.Info.SetGold(global_config.InitCoin)

@@ -28,6 +28,8 @@ enum MSGID {
 	G2G_FRIEND_GET_POINTS_RESPONSE			= 114; // 领取友情点返回
 	G2G_FRIENDS_REFRESH_GIVE_POINTS_REQUEST	= 115; // 刷新赠送好友点数
 	G2G_FRIENDS_REFRESH_GIVE_POINTS_RESPONSE = 116; // 刷新赠送好友点数返回
+	G2G_FRIEND_CHAT_REQUEST					= 117; // 好友聊天
+	G2G_FRIEND_CHAT_RESPONSE				= 118; // 好友聊天返回
 }
 
 // 玩家信息请求
@@ -136,4 +138,12 @@ message G2GFriendGivePointsRequest {
 message G2GFriendGivePointsResponse {
 	int32 LastSave							= 1;
 	int32 RemainSeconds						= 2;
+}
+
+// 好友聊天
+message G2GFriendChatRequest {
+	bytes Content							= 1;
+}
+
+message G2GFriendChatResponse {
 }

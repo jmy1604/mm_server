@@ -61,7 +61,7 @@ func (this *Player) get_chat_data(channel int32) (chat_data *PlayerChatData) {
 	} else if channel == CHAT_CHANNEL_RECRUIT {
 		//chat_data = &this.recruit_chat_data
 	} else if channel == CHAT_CHANNEL_SYSTEM {
-		//chat_data = &this.system_chat_data
+		chat_data = &this.system_chat_data
 	}
 	return
 }

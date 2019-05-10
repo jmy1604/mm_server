@@ -626,7 +626,7 @@ func (this *Player) ChkMapBlock() (count int32) {
 	var tmp_block *tables.XmlBlockItem
 	var new_building *dbPlayerBuildingData
 	var block_xy, area_id int32
-	log.Debug("玩家[%d]自动刷新障碍检查 %v %v", this.Id, time.Unix(int64(last_up_unix), 0).Format("2006-01-02 15:04:05.999999999"), time.Unix(int64(cur_unix), 0).Format("2006-01-02 15:04:05.999999999"))
+	//log.Debug("玩家[%d]自动刷新障碍检查 %v %v", this.Id, time.Unix(int64(last_up_unix), 0).Format("2006-01-02 15:04:05.999999999"), time.Unix(int64(cur_unix), 0).Format("2006-01-02 15:04:05.999999999"))
 	for tmp_unix := last_up_unix; tmp_unix+global_config.MapBlockRefleshSec < cur_unix; tmp_unix += global_config.MapBlockRefleshSec {
 		tmp_block = block_table_mgr.RandBlock()
 		log.Info("玩家[%d]自动刷新障碍检查时间递增 %s 刷出障碍[%s]", this.Id, time.Unix(int64(tmp_unix), 0).Format("2006-01-02 15:04:05.999999999"), tmp_block.Id)
@@ -666,7 +666,7 @@ func (this *Player) ChkMapChest() (count int32) {
 
 	var tmp_chest *tables.XmlMapChestItem
 	var new_building *dbPlayerBuildingData
-	log.Debug("玩家[%d]自动刷新宝箱检查 %s %s", this.Id, time.Unix(int64(last_up_unix), 0).Format("2006-01-02 15:04:05.999999999"), time.Unix(int64(cur_unix), 0).Format("2006-01-02 15:04:05.999999999"))
+	//log.Debug("玩家[%d]自动刷新宝箱检查 %s %s", this.Id, time.Unix(int64(last_up_unix), 0).Format("2006-01-02 15:04:05.999999999"), time.Unix(int64(cur_unix), 0).Format("2006-01-02 15:04:05.999999999"))
 	for tmp_unix := last_up_unix; tmp_unix+global_config.MapChestRefleshSec < cur_unix; tmp_unix += global_config.MapChestRefleshSec {
 		log.Debug("玩家[%d]自动刷新宝箱时间递增 %s", this.Id, time.Unix(int64(tmp_unix), 0).Format("2006-01-02 15:04:05.999999999"))
 		if cur_unix-tmp_unix > map_chest_mgr.MaxBoxLastSec {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"log"
 	"math/rand"
+	"mm_server/libs/log"
 	"mm_server/proto/gen_go/client_message"
 	"time"
 )
@@ -123,7 +123,7 @@ func SplitLocalAndRemotePlayers(player_ids []int32) int32 {
 		i = -1
 	}
 
-	log.Printf("splited player_ids: %v", player_ids)
+	log.Trace("splited player_ids: %v, idx: %v", player_ids, i)
 
 	return i
 }

@@ -820,7 +820,7 @@ func (this *Player) get_friend_list() int32 {
 		if idx >= 0 {
 			friend_list = this.get_friends_info(friend_ids)
 		}
-		if int(idx) > len(friend_ids)-1 {
+		if int(idx) < len(friend_ids)-1 {
 			friends_info, err_code := remote_friends_info(this.Id, friend_ids[idx+1:])
 			if err_code >= 0 {
 				friend_list = append(friend_list, friends_info...)
@@ -834,7 +834,7 @@ func (this *Player) get_friend_list() int32 {
 		if idx >= 0 {
 			req_list = this.get_friends_req_info(req_ids)
 		}
-		if int(idx) > len(friend_ids)-1 {
+		if int(idx) < len(friend_ids)-1 {
 			result := this.rpc_get_players_base_info(req_ids[idx+1:])
 			if result == nil {
 				log.Error("")
@@ -1057,6 +1057,41 @@ func (this *Player) friend_chat_add(friend_id int32, message []byte) int32 {
 	return 1
 }
 
+func remote_friend_chat(from_player_id, to_player_id int32, message []byte) (err_code int32) {
+	var req msg_rpc_message.G2GFriendChatRequest
+	resp := &msg_rpc_message.G2GFriendChatResponse{}
+	err_code = RemoteGetUsePB(from_player_id, rpc_proto.OBJECT_TYPE_PLAYER, to_player_id, int32(msg_rpc_message.MSGID_G2G_FRIEND_CHAT_REQUEST), &req, resp)
+	return
+}
+
+func remote_friend_chat_response(from_player_id, to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
+	var req msg_rpc_message.G2GFriendChatRequest
+	req_data, err := _marshal_msg(&req)
+	if err != nil {
+		err_code = -1
+		return
+	}
+
+	to_player := player_mgr.GetPlayerById(to_player_id)
+	if to_player == nil {
+		return
+	}
+
+	err_code = to_player.friend_chat_add(from_player_id, req.Content)
+	if err_code < 0 {
+		return
+	}
+
+	var response = msg_rpc_message.G2GFriendChatResponse{}
+	resp_data, err = _marshal_msg(&response)
+	if err != nil {
+		err_code = -1
+		return
+	}
+
+	return
+}
+
 func (this *Player) friend_chat(friend_id int32, message []byte) int32 {
 	if !this.db.Friends.HasIndex(friend_id) {
 		log.Error("Player[%v] no friend[%v], chat failed", this.Id, friend_id)
@@ -1075,15 +1110,11 @@ func (this *Player) friend_chat(friend_id int32, message []byte) int32 {
 			return res
 		}
 	} else {
-		/*result := this.rpc_call_friend_chat(friend_id, message)
-		if result == nil {
-			log.Error("Player[%v] chat message[%v] to friend[%v] failed", this.Id, message, friend_id)
-			return int32(msg_client_message.E_ERR_FRIEND_CHAT_FAILED)
+		err_code := remote_friend_chat(this.Id, friend_id, message)
+		if err_code < 0 {
+			log.Error("Player[%v] chat message[%v] to friend[%v] error[%v]", this.Id, message, friend_id, err_code)
+			return err_code
 		}
-		if result.Error < 0 {
-			log.Error("Player[%v] chat message[%v] to friend[%v] error[%v]", this.Id, message, friend_id, result.Error)
-			return result.Error
-		}*/
 	}
 
 	response := &msg_client_message.S2CFriendChatResult{}
