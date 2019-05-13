@@ -428,27 +428,40 @@ type G2R_FriendProc struct {
 }
 
 func (this *G2R_FriendProc) SearchFriends(args *rpc_proto.G2R_SearchFriend, result *rpc_proto.G2R_SearchFriendResult) error {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error(err)
+		}
+	}()
+
+	var players_info []*rpc_proto.SearchPlayerInfo
 	id, err := strconv.Atoi(args.Key)
 	if err == nil {
 		row := dbc.PlayerBaseInfos.GetRow(int32(id))
-		result.Players = append(result.Players, &rpc_proto.SearchPlayerInfo{
-			Id:    int32(id),
-			Nick:  row.GetName(),
-			Level: row.GetLevel(),
-			Head:  row.GetHead(),
-		})
+		if row != nil {
+			players_info = append(players_info, &rpc_proto.SearchPlayerInfo{
+				Id:    int32(id),
+				Nick:  row.GetName(),
+				Level: row.GetLevel(),
+				Head:  row.GetHead(),
+			})
+		}
 	}
 
 	id = int(player_mgr.GetId(args.Key))
 	if id > 0 {
 		row := dbc.PlayerBaseInfos.GetRow(int32(id))
-		result.Players = append(result.Players, &rpc_proto.SearchPlayerInfo{
-			Id:    int32(id),
-			Nick:  row.GetName(),
-			Level: row.GetLevel(),
-			Head:  row.GetHead(),
-		})
+		if row != nil {
+			players_info = append(players_info, &rpc_proto.SearchPlayerInfo{
+				Id:    int32(id),
+				Nick:  row.GetName(),
+				Level: row.GetLevel(),
+				Head:  row.GetHead(),
+			})
+		}
 	}
+
+	result.Players = players_info
 
 	log.Trace("@@@ Searched Friends %v by key %v", result.Players, args.Key)
 	return nil
