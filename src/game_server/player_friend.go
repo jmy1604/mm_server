@@ -578,7 +578,8 @@ func (this *Player) refuse_add_friend(player_id int32) int32 {
 
 func (this *Player) remove_friend_data(friend_id int32) {
 	this.db.Friends.Remove(friend_id)
-	this.db.FriendPoints.Remove(friend_id)
+	// 防止频繁的删除添加好友刷友情点
+	//this.db.FriendPoints.Remove(friend_id)
 	message_ids, o := this.db.FriendChatUnreadIds.GetMessageIds(friend_id)
 	if o {
 		this.db.FriendChatUnreadMessages.RemoveMessages(friend_id, message_ids)
