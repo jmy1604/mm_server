@@ -356,6 +356,12 @@ func remote_add_friend_by_id(from_player_id, to_player_id int32) (resp *msg_rpc_
 }
 
 func remote_add_friend_by_id_response(from_player_id, to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
+	var req msg_rpc_message.G2GFriendAskRequest
+	err := _unmarshal_msg(req_data, &req)
+	if err != nil {
+		err_code = -1
+		return
+	}
 	to_player := player_mgr.GetPlayerById(to_player_id)
 	if to_player == nil {
 		return
@@ -370,7 +376,20 @@ func remote_add_friend_by_id_response(from_player_id, to_player_id int32, req_da
 			return
 		}
 	}
+	to_player.notify_friend_add(req.FromPlayerId, req.FromPlayerName, req.FromPlayerLevel, req.FromPlayerHead)
 	return
+}
+
+func (this *Player) notify_friend_add(player_id int32, player_name string, player_level int32, player_head int32) {
+	notify := &msg_client_message.S2CFriendReqNotify{
+		Req: &msg_client_message.FriendReq{
+			PlayerId: player_id,
+			Name:     player_name,
+			Level:    player_level,
+			Head:     player_head,
+		},
+	}
+	this.Send(uint16(msg_client_message.S2CFriendReqNotify_ProtoID), notify)
 }
 
 func (this *Player) add_friend_by_id(id int32) int32 {
@@ -392,6 +411,7 @@ func (this *Player) add_friend_by_id(id int32) int32 {
 			log.Error("!!! Player[%v] request add friend to other player[%v] already exist", this.Id, id)
 			return res
 		}
+		add_player.notify_friend_add(this.Id, this.db.GetName(), this.db.GetLevel(), this.db.Info.GetHead())
 	} else {
 		// remote调用
 		resp, err_code := remote_add_friend_by_id(this.Id, id)
@@ -415,13 +435,34 @@ func (this *Player) add_friend_by_id(id int32) int32 {
 }
 
 func remote_agree_add_friend(from_player_id, to_player_id int32) (resp *msg_rpc_message.G2GFriendAgreeResponse, err_code int32) {
-	var req msg_rpc_message.G2GFriendAgreeRequest
+	p := player_mgr.GetPlayerById(from_player_id)
+	if p == nil {
+		err_code = -1
+		return
+	}
+	var req = msg_rpc_message.G2GFriendAgreeRequest{
+		Info: &msg_rpc_message.FriendInfo{
+			PlayerId:  from_player_id,
+			Name:      p.db.GetName(),
+			Head:      p.db.Info.GetHead(),
+			Level:     p.db.GetLevel(),
+			VipLevel:  p.db.Info.GetVipLvl(),
+			LastLogin: p.db.Info.GetLastLogin(),
+			Zan:       p.db.Info.GetZan(),
+		},
+	}
 	resp = &msg_rpc_message.G2GFriendAgreeResponse{}
 	err_code = RemoteGetUsePB(from_player_id, rpc_proto.OBJECT_TYPE_PLAYER, to_player_id, int32(msg_rpc_message.MSGID_G2G_FRIEND_AGREE_REQUEST), &req, resp)
 	return
 }
 
 func remote_agree_add_friend_response(from_player_id, to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
+	var req msg_rpc_message.G2GFriendAgreeRequest
+	err := _unmarshal_msg(req_data, &req)
+	if err != nil {
+		err_code = -1
+		return
+	}
 	to_player := player_mgr.GetPlayerById(to_player_id)
 	if to_player == nil {
 		return
@@ -433,8 +474,19 @@ func remote_agree_add_friend_response(from_player_id, to_player_id int32, req_da
 		})
 	}
 
+	friend_info := &msg_client_message.FriendInfo{
+		PlayerId:     req.Info.PlayerId,
+		Name:         req.Info.Name,
+		Head:         req.Info.Head,
+		Level:        req.Info.Level,
+		VipLevel:     req.Info.VipLevel,
+		LastLogin:    req.Info.LastLogin,
+		FriendPoints: req.Info.FriendPoints,
+	}
+
+	to_player.notify_friend_info(1, friend_info)
+
 	var response = msg_rpc_message.G2GFriendAgreeResponse{}
-	var err error
 	resp_data, err = _marshal_msg(&response)
 	if err != nil {
 		err_code = -1
@@ -442,6 +494,14 @@ func remote_agree_add_friend_response(from_player_id, to_player_id int32, req_da
 	}
 
 	return
+}
+
+func (this *Player) notify_friend_info(state int32, friend_info *msg_client_message.FriendInfo) {
+	notify := &msg_client_message.S2CFriendStateNotify{
+		StateType: state,
+		Info:      friend_info,
+	}
+	this.Send(uint16(msg_client_message.S2CFriendStateNotify_ProtoID), notify)
 }
 
 func (this *Player) agree_add_friend(id int32) int32 {
@@ -488,6 +548,11 @@ func (this *Player) agree_add_friend(id int32) int32 {
 	this.Send(uint16(msg_client_message.S2CAgreeFriendResult_ProtoID), response)
 
 	log.Debug("Player[%v] agree add friend request of player[%v][%v]", this.Id, id, data.FriendName)
+
+	if agree_player != nil {
+		friend_info := agree_player.get_friend_info(this.Id, time.Now())
+		agree_player.notify_friend_info(1, friend_info)
+	}
 
 	return 1
 }
@@ -1066,7 +1131,7 @@ func remote_friend_chat(from_player_id, to_player_id int32, message []byte) (err
 
 func remote_friend_chat_response(from_player_id, to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
 	var req msg_rpc_message.G2GFriendChatRequest
-	req_data, err := _marshal_msg(&req)
+	err := _unmarshal_msg(req_data, &req)
 	if err != nil {
 		err_code = -1
 		return
@@ -1296,17 +1361,6 @@ func C2SFriendSearchHandler(p *Player, msg_data []byte) int32 {
 
 	return p.search_friend(req.GetKey())
 }
-
-/*func C2SFriendSearchByIdHandler(p *Player, msg_data []byte) int32 {
-	var req msg_client_message.C2SFriendSearchById
-	err := proto.Unmarshal(msg_data, &req)
-	if err != nil {
-		log.Error("unmarshal msg failed %v", err.Error())
-		return -1
-	}
-
-	return p.search_friend_by_id(req.GetPlayerId())
-}*/
 
 func C2SAddFriendByIdHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SAddFriendByPId

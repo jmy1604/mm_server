@@ -77,6 +77,10 @@ message G2GPlayerMultiInfoResponse {
 
 // 添加好友请求
 message G2GFriendAskRequest {
+	int32 FromPlayerId						= 1;
+	string FromPlayerName					= 2;
+	int32 FromPlayerLevel					= 3;
+	int32 FromPlayerHead					= 4;
 }
 
 // 添加好友返回
@@ -85,6 +89,7 @@ message G2GFriendAskResponse {
 
 // 好友同意
 message G2GFriendAgreeRequest {
+	FriendInfo Info							= 1;
 }
 
 // 好友同意返回
