@@ -56,6 +56,7 @@ type XmlCharacterItem struct {
 	CriticalChances        []int32
 	SkillLevelScoreStr     string `xml:"SkillLevelScore,attr"`
 	SkillLevelScores       []int32
+	SkillScore             int32 `xml:"SkillScore,attr"`
 }
 
 func (this *XmlCharacterItem) GetMaxLevel() int32 {
