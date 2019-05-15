@@ -223,7 +223,7 @@ func (this *Player) add_all_items() {
 func (this *Player) OnCreate() {
 	// 随机初始名称
 	this.first_gen_achieve_tasks()
-
+	this.db.Info.SetHead(70901)
 	this.db.SetLevel(1)
 	this.db.Info.SetCreateUnix(int32(time.Now().Unix()))
 
