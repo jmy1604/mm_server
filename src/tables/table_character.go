@@ -248,11 +248,11 @@ func (this *CharacterTableMgr) Init(table_file string) bool {
 			return false
 		}
 
-		tmp_item.SkillLevelScores = parse_xml_str_arr(tmp_item.SkillLevelScoreStr, ",")
+		/*tmp_item.SkillLevelScores = parse_xml_str_arr(tmp_item.SkillLevelScoreStr, ",")
 		if len(tmp_item.SkillLevelScores) < len(tmp_item.UpStarCosts) {
 			log.Error("Cat[%v] index[%v] SkillLevelScore field array size must no less than UpstarCosts field")
 			return false
-		}
+		}*/
 
 		this.Map[tmp_item.Id] = tmp_item
 	}
