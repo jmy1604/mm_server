@@ -371,6 +371,97 @@ func (this *Player) space_data(player_id int32) int32 {
 	return 1
 }
 
+func remote_space_cat(from_player_id, to_player_id, to_cat_id int32) (resp *msg_rpc_message.G2GSpaceCatResponse, err_code int32) {
+	var req msg_rpc_message.G2GSpaceCatRequest
+	var response msg_rpc_message.G2GSpaceCatResponse
+	err_code = RemoteGetUsePB(from_player_id, rpc_proto.OBJECT_TYPE_PLAYER, to_player_id, int32(msg_rpc_message.MSGID_G2G_SPACE_CAT_REQUEST), &req, &response)
+	resp = &response
+	return
+}
+
+func remote_space_cat_response(from_player_id int32, to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
+	var req msg_rpc_message.G2GSpaceCatRequest
+	err := _unmarshal_msg(req_data, &req)
+	if err != nil {
+		err_code = -1
+		return
+	}
+	cat_id := req.GetCatId()
+	player := player_mgr.GetPlayerById(to_player_id)
+	if player == nil {
+		log.Error("remote request player %v space cat %v not found", to_player_id, cat_id)
+		err_code = int32(msg_client_message.E_ERR_PLAYER_NOT_EXIST)
+		return
+	}
+
+	if !player.db.Cats.HasIndex(cat_id) {
+		log.Error("remote request player %v space cat %v not found", to_player_id, cat_id)
+		err_code = int32(msg_client_message.E_ERR_CAT_NOT_FOUND)
+		return
+	}
+
+	cat_table_id, _ := player.db.Cats.GetCfgId(cat_id)
+	coin_ability, _ := player.db.Cats.GetCoinAbility(cat_id)
+	match_ability, _ := player.db.Cats.GetMatchAbility(cat_id)
+	explore_ability, _ := player.db.Cats.GetExploreAbility(cat_id)
+	ouqi := player.db.Cats.CalcOuqi(cat_id)
+
+	var response = msg_rpc_message.G2GSpaceCatResponse{
+		PlayerId:       to_player_id,
+		CatId:          cat_id,
+		CatTableId:     cat_table_id,
+		CoinAbility:    coin_ability,
+		MatchAbility:   match_ability,
+		ExploreAbility: explore_ability,
+		Ouqi:           ouqi,
+	}
+
+	resp_data, err = _marshal_msg(&response)
+	if err != nil {
+		err_code = -1
+		return
+	}
+
+	err_code = 1
+	return
+}
+
+func (this *Player) space_cat(player_id, cat_id int32) int32 {
+	if this.Id == player_id {
+		return -1
+	}
+
+	var response = msg_client_message.S2CSpaceCatDataResponse{
+		PlayerId: player_id,
+		CatId:    cat_id,
+	}
+	p := player_mgr.GetPlayerById(player_id)
+	if p != nil {
+		if !p.db.Cats.HasIndex(cat_id) {
+			log.Error("Player %v have not cat %v", this.Id, cat_id)
+			return int32(msg_client_message.E_ERR_CAT_NOT_FOUND)
+		}
+		response.CatTableId, _ = p.db.Cats.GetCfgId(cat_id)
+		response.CoinAbility, _ = p.db.Cats.GetCoinAbility(cat_id)
+		response.MatchAbility, _ = p.db.Cats.GetMatchAbility(cat_id)
+		response.ExploreAbility, _ = p.db.Cats.GetExploreAbility(cat_id)
+		response.CatOuqi = p.db.Cats.CalcOuqi(cat_id)
+	} else {
+		resp, err_code := remote_space_cat(this.Id, player_id, cat_id)
+		if err_code < 0 {
+			return err_code
+		}
+		response.CatTableId = resp.CatTableId
+		response.CoinAbility = resp.CoinAbility
+		response.MatchAbility = resp.MatchAbility
+		response.ExploreAbility = resp.ExploreAbility
+		response.CatOuqi = resp.Ouqi
+	}
+	this.Send(uint16(msg_client_message.S2CSpaceCatDataResponse_ProtoID), &response)
+	log.Trace("Player %v get player %v space cat %v data %v", this.Id, player_id, cat_id, response)
+	return 1
+}
+
 func C2SFocusDataHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SFocusDataRequest
 	err := proto.Unmarshal(msg_data, &req)
@@ -429,4 +520,14 @@ func C2SSpaceDataHandler(p *Player, msg_data []byte) int32 {
 		return -1
 	}
 	return p.space_data(req.GetPlayerId())
+}
+
+func C2SSpaceCatHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SSpaceCatDataRequest
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed %v", err.Error())
+		return -1
+	}
+	return p.space_cat(req.GetPlayerId(), req.GetCatId())
 }

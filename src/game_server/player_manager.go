@@ -342,6 +342,7 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMyPictureDataRequest_ProtoID), C2SMyPictureDataHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMyPictureSetRequest_ProtoID), C2SMyPictureSetHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceDataRequest_ProtoID), C2SSpaceDataHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceCatDataRequest_ProtoID), C2SSpaceCatHandler)
 }
 
 func C2SEnterGameRequestHandler(msg_data []byte) (int32, *Player) {

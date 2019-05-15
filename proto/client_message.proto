@@ -2796,8 +2796,8 @@ message S2CGuideDataResponse {
 }
 
 message GuideDM {
-	int32 GuideID		= 1;
-	int32 StepID		= 2;
+	int32 GuideID							= 1;
+	int32 StepID							= 2;
 }
 
 // ----------------------------------- 空间 -----------------------------------
@@ -2883,4 +2883,23 @@ message S2CSpaceDataResponse {
 	int32 Charm								= 7;
 	repeated MyPictureData Pictures			= 8;
 	enum EProtocol { None = 0; ProtoID = 13011; }
+}
+
+// 查看其他玩家空间的猫
+message C2SSpaceCatDataRequest {
+	int32 PlayerId							= 1;
+	int32 CatId								= 2;
+	enum EProtocol { None = 0; ProtoID = 13012; }
+}
+
+message S2CSpaceCatDataResponse {
+	int32 PlayerId							= 1;
+	int32 CatId								= 2;
+	int32 CatTableId 						= 3;
+	string CatName							= 4;
+	int32 CatOuqi							= 5;
+	int32 CoinAbility					 	= 6;
+	int32 MatchAbility						= 7;
+	int32 ExploreAbility					= 8;
+	enum EProtocol { None = 0; ProtoID = 13013; }
 }

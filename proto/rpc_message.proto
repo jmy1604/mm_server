@@ -37,6 +37,8 @@ enum MSGID {
 	G2G_UNFOCUS_PLAYER_RESPONSE				= 203; //
 	G2G_SPACE_DATA_REQUEST					= 210; // 空间数据
 	G2G_SPACE_DATA_RESPONSE					= 211;
+	G2G_SPACE_CAT_REQUEST					= 212; // 空间猫
+	G2G_SPACE_CAT_RESPONSE					= 213;
 }
 
 // 玩家信息请求
@@ -195,4 +197,21 @@ message G2GSpaceDataResponse {
 	int32 BeFocusNum					 	= 5;
 	int32 Charm								= 6;
 	map<int32,int32> Pictures				= 7;
+}
+
+// 获取其他玩家个人空间的猫
+message G2GSpaceCatRequest {
+	int32 PlayerId							= 1;
+	int32 CatId								= 2;
+}
+
+message G2GSpaceCatResponse {
+	int32 PlayerId							= 1;
+	int32 CatId								= 2;
+	int32 CatTableId						= 3;
+	string CatName							= 4;
+	int32 CoinAbility						= 5;
+	int32 MatchAbility						= 6;
+	int32 ExploreAbility					= 7;
+	int32 Ouqi								= 8;
 }
