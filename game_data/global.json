@@ -6,7 +6,8 @@
 	"InitAreas":[1],
 	"InitBuildings":[],
 	"InitFormulas":[
-],	
+],
+	"InitHead":70101,
 	"MaxFriendNum":200,
 	
 	"HeartbeatInterval":600,

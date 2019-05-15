@@ -50,6 +50,7 @@ type GlobalConfig struct {
 	InitAreas_len int32
 	InitFormulas  []int32
 	InitBuildings []int32
+	InitHead      int32
 
 	HeartbeatInterval int32 // 心跳
 

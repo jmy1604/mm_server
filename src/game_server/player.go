@@ -223,7 +223,7 @@ func (this *Player) add_all_items() {
 func (this *Player) OnCreate() {
 	// 随机初始名称
 	this.first_gen_achieve_tasks()
-	this.db.Info.SetHead(70901)
+	this.db.Info.SetHead(global_config.InitHead)
 	this.db.SetLevel(1)
 	this.db.Info.SetCreateUnix(int32(time.Now().Unix()))
 
@@ -371,21 +371,23 @@ func (this *Player) notify_enter_complete() {
 }
 
 func (this *Player) change_head(new_head int32) int32 {
-	head := item_table_mgr.Get(new_head)
-	if head == nil {
-		log.Error("head[%v] table data not found", new_head)
-		return int32(msg_client_message.E_ERR_PLAYER_HEAD_TABLE_DATA_NOT_FOUND)
+	if new_head > 0 {
+		head := item_table_mgr.Get(new_head)
+		if head == nil {
+			log.Error("head[%v] table data not found", new_head)
+			return int32(msg_client_message.E_ERR_PLAYER_HEAD_TABLE_DATA_NOT_FOUND)
+		}
+
+		if head.Type != ITEM_TYPE_HEAD {
+			log.Error("item[%v] type is not head", new_head)
+			return -1
+		}
 	}
 
-	if head.Type != ITEM_TYPE_HEAD {
-		log.Error("item[%v] type is not head", new_head)
-		return -1
-	}
-
-	if this.get_resource(new_head) < 1 {
+	/*if this.get_resource(new_head) < 1 {
 		log.Error("Player[%v] no head %v", this.Id, new_head)
 		return int32(msg_client_message.E_ERR_PLAYER_NO_SUCH_HEAD)
-	}
+	}*/
 
 	this.db.Info.SetHead(new_head)
 
