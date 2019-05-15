@@ -1795,279 +1795,68 @@ func push_sysmsg_text_cmd(p *Player, args []string) int32 {
 	return 1
 }
 
-/*func get_personal_space_cmd(p *Player, args []string) int32 {
-	var err error
-	var player_id int
-	if len(args) > 0 {
-		player_id, err = strconv.Atoi(args[0])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[0], err.Error())
-			return -1
-		}
-	}
-
-	return p.get_personal_space(int32(player_id))
+func focus_data_cmd(p *Player, args []string) int32 {
+	return p.send_focus_data()
 }
 
-func change_signature_cmd(p *Player, args []string) int32 {
+func focus_player_cmd(p *Player, args []string) int32 {
+	if len(args) < 1 {
+		log.Error("参数[%v]不够", len(args))
+		return -1
+	}
+	player_id, err := strconv.Atoi(args[0])
+	if err != nil {
+		return -1
+	}
+	return p.focus_player(int32(player_id))
+}
+
+func unfocus_player_cmd(p *Player, args []string) int32 {
+	if len(args) < 1 {
+		log.Error("参数[%v]不够", len(args))
+		return -1
+	}
+	player_id, err := strconv.Atoi(args[0])
+	if err != nil {
+		return -1
+	}
+	return p.unfocus_player(int32(player_id))
+}
+
+func my_pictures_cmd(p *Player, args []string) int32 {
+	return p.send_my_picture_data()
+}
+
+func my_picture_set_cmd(p *Player, args []string) int32 {
+	if len(args) < 2 {
+		log.Error("参数[%v]不够", len(args))
+		return -1
+	}
+	var cat_id, pos int
+	var err error
+	cat_id, err = strconv.Atoi(args[0])
+	if err != nil {
+		return -1
+	}
+	pos, err = strconv.Atoi(args[1])
+	if err != nil {
+		return -1
+	}
+	return p.my_picture_set(int32(cat_id), int32(pos))
+}
+
+func space_data_cmd(p *Player, args []string) int32 {
 	if len(args) < 1 {
 		log.Error("参数[%v]不够", len(args))
 		return -1
 	}
 
-	return p.personal_space_modify_signature(args[0])
-}
-
-func send_personal_space_leave_msg_cmd(p *Player, args []string) int32 {
-	if len(args) < 2 {
-		log.Error("参数[%v]不够", len(args))
-		return -1
-	}
-
-	var err error
-	var player_id, pic_id int
-	var msg string
-	player_id, err = strconv.Atoi(args[0])
+	player_id, err := strconv.Atoi(args[0])
 	if err != nil {
-		log.Error("转换参数[%v]错误[%v]", args[0], err.Error())
 		return -1
 	}
-
-	if len(args) > 2 {
-		pic_id, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-		msg = args[2]
-	} else {
-		msg = args[1]
-	}
-	return p.personal_space_send_leave_msg(int32(player_id), int32(pic_id), []byte(msg))
+	return p.space_data(int32(player_id))
 }
-
-func delete_personal_space_leave_msg_cmd(p *Player, args []string) int32 {
-	if len(args) < 2 {
-		log.Error("参数[%v]不够", len(args))
-		return -1
-	}
-
-	var err error
-	var player_id, pic_id, msg_id int
-	player_id, err = strconv.Atoi(args[0])
-	if err != nil {
-		log.Error("转换参数[%v]错误[%v]", args[0], err.Error())
-		return -1
-	}
-
-	if len(args) > 2 {
-		pic_id, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-		msg_id, err = strconv.Atoi(args[2])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[2], err.Error())
-			return -1
-		}
-	} else {
-		msg_id, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-	}
-
-	return p.personal_space_delete_leave_msg(int32(player_id), int32(pic_id), int32(msg_id))
-}
-
-func pull_personal_space_leave_msg_cmd(p *Player, args []string) int32 {
-	if len(args) < 3 {
-		log.Error("参数[%v]不够", len(args))
-		return -1
-	}
-
-	var err error
-	var player_id, pic_id, start_index, msg_num int
-	player_id, err = strconv.Atoi(args[0])
-	if err != nil {
-		log.Error("转换参数[%v]错误[%v]", args[0], err.Error())
-		return -1
-	}
-
-	if len(args) > 3 {
-		pic_id, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-		start_index, err = strconv.Atoi(args[2])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[2], err.Error())
-			return -1
-		}
-		msg_num, err = strconv.Atoi(args[3])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[3], err.Error())
-			return -1
-		}
-	} else {
-		start_index, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-		msg_num, err = strconv.Atoi(args[2])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[2], err.Error())
-			return -1
-		}
-	}
-
-	return p.personal_space_pull_leave_msg(int32(player_id), int32(pic_id), int32(start_index), int32(msg_num))
-}
-
-func send_personal_space_leave_msg_comment_cmd(p *Player, args []string) int32 {
-	if len(args) < 3 {
-		log.Error("参数[%v]不够", len(args))
-		return -1
-	}
-
-	var err error
-	var player_id, pic_id, msg_id int
-	player_id, err = strconv.Atoi(args[0])
-	if err != nil {
-		log.Error("转换参数[%v]错误[%v]", args[0], err.Error())
-		return -1
-	}
-
-	var comment string
-	if len(args) == 3 {
-		msg_id, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-		comment = args[2]
-	} else {
-		pic_id, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-		msg_id, err = strconv.Atoi(args[2])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[2], err.Error())
-			return -1
-		}
-		comment = args[3]
-	}
-
-	return p.personal_space_send_leave_msg_comment(int32(player_id), int32(pic_id), int32(msg_id), []byte(comment))
-}
-
-func delete_personal_space_leave_msg_comment_cmd(p *Player, args []string) int32 {
-	if len(args) < 3 {
-		log.Error("参数[%v]不够", len(args))
-		return -1
-	}
-
-	var err error
-	var player_id, pic_id, msg_id, comment_id int
-	player_id, err = strconv.Atoi(args[0])
-	if err != nil {
-		log.Error("转换参数[%v]错误[%v]", args[0], err.Error())
-		return -1
-	}
-
-	if len(args) < 4 {
-		msg_id, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-		comment_id, err = strconv.Atoi(args[2])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[2], err.Error())
-			return -1
-		}
-	} else {
-		pic_id, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-		msg_id, err = strconv.Atoi(args[2])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[2], err.Error())
-			return -1
-		}
-		comment_id, err = strconv.Atoi(args[3])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[3], err.Error())
-			return -1
-		}
-	}
-
-	return p.personal_space_delete_leave_msg_comment(int32(player_id), int32(pic_id), int32(msg_id), int32(comment_id))
-}
-
-func pull_personal_space_leave_msg_comment_cmd(p *Player, args []string) int32 {
-	if len(args) < 4 {
-		log.Error("参数[%v]不够", len(args))
-		return -1
-	}
-
-	var err error
-	var player_id, pic_id, msg_id, start_index, comment_num int
-	player_id, err = strconv.Atoi(args[0])
-	if err != nil {
-		log.Error("转换参数[%v]错误[%v]", args[0], err.Error())
-		return -1
-	}
-
-	if len(args) < 5 {
-		msg_id, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-		start_index, err = strconv.Atoi(args[2])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[2], err.Error())
-			return -1
-		}
-		comment_num, err = strconv.Atoi(args[3])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[3], err.Error())
-			return -1
-		}
-	} else {
-		pic_id, err = strconv.Atoi(args[1])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[1], err.Error())
-			return -1
-		}
-		msg_id, err = strconv.Atoi(args[2])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[2], err.Error())
-			return -1
-		}
-		start_index, err = strconv.Atoi(args[3])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[3], err.Error())
-			return -1
-		}
-		comment_num, err = strconv.Atoi(args[4])
-		if err != nil {
-			log.Error("转换参数[%v]错误[%v]", args[4], err.Error())
-			return -1
-		}
-	}
-
-	return p.personal_space_pull_leave_msg_comment(int32(player_id), int32(pic_id), int32(msg_id), int32(start_index), int32(comment_num))
-}*/
 
 type test_cmd_func func(*Player, []string) int32
 
@@ -2160,18 +1949,16 @@ var test_cmd2funcs = map[string]test_cmd_func{
 	"rank_test2":                rank_test2_cmd,
 	"ranklist":                  ranklist_cmd,
 	"visit_player":              visit_player_cmd,
+	"push_sysmsg":               push_sysmsg_cmd,
+	"push_sysmsg_text":          push_sysmsg_text_cmd,
+	"focus_data":                focus_data_cmd,
+	"focus_player":              focus_player_cmd,
+	"unfocus_player":            unfocus_player_cmd,
+	"my_pictures":               my_pictures_cmd,
+	"my_picture_set":            my_picture_set_cmd,
+	"space_data":                space_data_cmd,
 	//"world_chat":                world_chat_cmd,
 	//"pull_world_chat":           pull_world_chat_cmd,
-	"push_sysmsg":      push_sysmsg_cmd,
-	"push_sysmsg_text": push_sysmsg_text_cmd,
-	/*"get_ps":                get_personal_space_cmd,
-	"change_signature":      change_signature_cmd,
-	"send_ps_msg":           send_personal_space_leave_msg_cmd,
-	"del_ps_msg":            delete_personal_space_leave_msg_cmd,
-	"pull_ps_msg":           pull_personal_space_leave_msg_cmd,
-	"send_ps_msg_comment":   send_personal_space_leave_msg_comment_cmd,
-	"del_ps_msg_comment":    delete_personal_space_leave_msg_comment_cmd,
-	"pull_ps_msg_comment":   pull_personal_space_leave_msg_comment_cmd,*/
 }
 
 func C2STestCommandHandler(p *Player, msg_data []byte) int32 {

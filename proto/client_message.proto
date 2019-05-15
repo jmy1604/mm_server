@@ -2799,3 +2799,88 @@ message GuideDM {
 	int32 GuideID		= 1;
 	int32 StepID		= 2;
 }
+
+// ----------------------------------- 空间 -----------------------------------
+// 请求关注数据
+message C2SFocusDataRequest {
+	enum EProtocol { None = 0; ProtoID = 13000; }
+}
+
+message FocusPlayer {
+	int32 Id								= 1;
+	string Name								= 2;
+	int32 Level								= 3;
+	int32 Head								= 4;
+}
+
+message S2CFocusDataResponse {
+	int32 BeFocusNum						= 1; // 被关注数
+	repeated FocusPlayer Players			= 2; // 关注的玩家
+	enum EProtocol { None = 0; ProtoID = 13001; }
+}
+
+// 关注玩家
+message C2SFocusPlayerRequest {
+	int32 PlayerId							= 1;
+	enum EProtocol { None = 0; ProtoID = 13002; }
+}
+
+message S2CFocusPlayerResponse {
+	FocusPlayer PlayerInfo					= 1;
+	enum EProtocol { None = 0; ProtoID = 13003; }
+}
+
+// 取消关注
+message C2SFocusPlayerCancalRequest {
+	int32 PlayerId							= 1;
+	enum EProtocol { None = 0; ProtoID = 13004; }
+}
+
+message S2CFocusPlayerCancelResponse {
+	int32 PlayerId							= 1;
+	enum EProtocol { None = 0; ProtoID = 13005; }
+}
+
+// 请求空间照片的状态
+message C2SMyPictureDataRequest {
+	enum EProtocol { None = 0; ProtoID = 13006; } 
+}
+
+message MyPictureData {
+	int32 Pos								= 1; // 索引位置 从0开始
+	int32 CatId								= 2; // 猫实例ID
+}
+
+message S2CMyPictureDataResponse {
+	repeated MyPictureData Pictures			= 1;
+	enum EProtocol { None = 0; ProtoID = 13007; }
+}
+
+// 请求设置空间照片
+message C2SMyPictureSetRequest {
+	MyPictureData PictureData				= 1;
+	enum EProtocol { None = 0; ProtoID = 13008; }
+}
+
+message S2CMyPictureSetResponse {
+	MyPictureData PictureData				= 2;
+	enum EProtocol { None = 0; ProtoID = 13009; }
+}
+
+// 查看其他玩家个人空间
+message C2SSpaceDataRequest {
+	int32 PlayerId							= 1;
+	enum EProtocol { None = 0; ProtoID = 13010; }
+}
+
+message S2CSpaceDataResponse {
+	int32 PlayerId							= 1;
+	string PlayerName						= 2;
+	int32 PlayerLevel						= 3;
+	int32 PlayerHead						= 4;
+	int32 Zaned								= 5;
+	int32 BeFocusNum						= 6;
+	int32 Charm								= 7;
+	repeated MyPictureData Pictures			= 8;
+	enum EProtocol { None = 0; ProtoID = 13011; }
+}

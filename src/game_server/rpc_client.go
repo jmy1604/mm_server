@@ -224,7 +224,7 @@ func (this *Player) rpc_get_players_base_info(player_ids []int32) (result *rpc_p
 	}
 
 	result = &rpc_proto.G2R_GetPlayersBaseInfoResult{}
-	err := rpc_client.Call("G2R_GetPlayersBaseInfoResult", &args, result)
+	err := rpc_client.Call("G2R_PlayerProc.GetPlayersBaseInfo", &args, result)
 	if err != nil {
 		log.Error("RPC ### Player %v get players %v base info err %v", this.Id, player_ids, err.Error())
 	}

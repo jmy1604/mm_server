@@ -1484,52 +1484,6 @@ func (this* dbPlayerFriendChatUnreadMessageData)clone_to(d *dbPlayerFriendChatUn
 	d.IsRead = this.IsRead
 	return
 }
-type dbPlayerFocusPlayerData struct{
-	FriendId int32
-	FriendName string
-}
-func (this* dbPlayerFocusPlayerData)from_pb(pb *db.PlayerFocusPlayer){
-	if pb == nil {
-		return
-	}
-	this.FriendId = pb.GetFriendId()
-	this.FriendName = pb.GetFriendName()
-	return
-}
-func (this* dbPlayerFocusPlayerData)to_pb()(pb *db.PlayerFocusPlayer){
-	pb = &db.PlayerFocusPlayer{}
-	pb.FriendId = proto.Int32(this.FriendId)
-	pb.FriendName = proto.String(this.FriendName)
-	return
-}
-func (this* dbPlayerFocusPlayerData)clone_to(d *dbPlayerFocusPlayerData){
-	d.FriendId = this.FriendId
-	d.FriendName = this.FriendName
-	return
-}
-type dbPlayerBeFocusPlayerData struct{
-	FriendId int32
-	FriendName string
-}
-func (this* dbPlayerBeFocusPlayerData)from_pb(pb *db.PlayerBeFocusPlayer){
-	if pb == nil {
-		return
-	}
-	this.FriendId = pb.GetFriendId()
-	this.FriendName = pb.GetFriendName()
-	return
-}
-func (this* dbPlayerBeFocusPlayerData)to_pb()(pb *db.PlayerBeFocusPlayer){
-	pb = &db.PlayerBeFocusPlayer{}
-	pb.FriendId = proto.Int32(this.FriendId)
-	pb.FriendName = proto.String(this.FriendName)
-	return
-}
-func (this* dbPlayerBeFocusPlayerData)clone_to(d *dbPlayerBeFocusPlayerData){
-	d.FriendId = this.FriendId
-	d.FriendName = this.FriendName
-	return
-}
 type dbPlayerCustomDataData struct{
 	CustomData []byte
 }
@@ -2381,6 +2335,67 @@ func (this* dbPlayerSurfaceData)clone_to(d *dbPlayerSurfaceData){
 	for _ii, _vv := range this.Data {
 		d.Data[_ii]=_vv
 	}
+	return
+}
+type dbPlayerFocusCommonData struct{
+	BeFocusNum int32
+}
+func (this* dbPlayerFocusCommonData)from_pb(pb *db.PlayerFocusCommon){
+	if pb == nil {
+		return
+	}
+	this.BeFocusNum = pb.GetBeFocusNum()
+	return
+}
+func (this* dbPlayerFocusCommonData)to_pb()(pb *db.PlayerFocusCommon){
+	pb = &db.PlayerFocusCommon{}
+	pb.BeFocusNum = proto.Int32(this.BeFocusNum)
+	return
+}
+func (this* dbPlayerFocusCommonData)clone_to(d *dbPlayerFocusCommonData){
+	d.BeFocusNum = this.BeFocusNum
+	return
+}
+type dbPlayerFocusPlayerData struct{
+	PlayerId int32
+}
+func (this* dbPlayerFocusPlayerData)from_pb(pb *db.PlayerFocusPlayer){
+	if pb == nil {
+		return
+	}
+	this.PlayerId = pb.GetPlayerId()
+	return
+}
+func (this* dbPlayerFocusPlayerData)to_pb()(pb *db.PlayerFocusPlayer){
+	pb = &db.PlayerFocusPlayer{}
+	pb.PlayerId = proto.Int32(this.PlayerId)
+	return
+}
+func (this* dbPlayerFocusPlayerData)clone_to(d *dbPlayerFocusPlayerData){
+	d.PlayerId = this.PlayerId
+	return
+}
+type dbPlayerMyPictureDataData struct{
+	CatId int32
+	Pos int32
+}
+func (this* dbPlayerMyPictureDataData)from_pb(pb *db.PlayerMyPictureData){
+	if pb == nil {
+		return
+	}
+	this.CatId = pb.GetCatId()
+	this.Pos = pb.GetPos()
+	return
+}
+func (this* dbPlayerMyPictureDataData)to_pb()(pb *db.PlayerMyPictureData){
+	pb = &db.PlayerMyPictureData{}
+	pb.CatId = proto.Int32(this.CatId)
+	pb.Pos = proto.Int32(this.Pos)
+	return
+}
+func (this* dbPlayerMyPictureDataData)clone_to(d *dbPlayerMyPictureDataData){
+	d.CatId = this.CatId
+	d.Pos = this.Pos
 	return
 }
 type dbSysMailAttachedItemsData struct{
@@ -8690,304 +8705,6 @@ func (this *dbPlayerFriendChatUnreadMessageColumn)SetIsRead(id int64,v int32)(ha
 	this.m_changed = true
 	return true
 }
-type dbPlayerFocusPlayerColumn struct{
-	m_row *dbPlayerRow
-	m_data map[int32]*dbPlayerFocusPlayerData
-	m_changed bool
-}
-func (this *dbPlayerFocusPlayerColumn)load(data []byte)(err error){
-	if data == nil || len(data) == 0 {
-		this.m_changed = false
-		return nil
-	}
-	pb := &db.PlayerFocusPlayerList{}
-	err = proto.Unmarshal(data, pb)
-	if err != nil {
-		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
-		return
-	}
-	for _, v := range pb.List {
-		d := &dbPlayerFocusPlayerData{}
-		d.from_pb(v)
-		this.m_data[int32(d.FriendId)] = d
-	}
-	this.m_changed = false
-	return
-}
-func (this *dbPlayerFocusPlayerColumn)save( )(data []byte,err error){
-	pb := &db.PlayerFocusPlayerList{}
-	pb.List=make([]*db.PlayerFocusPlayer,len(this.m_data))
-	i:=0
-	for _, v := range this.m_data {
-		pb.List[i] = v.to_pb()
-		i++
-	}
-	data, err = proto.Marshal(pb)
-	if err != nil {
-		log.Error("Marshal %v", this.m_row.GetPlayerId())
-		return
-	}
-	this.m_changed = false
-	return
-}
-func (this *dbPlayerFocusPlayerColumn)HasIndex(id int32)(has bool){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.HasIndex")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	_, has = this.m_data[id]
-	return
-}
-func (this *dbPlayerFocusPlayerColumn)GetAllIndex()(list []int32){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.GetAllIndex")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	list = make([]int32, len(this.m_data))
-	i := 0
-	for k, _ := range this.m_data {
-		list[i] = k
-		i++
-	}
-	return
-}
-func (this *dbPlayerFocusPlayerColumn)GetAll()(list []dbPlayerFocusPlayerData){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.GetAll")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	list = make([]dbPlayerFocusPlayerData, len(this.m_data))
-	i := 0
-	for _, v := range this.m_data {
-		v.clone_to(&list[i])
-		i++
-	}
-	return
-}
-func (this *dbPlayerFocusPlayerColumn)Get(id int32)(v *dbPlayerFocusPlayerData){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.Get")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	d := this.m_data[id]
-	if d==nil{
-		return nil
-	}
-	v=&dbPlayerFocusPlayerData{}
-	d.clone_to(v)
-	return
-}
-func (this *dbPlayerFocusPlayerColumn)Set(v dbPlayerFocusPlayerData)(has bool){
-	this.m_row.m_lock.UnSafeLock("dbPlayerFocusPlayerColumn.Set")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	d := this.m_data[int32(v.FriendId)]
-	if d==nil{
-		log.Error("not exist %v %v",this.m_row.GetPlayerId(), v.FriendId)
-		return false
-	}
-	v.clone_to(d)
-	this.m_changed = true
-	return true
-}
-func (this *dbPlayerFocusPlayerColumn)Add(v *dbPlayerFocusPlayerData)(ok bool){
-	this.m_row.m_lock.UnSafeLock("dbPlayerFocusPlayerColumn.Add")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	_, has := this.m_data[int32(v.FriendId)]
-	if has {
-		log.Error("already added %v %v",this.m_row.GetPlayerId(), v.FriendId)
-		return false
-	}
-	d:=&dbPlayerFocusPlayerData{}
-	v.clone_to(d)
-	this.m_data[int32(v.FriendId)]=d
-	this.m_changed = true
-	return true
-}
-func (this *dbPlayerFocusPlayerColumn)Remove(id int32){
-	this.m_row.m_lock.UnSafeLock("dbPlayerFocusPlayerColumn.Remove")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	_, has := this.m_data[id]
-	if has {
-		delete(this.m_data,id)
-	}
-	this.m_changed = true
-	return
-}
-func (this *dbPlayerFocusPlayerColumn)Clear(){
-	this.m_row.m_lock.UnSafeLock("dbPlayerFocusPlayerColumn.Clear")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	this.m_data=make(map[int32]*dbPlayerFocusPlayerData)
-	this.m_changed = true
-	return
-}
-func (this *dbPlayerFocusPlayerColumn)NumAll()(n int32){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.NumAll")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	return int32(len(this.m_data))
-}
-func (this *dbPlayerFocusPlayerColumn)GetFriendName(id int32)(v string ,has bool){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.GetFriendName")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	d := this.m_data[id]
-	if d==nil{
-		return
-	}
-	v = d.FriendName
-	return v,true
-}
-func (this *dbPlayerFocusPlayerColumn)SetFriendName(id int32,v string)(has bool){
-	this.m_row.m_lock.UnSafeLock("dbPlayerFocusPlayerColumn.SetFriendName")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	d := this.m_data[id]
-	if d==nil{
-		log.Error("not exist %v %v",this.m_row.GetPlayerId(), id)
-		return
-	}
-	d.FriendName = v
-	this.m_changed = true
-	return true
-}
-type dbPlayerBeFocusPlayerColumn struct{
-	m_row *dbPlayerRow
-	m_data map[int32]*dbPlayerBeFocusPlayerData
-	m_changed bool
-}
-func (this *dbPlayerBeFocusPlayerColumn)load(data []byte)(err error){
-	if data == nil || len(data) == 0 {
-		this.m_changed = false
-		return nil
-	}
-	pb := &db.PlayerBeFocusPlayerList{}
-	err = proto.Unmarshal(data, pb)
-	if err != nil {
-		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
-		return
-	}
-	for _, v := range pb.List {
-		d := &dbPlayerBeFocusPlayerData{}
-		d.from_pb(v)
-		this.m_data[int32(d.FriendId)] = d
-	}
-	this.m_changed = false
-	return
-}
-func (this *dbPlayerBeFocusPlayerColumn)save( )(data []byte,err error){
-	pb := &db.PlayerBeFocusPlayerList{}
-	pb.List=make([]*db.PlayerBeFocusPlayer,len(this.m_data))
-	i:=0
-	for _, v := range this.m_data {
-		pb.List[i] = v.to_pb()
-		i++
-	}
-	data, err = proto.Marshal(pb)
-	if err != nil {
-		log.Error("Marshal %v", this.m_row.GetPlayerId())
-		return
-	}
-	this.m_changed = false
-	return
-}
-func (this *dbPlayerBeFocusPlayerColumn)HasIndex(id int32)(has bool){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerBeFocusPlayerColumn.HasIndex")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	_, has = this.m_data[id]
-	return
-}
-func (this *dbPlayerBeFocusPlayerColumn)GetAllIndex()(list []int32){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerBeFocusPlayerColumn.GetAllIndex")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	list = make([]int32, len(this.m_data))
-	i := 0
-	for k, _ := range this.m_data {
-		list[i] = k
-		i++
-	}
-	return
-}
-func (this *dbPlayerBeFocusPlayerColumn)GetAll()(list []dbPlayerBeFocusPlayerData){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerBeFocusPlayerColumn.GetAll")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	list = make([]dbPlayerBeFocusPlayerData, len(this.m_data))
-	i := 0
-	for _, v := range this.m_data {
-		v.clone_to(&list[i])
-		i++
-	}
-	return
-}
-func (this *dbPlayerBeFocusPlayerColumn)Get(id int32)(v *dbPlayerBeFocusPlayerData){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerBeFocusPlayerColumn.Get")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	d := this.m_data[id]
-	if d==nil{
-		return nil
-	}
-	v=&dbPlayerBeFocusPlayerData{}
-	d.clone_to(v)
-	return
-}
-func (this *dbPlayerBeFocusPlayerColumn)Set(v dbPlayerBeFocusPlayerData)(has bool){
-	this.m_row.m_lock.UnSafeLock("dbPlayerBeFocusPlayerColumn.Set")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	d := this.m_data[int32(v.FriendId)]
-	if d==nil{
-		log.Error("not exist %v %v",this.m_row.GetPlayerId(), v.FriendId)
-		return false
-	}
-	v.clone_to(d)
-	this.m_changed = true
-	return true
-}
-func (this *dbPlayerBeFocusPlayerColumn)Add(v *dbPlayerBeFocusPlayerData)(ok bool){
-	this.m_row.m_lock.UnSafeLock("dbPlayerBeFocusPlayerColumn.Add")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	_, has := this.m_data[int32(v.FriendId)]
-	if has {
-		log.Error("already added %v %v",this.m_row.GetPlayerId(), v.FriendId)
-		return false
-	}
-	d:=&dbPlayerBeFocusPlayerData{}
-	v.clone_to(d)
-	this.m_data[int32(v.FriendId)]=d
-	this.m_changed = true
-	return true
-}
-func (this *dbPlayerBeFocusPlayerColumn)Remove(id int32){
-	this.m_row.m_lock.UnSafeLock("dbPlayerBeFocusPlayerColumn.Remove")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	_, has := this.m_data[id]
-	if has {
-		delete(this.m_data,id)
-	}
-	this.m_changed = true
-	return
-}
-func (this *dbPlayerBeFocusPlayerColumn)Clear(){
-	this.m_row.m_lock.UnSafeLock("dbPlayerBeFocusPlayerColumn.Clear")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	this.m_data=make(map[int32]*dbPlayerBeFocusPlayerData)
-	this.m_changed = true
-	return
-}
-func (this *dbPlayerBeFocusPlayerColumn)NumAll()(n int32){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerBeFocusPlayerColumn.NumAll")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	return int32(len(this.m_data))
-}
-func (this *dbPlayerBeFocusPlayerColumn)GetFriendName(id int32)(v string ,has bool){
-	this.m_row.m_lock.UnSafeRLock("dbPlayerBeFocusPlayerColumn.GetFriendName")
-	defer this.m_row.m_lock.UnSafeRUnlock()
-	d := this.m_data[id]
-	if d==nil{
-		return
-	}
-	v = d.FriendName
-	return v,true
-}
-func (this *dbPlayerBeFocusPlayerColumn)SetFriendName(id int32,v string)(has bool){
-	this.m_row.m_lock.UnSafeLock("dbPlayerBeFocusPlayerColumn.SetFriendName")
-	defer this.m_row.m_lock.UnSafeUnlock()
-	d := this.m_data[id]
-	if d==nil{
-		log.Error("not exist %v %v",this.m_row.GetPlayerId(), id)
-		return
-	}
-	d.FriendName = v
-	this.m_changed = true
-	return true
-}
 type dbPlayerCustomDataColumn struct{
 	m_row *dbPlayerRow
 	m_data *dbPlayerCustomDataData
@@ -12942,6 +12659,349 @@ func (this *dbPlayerSurfaceColumn)SetData(v []byte){
 	this.m_changed = true
 	return
 }
+type dbPlayerFocusCommonColumn struct{
+	m_row *dbPlayerRow
+	m_data *dbPlayerFocusCommonData
+	m_changed bool
+}
+func (this *dbPlayerFocusCommonColumn)load(data []byte)(err error){
+	if data == nil || len(data) == 0 {
+		this.m_data = &dbPlayerFocusCommonData{}
+		this.m_changed = false
+		return nil
+	}
+	pb := &db.PlayerFocusCommon{}
+	err = proto.Unmarshal(data, pb)
+	if err != nil {
+		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_data = &dbPlayerFocusCommonData{}
+	this.m_data.from_pb(pb)
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerFocusCommonColumn)save( )(data []byte,err error){
+	pb:=this.m_data.to_pb()
+	data, err = proto.Marshal(pb)
+	if err != nil {
+		log.Error("Marshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerFocusCommonColumn)Get( )(v *dbPlayerFocusCommonData ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusCommonColumn.Get")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v=&dbPlayerFocusCommonData{}
+	this.m_data.clone_to(v)
+	return
+}
+func (this *dbPlayerFocusCommonColumn)Set(v dbPlayerFocusCommonData ){
+	this.m_row.m_lock.UnSafeLock("dbPlayerFocusCommonColumn.Set")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data=&dbPlayerFocusCommonData{}
+	v.clone_to(this.m_data)
+	this.m_changed=true
+	return
+}
+func (this *dbPlayerFocusCommonColumn)GetBeFocusNum( )(v int32 ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusCommonColumn.GetBeFocusNum")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v = this.m_data.BeFocusNum
+	return
+}
+func (this *dbPlayerFocusCommonColumn)SetBeFocusNum(v int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerFocusCommonColumn.SetBeFocusNum")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data.BeFocusNum = v
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerFocusCommonColumn)IncbyBeFocusNum(v int32)(r int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerFocusCommonColumn.IncbyBeFocusNum")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data.BeFocusNum += v
+	this.m_changed = true
+	return this.m_data.BeFocusNum
+}
+type dbPlayerFocusPlayerColumn struct{
+	m_row *dbPlayerRow
+	m_data map[int32]*dbPlayerFocusPlayerData
+	m_changed bool
+}
+func (this *dbPlayerFocusPlayerColumn)load(data []byte)(err error){
+	if data == nil || len(data) == 0 {
+		this.m_changed = false
+		return nil
+	}
+	pb := &db.PlayerFocusPlayerList{}
+	err = proto.Unmarshal(data, pb)
+	if err != nil {
+		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	for _, v := range pb.List {
+		d := &dbPlayerFocusPlayerData{}
+		d.from_pb(v)
+		this.m_data[int32(d.PlayerId)] = d
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerFocusPlayerColumn)save( )(data []byte,err error){
+	pb := &db.PlayerFocusPlayerList{}
+	pb.List=make([]*db.PlayerFocusPlayer,len(this.m_data))
+	i:=0
+	for _, v := range this.m_data {
+		pb.List[i] = v.to_pb()
+		i++
+	}
+	data, err = proto.Marshal(pb)
+	if err != nil {
+		log.Error("Marshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerFocusPlayerColumn)HasIndex(id int32)(has bool){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.HasIndex")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	_, has = this.m_data[id]
+	return
+}
+func (this *dbPlayerFocusPlayerColumn)GetAllIndex()(list []int32){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.GetAllIndex")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	list = make([]int32, len(this.m_data))
+	i := 0
+	for k, _ := range this.m_data {
+		list[i] = k
+		i++
+	}
+	return
+}
+func (this *dbPlayerFocusPlayerColumn)GetAll()(list []dbPlayerFocusPlayerData){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.GetAll")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	list = make([]dbPlayerFocusPlayerData, len(this.m_data))
+	i := 0
+	for _, v := range this.m_data {
+		v.clone_to(&list[i])
+		i++
+	}
+	return
+}
+func (this *dbPlayerFocusPlayerColumn)Get(id int32)(v *dbPlayerFocusPlayerData){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.Get")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		return nil
+	}
+	v=&dbPlayerFocusPlayerData{}
+	d.clone_to(v)
+	return
+}
+func (this *dbPlayerFocusPlayerColumn)Set(v dbPlayerFocusPlayerData)(has bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerFocusPlayerColumn.Set")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	d := this.m_data[int32(v.PlayerId)]
+	if d==nil{
+		log.Error("not exist %v %v",this.m_row.GetPlayerId(), v.PlayerId)
+		return false
+	}
+	v.clone_to(d)
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerFocusPlayerColumn)Add(v *dbPlayerFocusPlayerData)(ok bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerFocusPlayerColumn.Add")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	_, has := this.m_data[int32(v.PlayerId)]
+	if has {
+		log.Error("already added %v %v",this.m_row.GetPlayerId(), v.PlayerId)
+		return false
+	}
+	d:=&dbPlayerFocusPlayerData{}
+	v.clone_to(d)
+	this.m_data[int32(v.PlayerId)]=d
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerFocusPlayerColumn)Remove(id int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerFocusPlayerColumn.Remove")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	_, has := this.m_data[id]
+	if has {
+		delete(this.m_data,id)
+	}
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerFocusPlayerColumn)Clear(){
+	this.m_row.m_lock.UnSafeLock("dbPlayerFocusPlayerColumn.Clear")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data=make(map[int32]*dbPlayerFocusPlayerData)
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerFocusPlayerColumn)NumAll()(n int32){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerFocusPlayerColumn.NumAll")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	return int32(len(this.m_data))
+}
+type dbPlayerMyPictureDataColumn struct{
+	m_row *dbPlayerRow
+	m_data map[int32]*dbPlayerMyPictureDataData
+	m_changed bool
+}
+func (this *dbPlayerMyPictureDataColumn)load(data []byte)(err error){
+	if data == nil || len(data) == 0 {
+		this.m_changed = false
+		return nil
+	}
+	pb := &db.PlayerMyPictureDataList{}
+	err = proto.Unmarshal(data, pb)
+	if err != nil {
+		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	for _, v := range pb.List {
+		d := &dbPlayerMyPictureDataData{}
+		d.from_pb(v)
+		this.m_data[int32(d.CatId)] = d
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerMyPictureDataColumn)save( )(data []byte,err error){
+	pb := &db.PlayerMyPictureDataList{}
+	pb.List=make([]*db.PlayerMyPictureData,len(this.m_data))
+	i:=0
+	for _, v := range this.m_data {
+		pb.List[i] = v.to_pb()
+		i++
+	}
+	data, err = proto.Marshal(pb)
+	if err != nil {
+		log.Error("Marshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerMyPictureDataColumn)HasIndex(id int32)(has bool){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerMyPictureDataColumn.HasIndex")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	_, has = this.m_data[id]
+	return
+}
+func (this *dbPlayerMyPictureDataColumn)GetAllIndex()(list []int32){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerMyPictureDataColumn.GetAllIndex")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	list = make([]int32, len(this.m_data))
+	i := 0
+	for k, _ := range this.m_data {
+		list[i] = k
+		i++
+	}
+	return
+}
+func (this *dbPlayerMyPictureDataColumn)GetAll()(list []dbPlayerMyPictureDataData){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerMyPictureDataColumn.GetAll")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	list = make([]dbPlayerMyPictureDataData, len(this.m_data))
+	i := 0
+	for _, v := range this.m_data {
+		v.clone_to(&list[i])
+		i++
+	}
+	return
+}
+func (this *dbPlayerMyPictureDataColumn)Get(id int32)(v *dbPlayerMyPictureDataData){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerMyPictureDataColumn.Get")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		return nil
+	}
+	v=&dbPlayerMyPictureDataData{}
+	d.clone_to(v)
+	return
+}
+func (this *dbPlayerMyPictureDataColumn)Set(v dbPlayerMyPictureDataData)(has bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerMyPictureDataColumn.Set")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	d := this.m_data[int32(v.CatId)]
+	if d==nil{
+		log.Error("not exist %v %v",this.m_row.GetPlayerId(), v.CatId)
+		return false
+	}
+	v.clone_to(d)
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerMyPictureDataColumn)Add(v *dbPlayerMyPictureDataData)(ok bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerMyPictureDataColumn.Add")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	_, has := this.m_data[int32(v.CatId)]
+	if has {
+		log.Error("already added %v %v",this.m_row.GetPlayerId(), v.CatId)
+		return false
+	}
+	d:=&dbPlayerMyPictureDataData{}
+	v.clone_to(d)
+	this.m_data[int32(v.CatId)]=d
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerMyPictureDataColumn)Remove(id int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerMyPictureDataColumn.Remove")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	_, has := this.m_data[id]
+	if has {
+		delete(this.m_data,id)
+	}
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerMyPictureDataColumn)Clear(){
+	this.m_row.m_lock.UnSafeLock("dbPlayerMyPictureDataColumn.Clear")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data=make(map[int32]*dbPlayerMyPictureDataData)
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerMyPictureDataColumn)NumAll()(n int32){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerMyPictureDataColumn.NumAll")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	return int32(len(this.m_data))
+}
+func (this *dbPlayerMyPictureDataColumn)GetPos(id int32)(v int32 ,has bool){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerMyPictureDataColumn.GetPos")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		return
+	}
+	v = d.Pos
+	return v,true
+}
+func (this *dbPlayerMyPictureDataColumn)SetPos(id int32,v int32)(has bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerMyPictureDataColumn.SetPos")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		log.Error("not exist %v %v",this.m_row.GetPlayerId(), id)
+		return
+	}
+	d.Pos = v
+	this.m_changed = true
+	return true
+}
 type dbPlayerRow struct {
 	m_table *dbPlayerTable
 	m_lock       *RWMutex
@@ -12993,8 +13053,6 @@ type dbPlayerRow struct {
 	FriendPoints dbPlayerFriendPointColumn
 	FriendChatUnreadIds dbPlayerFriendChatUnreadIdColumn
 	FriendChatUnreadMessages dbPlayerFriendChatUnreadMessageColumn
-	FocusPlayers dbPlayerFocusPlayerColumn
-	BeFocusPlayers dbPlayerBeFocusPlayerColumn
 	CustomData dbPlayerCustomDataColumn
 	ChaterOpenRequest dbPlayerChaterOpenRequestColumn
 	ExpeditionCommon dbPlayerExpeditionCommonColumn
@@ -13021,6 +13079,9 @@ type dbPlayerRow struct {
 	ActivityDatas dbPlayerActivityDataColumn
 	SysMail dbPlayerSysMailColumn
 	Surface dbPlayerSurfaceColumn
+	FocusCommon dbPlayerFocusCommonColumn
+	FocusPlayers dbPlayerFocusPlayerColumn
+	MyPictureDatas dbPlayerMyPictureDataColumn
 }
 func new_dbPlayerRow(table *dbPlayerTable, PlayerId int32) (r *dbPlayerRow) {
 	this := &dbPlayerRow{}
@@ -13094,10 +13155,6 @@ func new_dbPlayerRow(table *dbPlayerTable, PlayerId int32) (r *dbPlayerRow) {
 	this.FriendChatUnreadIds.m_data=make(map[int32]*dbPlayerFriendChatUnreadIdData)
 	this.FriendChatUnreadMessages.m_row=this
 	this.FriendChatUnreadMessages.m_data=make(map[int64]*dbPlayerFriendChatUnreadMessageData)
-	this.FocusPlayers.m_row=this
-	this.FocusPlayers.m_data=make(map[int32]*dbPlayerFocusPlayerData)
-	this.BeFocusPlayers.m_row=this
-	this.BeFocusPlayers.m_data=make(map[int32]*dbPlayerBeFocusPlayerData)
 	this.CustomData.m_row=this
 	this.CustomData.m_data=&dbPlayerCustomDataData{}
 	this.ChaterOpenRequest.m_row=this
@@ -13150,6 +13207,12 @@ func new_dbPlayerRow(table *dbPlayerTable, PlayerId int32) (r *dbPlayerRow) {
 	this.SysMail.m_data=&dbPlayerSysMailData{}
 	this.Surface.m_row=this
 	this.Surface.m_data=&dbPlayerSurfaceData{}
+	this.FocusCommon.m_row=this
+	this.FocusCommon.m_data=&dbPlayerFocusCommonData{}
+	this.FocusPlayers.m_row=this
+	this.FocusPlayers.m_data=make(map[int32]*dbPlayerFocusPlayerData)
+	this.MyPictureDatas.m_row=this
+	this.MyPictureDatas.m_data=make(map[int32]*dbPlayerMyPictureDataData)
 	return this
 }
 func (this *dbPlayerRow) GetPlayerId() (r int32) {
@@ -13159,7 +13222,7 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.m_lock.UnSafeLock("dbPlayerRow.save_data")
 	defer this.m_lock.UnSafeUnlock()
 	if this.m_new {
-		db_args:=new_db_args(65)
+		db_args:=new_db_args(66)
 		db_args.Push(this.m_PlayerId)
 		db_args.Push(this.m_UniqueId)
 		db_args.Push(this.m_Account)
@@ -13352,18 +13415,6 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 			return db_err,false,0,"",nil
 		}
 		db_args.Push(dFriendChatUnreadMessages)
-		dFocusPlayers,db_err:=this.FocusPlayers.save()
-		if db_err!=nil{
-			log.Error("insert save FocusPlayer failed")
-			return db_err,false,0,"",nil
-		}
-		db_args.Push(dFocusPlayers)
-		dBeFocusPlayers,db_err:=this.BeFocusPlayers.save()
-		if db_err!=nil{
-			log.Error("insert save BeFocusPlayer failed")
-			return db_err,false,0,"",nil
-		}
-		db_args.Push(dBeFocusPlayers)
 		dCustomData,db_err:=this.CustomData.save()
 		if db_err!=nil{
 			log.Error("insert save CustomData failed")
@@ -13520,12 +13571,30 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 			return db_err,false,0,"",nil
 		}
 		db_args.Push(dSurface)
+		dFocusCommon,db_err:=this.FocusCommon.save()
+		if db_err!=nil{
+			log.Error("insert save FocusCommon failed")
+			return db_err,false,0,"",nil
+		}
+		db_args.Push(dFocusCommon)
+		dFocusPlayers,db_err:=this.FocusPlayers.save()
+		if db_err!=nil{
+			log.Error("insert save FocusPlayer failed")
+			return db_err,false,0,"",nil
+		}
+		db_args.Push(dFocusPlayers)
+		dMyPictureDatas,db_err:=this.MyPictureDatas.save()
+		if db_err!=nil{
+			log.Error("insert save MyPictureData failed")
+			return db_err,false,0,"",nil
+		}
+		db_args.Push(dMyPictureDatas)
 		args=db_args.GetArgs()
 		state = 1
 	} else {
-		if this.m_UniqueId_changed||this.m_Account_changed||this.m_Name_changed||this.m_Token_changed||this.m_Level_changed||this.Info.m_changed||this.Stages.m_changed||this.ChapterUnLock.m_changed||this.Items.m_changed||this.Areas.m_changed||this.Buildings.m_changed||this.BuildingDepots.m_changed||this.DepotBuildingFormulas.m_changed||this.MakingFormulaBuildings.m_changed||this.Crops.m_changed||this.Cats.m_changed||this.CatHouses.m_changed||this.ShopItems.m_changed||this.ShopLimitedInfos.m_changed||this.Chests.m_changed||this.PayBacks.m_changed||this.Options.m_changed||this.TaskCommon.m_changed||this.Tasks.m_changed||this.FinishedTasks.m_changed||this.DailyTaskAllDailys.m_changed||this.SevenActivitys.m_changed||this.SignInfo.m_changed||this.FriendRelative.m_changed||this.Friends.m_changed||this.FriendRecommends.m_changed||this.FriendAsks.m_changed||this.FriendReqs.m_changed||this.FriendPoints.m_changed||this.FriendChatUnreadIds.m_changed||this.FriendChatUnreadMessages.m_changed||this.FocusPlayers.m_changed||this.BeFocusPlayers.m_changed||this.CustomData.m_changed||this.ChaterOpenRequest.m_changed||this.ExpeditionCommon.m_changed||this.Expeditions.m_changed||this.HandbookItems.m_changed||this.HeadItems.m_changed||this.Activitys.m_changed||this.SuitAwards.m_changed||this.Zans.m_changed||this.Foster.m_changed||this.FosterCats.m_changed||this.FosterCatOnFriends.m_changed||this.FosterFriendCats.m_changed||this.Chats.m_changed||this.Anouncement.m_changed||this.FirstDrawCards.m_changed||this.TalkForbid.m_changed||this.ServerRewards.m_changed||this.MailCommon.m_changed||this.Mails.m_changed||this.PayCommon.m_changed||this.Pays.m_changed||this.GuideData.m_changed||this.ActivityDatas.m_changed||this.SysMail.m_changed||this.Surface.m_changed{
+		if this.m_UniqueId_changed||this.m_Account_changed||this.m_Name_changed||this.m_Token_changed||this.m_Level_changed||this.Info.m_changed||this.Stages.m_changed||this.ChapterUnLock.m_changed||this.Items.m_changed||this.Areas.m_changed||this.Buildings.m_changed||this.BuildingDepots.m_changed||this.DepotBuildingFormulas.m_changed||this.MakingFormulaBuildings.m_changed||this.Crops.m_changed||this.Cats.m_changed||this.CatHouses.m_changed||this.ShopItems.m_changed||this.ShopLimitedInfos.m_changed||this.Chests.m_changed||this.PayBacks.m_changed||this.Options.m_changed||this.TaskCommon.m_changed||this.Tasks.m_changed||this.FinishedTasks.m_changed||this.DailyTaskAllDailys.m_changed||this.SevenActivitys.m_changed||this.SignInfo.m_changed||this.FriendRelative.m_changed||this.Friends.m_changed||this.FriendRecommends.m_changed||this.FriendAsks.m_changed||this.FriendReqs.m_changed||this.FriendPoints.m_changed||this.FriendChatUnreadIds.m_changed||this.FriendChatUnreadMessages.m_changed||this.CustomData.m_changed||this.ChaterOpenRequest.m_changed||this.ExpeditionCommon.m_changed||this.Expeditions.m_changed||this.HandbookItems.m_changed||this.HeadItems.m_changed||this.Activitys.m_changed||this.SuitAwards.m_changed||this.Zans.m_changed||this.Foster.m_changed||this.FosterCats.m_changed||this.FosterCatOnFriends.m_changed||this.FosterFriendCats.m_changed||this.Chats.m_changed||this.Anouncement.m_changed||this.FirstDrawCards.m_changed||this.TalkForbid.m_changed||this.ServerRewards.m_changed||this.MailCommon.m_changed||this.Mails.m_changed||this.PayCommon.m_changed||this.Pays.m_changed||this.GuideData.m_changed||this.ActivityDatas.m_changed||this.SysMail.m_changed||this.Surface.m_changed||this.FocusCommon.m_changed||this.FocusPlayers.m_changed||this.MyPictureDatas.m_changed{
 			update_string = "UPDATE Players SET "
-			db_args:=new_db_args(65)
+			db_args:=new_db_args(66)
 			if this.m_UniqueId_changed{
 				update_string+="UniqueId=?,"
 				db_args.Push(this.m_UniqueId)
@@ -13825,24 +13894,6 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 				}
 				db_args.Push(dFriendChatUnreadMessages)
 			}
-			if this.FocusPlayers.m_changed{
-				update_string+="FocusPlayers=?,"
-				dFocusPlayers,err:=this.FocusPlayers.save()
-				if err!=nil{
-					log.Error("insert save FocusPlayer failed")
-					return err,false,0,"",nil
-				}
-				db_args.Push(dFocusPlayers)
-			}
-			if this.BeFocusPlayers.m_changed{
-				update_string+="BeFocusPlayers=?,"
-				dBeFocusPlayers,err:=this.BeFocusPlayers.save()
-				if err!=nil{
-					log.Error("insert save BeFocusPlayer failed")
-					return err,false,0,"",nil
-				}
-				db_args.Push(dBeFocusPlayers)
-			}
 			if this.CustomData.m_changed{
 				update_string+="CustomData=?,"
 				dCustomData,err:=this.CustomData.save()
@@ -14077,6 +14128,33 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 				}
 				db_args.Push(dSurface)
 			}
+			if this.FocusCommon.m_changed{
+				update_string+="FocusCommon=?,"
+				dFocusCommon,err:=this.FocusCommon.save()
+				if err!=nil{
+					log.Error("update save FocusCommon failed")
+					return err,false,0,"",nil
+				}
+				db_args.Push(dFocusCommon)
+			}
+			if this.FocusPlayers.m_changed{
+				update_string+="FocusPlayers=?,"
+				dFocusPlayers,err:=this.FocusPlayers.save()
+				if err!=nil{
+					log.Error("insert save FocusPlayer failed")
+					return err,false,0,"",nil
+				}
+				db_args.Push(dFocusPlayers)
+			}
+			if this.MyPictureDatas.m_changed{
+				update_string+="MyPictureDatas=?,"
+				dMyPictureDatas,err:=this.MyPictureDatas.save()
+				if err!=nil{
+					log.Error("insert save MyPictureData failed")
+					return err,false,0,"",nil
+				}
+				db_args.Push(dMyPictureDatas)
+			}
 			update_string = strings.TrimRight(update_string, ", ")
 			update_string+=" WHERE PlayerId=?"
 			db_args.Push(this.m_PlayerId)
@@ -14121,8 +14199,6 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.FriendPoints.m_changed = false
 	this.FriendChatUnreadIds.m_changed = false
 	this.FriendChatUnreadMessages.m_changed = false
-	this.FocusPlayers.m_changed = false
-	this.BeFocusPlayers.m_changed = false
 	this.CustomData.m_changed = false
 	this.ChaterOpenRequest.m_changed = false
 	this.ExpeditionCommon.m_changed = false
@@ -14149,6 +14225,9 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.ActivityDatas.m_changed = false
 	this.SysMail.m_changed = false
 	this.Surface.m_changed = false
+	this.FocusCommon.m_changed = false
+	this.FocusPlayers.m_changed = false
+	this.MyPictureDatas.m_changed = false
 	if release && this.m_loaded {
 		atomic.AddInt32(&this.m_table.m_gc_n, -1)
 		this.m_loaded = false
@@ -14536,22 +14615,6 @@ func (this *dbPlayerTable) check_create_table() (err error) {
 			return
 		}
 	}
-	_, hasFocusPlayer := columns["FocusPlayers"]
-	if !hasFocusPlayer {
-		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN FocusPlayers LONGBLOB")
-		if err != nil {
-			log.Error("ADD COLUMN FocusPlayers failed")
-			return
-		}
-	}
-	_, hasBeFocusPlayer := columns["BeFocusPlayers"]
-	if !hasBeFocusPlayer {
-		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN BeFocusPlayers LONGBLOB")
-		if err != nil {
-			log.Error("ADD COLUMN BeFocusPlayers failed")
-			return
-		}
-	}
 	_, hasCustomData := columns["CustomData"]
 	if !hasCustomData {
 		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN CustomData LONGBLOB")
@@ -14760,10 +14823,34 @@ func (this *dbPlayerTable) check_create_table() (err error) {
 			return
 		}
 	}
+	_, hasFocusCommon := columns["FocusCommon"]
+	if !hasFocusCommon {
+		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN FocusCommon LONGBLOB")
+		if err != nil {
+			log.Error("ADD COLUMN FocusCommon failed")
+			return
+		}
+	}
+	_, hasFocusPlayer := columns["FocusPlayers"]
+	if !hasFocusPlayer {
+		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN FocusPlayers LONGBLOB")
+		if err != nil {
+			log.Error("ADD COLUMN FocusPlayers failed")
+			return
+		}
+	}
+	_, hasMyPictureData := columns["MyPictureDatas"]
+	if !hasMyPictureData {
+		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN MyPictureDatas LONGBLOB")
+		if err != nil {
+			log.Error("ADD COLUMN MyPictureDatas failed")
+			return
+		}
+	}
 	return
 }
 func (this *dbPlayerTable) prepare_preload_select_stmt() (err error) {
-	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,FocusPlayers,BeFocusPlayers,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface FROM Players")
+	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface,FocusCommon,FocusPlayers,MyPictureDatas FROM Players")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -14771,7 +14858,7 @@ func (this *dbPlayerTable) prepare_preload_select_stmt() (err error) {
 	return
 }
 func (this *dbPlayerTable) prepare_save_insert_stmt()(err error){
-	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Players (PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,FocusPlayers,BeFocusPlayers,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Players (PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface,FocusCommon,FocusPlayers,MyPictureDatas) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -14852,8 +14939,6 @@ func (this *dbPlayerTable) Preload() (err error) {
 	var dFriendPoints []byte
 	var dFriendChatUnreadIds []byte
 	var dFriendChatUnreadMessages []byte
-	var dFocusPlayers []byte
-	var dBeFocusPlayers []byte
 	var dCustomData []byte
 	var dChaterOpenRequest []byte
 	var dExpeditionCommon []byte
@@ -14880,9 +14965,12 @@ func (this *dbPlayerTable) Preload() (err error) {
 	var dActivityDatas []byte
 	var dSysMail []byte
 	var dSurface []byte
+	var dFocusCommon []byte
+	var dFocusPlayers []byte
+	var dMyPictureDatas []byte
 		this.m_preload_max_id = 0
 	for r.Next() {
-		err = r.Scan(&PlayerId,&dUniqueId,&dAccount,&dName,&dToken,&dLevel,&dInfo,&dStages,&dChapterUnLock,&dItems,&dAreas,&dBuildings,&dBuildingDepots,&dDepotBuildingFormulas,&dMakingFormulaBuildings,&dCrops,&dCats,&dCatHouses,&dShopItems,&dShopLimitedInfos,&dChests,&dPayBacks,&dOptions,&dTaskCommon,&dTasks,&dFinishedTasks,&dDailyTaskAllDailys,&dSevenActivitys,&dSignInfo,&dFriendRelative,&dFriends,&dFriendRecommends,&dFriendAsks,&dFriendReqs,&dFriendPoints,&dFriendChatUnreadIds,&dFriendChatUnreadMessages,&dFocusPlayers,&dBeFocusPlayers,&dCustomData,&dChaterOpenRequest,&dExpeditionCommon,&dExpeditions,&dHandbookItems,&dHeadItems,&dActivitys,&dSuitAwards,&dZans,&dFoster,&dFosterCats,&dFosterCatOnFriends,&dFosterFriendCats,&dChats,&dAnouncement,&dFirstDrawCards,&dTalkForbid,&dServerRewards,&dMailCommon,&dMails,&dPayCommon,&dPays,&dGuideData,&dActivityDatas,&dSysMail,&dSurface)
+		err = r.Scan(&PlayerId,&dUniqueId,&dAccount,&dName,&dToken,&dLevel,&dInfo,&dStages,&dChapterUnLock,&dItems,&dAreas,&dBuildings,&dBuildingDepots,&dDepotBuildingFormulas,&dMakingFormulaBuildings,&dCrops,&dCats,&dCatHouses,&dShopItems,&dShopLimitedInfos,&dChests,&dPayBacks,&dOptions,&dTaskCommon,&dTasks,&dFinishedTasks,&dDailyTaskAllDailys,&dSevenActivitys,&dSignInfo,&dFriendRelative,&dFriends,&dFriendRecommends,&dFriendAsks,&dFriendReqs,&dFriendPoints,&dFriendChatUnreadIds,&dFriendChatUnreadMessages,&dCustomData,&dChaterOpenRequest,&dExpeditionCommon,&dExpeditions,&dHandbookItems,&dHeadItems,&dActivitys,&dSuitAwards,&dZans,&dFoster,&dFosterCats,&dFosterCatOnFriends,&dFosterFriendCats,&dChats,&dAnouncement,&dFirstDrawCards,&dTalkForbid,&dServerRewards,&dMailCommon,&dMails,&dPayCommon,&dPays,&dGuideData,&dActivityDatas,&dSysMail,&dSurface,&dFocusCommon,&dFocusPlayers,&dMyPictureDatas)
 		if err != nil {
 			log.Error("Scan err[%v]", err.Error())
 			return
@@ -15051,16 +15139,6 @@ func (this *dbPlayerTable) Preload() (err error) {
 			log.Error("FriendChatUnreadMessages %v", PlayerId)
 			return
 		}
-		err = row.FocusPlayers.load(dFocusPlayers)
-		if err != nil {
-			log.Error("FocusPlayers %v", PlayerId)
-			return
-		}
-		err = row.BeFocusPlayers.load(dBeFocusPlayers)
-		if err != nil {
-			log.Error("BeFocusPlayers %v", PlayerId)
-			return
-		}
 		err = row.CustomData.load(dCustomData)
 		if err != nil {
 			log.Error("CustomData %v", PlayerId)
@@ -15189,6 +15267,21 @@ func (this *dbPlayerTable) Preload() (err error) {
 		err = row.Surface.load(dSurface)
 		if err != nil {
 			log.Error("Surface %v", PlayerId)
+			return
+		}
+		err = row.FocusCommon.load(dFocusCommon)
+		if err != nil {
+			log.Error("FocusCommon %v", PlayerId)
+			return
+		}
+		err = row.FocusPlayers.load(dFocusPlayers)
+		if err != nil {
+			log.Error("FocusPlayers %v", PlayerId)
+			return
+		}
+		err = row.MyPictureDatas.load(dMyPictureDatas)
+		if err != nil {
+			log.Error("MyPictureDatas %v", PlayerId)
 			return
 		}
 		row.m_UniqueId_changed=false

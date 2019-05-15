@@ -576,30 +576,6 @@
 					]
 				},
 				{
-					"DBColumnName":"FocusPlayer",
-					"InUse":true,
-					"ColumnName":"FocusPlayer",
-					"Preload":true,
-					"Map":true,
-					"AutoIndex":false,
-					"Fields":[
-						{"Type":"int32","Index":1,"Name":"FriendId"},
-						{"Type":"string","Index":2,"Name":"FriendName"}
-					]
-				},
-				{
-					"DBColumnName":"BeFocusPlayer",
-					"InUse":true,
-					"ColumnName":"BeFocusPlayer",
-					"Preload":true,
-					"Map":true,
-					"AutoIndex":false,
-					"Fields":[
-						{"Type":"int32","Index":1,"Name":"FriendId"},
-						{"Type":"string","Index":2,"Name":"FriendName"}
-					]
-				},
-				{
 					"DBColumnName":"CustomData",
 					"InUse":true,
 					"ColumnName":"CustomData",
@@ -954,6 +930,46 @@
 					"AutoIndex":false,
 					"Fields":[
 						{"Type":"bytes","Index":1,"Name":"Data"}
+					]
+				},
+				{
+					"ColumnName":"FocusCommon",
+					"DBColumnName":"FocusCommon",
+					"InUse":true,
+					"Simple":false,
+					"SimpleType":"",
+					"Preload":true,
+					"Map":false,
+					"AutoIndex":false,
+					"Fields":[
+						{"Type":"int32","Index":1,"Name":"BeFocusNum","Incby":true}
+					]
+				},
+				{
+					"ColumnName":"FocusPlayer",
+					"DBColumnName":"FocusPlayer",
+					"InUse":true,
+					"Simple":false,
+					"SimpleType":"",
+					"Preload":true,
+					"Map":true,
+					"AutoIndex":false,
+					"Fields":[
+						{"Type":"int32","Index":1,"Name":"PlayerId"}
+					]
+				},
+				{
+					"ColumnName":"MyPictureData",
+					"DBColumnName":"MyPictureData",
+					"InUse":true,
+					"Simple":false,
+					"SimpleType":"",
+					"Preload":true,
+					"Map":true,
+					"AutoIndex":false,
+					"Fields":[
+						{"Type":"int32","Index":1,"Name":"CatId"},
+						{"Type":"int32","Index":2,"Name":"Pos"}
 					]
 				}
 			]

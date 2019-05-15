@@ -38,9 +38,9 @@ type ItemTableMgr struct {
 }
 
 func (this *ItemTableMgr) Init(prop_table, things_table string) bool {
-	if !this.LoadProp(prop_table) {
+	/*if !this.LoadProp(prop_table) {
 		return false
-	}
+	}*/
 
 	if !this.LoadThings(things_table) {
 		return false

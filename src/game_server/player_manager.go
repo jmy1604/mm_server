@@ -205,12 +205,6 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseGetGold_ProtoID), C2SCatHouseGetGoldHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SCatHouseSetDone_ProtoID), C2SCatHouseSetDoneHandler)
 
-	// 任务
-	//msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetDialyTaskInfo_ProtoID), C2SGetDialyTaskInfoHanlder)
-	//msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetAchieve_ProtoID), C2SGetAchieveHandler)
-	//msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetTaskReward_ProtoID), C2SGetTaskRewardHandler)
-	//msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetAchieveReward_ProtoID), C2SGetAchieveRewardHandler)
-
 	// 图鉴
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetHandbook_ProtoID), C2SGetHandbookHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetHead_ProtoID), C2SGetHeadHandler)
@@ -299,8 +293,6 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SStartExpedition_ProtoID), C2SStartExpeditionHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChgExpeditionResult_ProtoID), C2SChgExpeditionResultHandler)
 
-	//reg_player_personl_space_msg()
-
 	// 点金手
 	/*msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_GOLD_HAND_DATA_REQUEST), C2SGoldHandDataHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_TOUCH_GOLD_REQUEST), C2STouchGoldHandler)*/
@@ -313,37 +305,9 @@ func (this *PlayerManager) RegMsgHandler() {
 	// 排行榜
 	/*msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_RANK_LIST_REQUEST), C2SRankListHandler)*/
 
-	// 好友
-	/*msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_RECOMMEND_REQUEST), C2SFriendsRecommendHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_LIST_REQUEST), C2SFriendListHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_ASK_PLAYER_LIST_REQUEST), C2SFriendAskListHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_ASK_REQUEST), C2SFriendAskHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_AGREE_REQUEST), C2SFriendAgreeHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_REFUSE_REQUEST), C2SFriendRefuseHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_REMOVE_REQUEST), C2SFriendRemoveHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_GIVE_POINTS_REQUEST), C2SFriendGivePointsHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_GET_POINTS_REQUEST), C2SFriendGetPointsHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_SEARCH_BOSS_REQUEST), C2SFriendSearchBossHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIENDS_BOSS_LIST_REQUEST), C2SFriendGetBossListHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_BOSS_ATTACK_LIST_REQUEST), C2SFriendBossAttackListHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_DATA_REQUEST), C2SFriendDataHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_SET_ASSIST_ROLE_REQUEST), C2SFriendSetAssistRoleHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_GIVE_AND_GET_POINTS_REQUEST), C2SFriendGiveAndGetPointsHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_FRIEND_GET_ASSIST_POINTS_REQUEST), C2SFriendGetAssistPointsHandler)*/
-
 	// 任务
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2STaskDataRequest_ProtoID), C2STaskDataHanlder)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2STaskRewardRequest_ProtoID), C2SGetTaskRewardHandler)
-
-	// 探索
-	/*msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_EXPLORE_DATA_REQUEST), C2SExploreDataHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_EXPLORE_SEL_ROLE_REQUEST), C2SExploreSelRoleHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_EXPLORE_START_REQUEST), C2SExploreStartHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_EXPLORE_SPEEDUP_REQUEST), C2SExploreSpeedupHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_EXPLORE_REFRESH_REQUEST), C2SExploreTasksRefreshHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_EXPLORE_LOCK_REQUEST), C2SExploreTaskLockHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_EXPLORE_GET_REWARD_REQUEST), C2SExploreGetRewardHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_EXPLORE_CANCEL_REQUEST), C2SExploreCancelHandler)*/
 
 	// 聊天
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChatRequest_ProtoID), C2SChatHandler)
@@ -370,6 +334,14 @@ func (this *PlayerManager) RegMsgHandler() {
 
 	// 活动
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SActivityDataRequest_ProtoID), C2SActivityDataHandler)
+
+	// 空间
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFocusDataRequest_ProtoID), C2SFocusDataHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFocusPlayerRequest_ProtoID), C2SFocusPlayerHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SFocusPlayerCancalRequest_ProtoID), C2SUnfocusPlayerHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMyPictureDataRequest_ProtoID), C2SMyPictureDataHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMyPictureSetRequest_ProtoID), C2SMyPictureSetHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceDataRequest_ProtoID), C2SSpaceDataHandler)
 }
 
 func C2SEnterGameRequestHandler(msg_data []byte) (int32, *Player) {

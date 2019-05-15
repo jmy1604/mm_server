@@ -30,6 +30,13 @@ enum MSGID {
 	G2G_FRIENDS_REFRESH_GIVE_POINTS_RESPONSE = 116; // 刷新赠送好友点数返回
 	G2G_FRIEND_CHAT_REQUEST					= 117; // 好友聊天
 	G2G_FRIEND_CHAT_RESPONSE				= 118; // 好友聊天返回
+	
+	G2G_FOCUS_PLAYER_REQUEST				= 200; // 关注
+	G2G_FOCUS_PLAYER_RESPONSE				= 201; //
+	G2G_UNFOCUS_PLAYER_REQUEST				= 202; // 取消关注
+	G2G_UNFOCUS_PLAYER_RESPONSE				= 203; //
+	G2G_SPACE_DATA_REQUEST					= 210; // 空间数据
+	G2G_SPACE_DATA_RESPONSE					= 211;
 }
 
 // 玩家信息请求
@@ -151,4 +158,41 @@ message G2GFriendChatRequest {
 }
 
 message G2GFriendChatResponse {
+}
+
+// 关注
+message G2GFocusPlayerRequest {
+}
+
+message G2GFocusPlayerResponse {
+	int32 PlayerId							= 1;
+	string PlayerName						= 2;
+	int32 PlayerLevel						= 3;
+	int32 PlayerHead						= 4;
+}
+
+// 取消关注
+message G2GUnfocusPlayerRequest {
+}
+
+message G2GUnfocusPlayerResponse {
+}
+
+// 获取个人空间
+message G2GSpaceDataRequest {
+}
+
+message MyPictureData {
+	int32 CatId								= 1;
+	int32 CatPos							= 2;
+}
+
+message G2GSpaceDataResponse {
+	string PlayerName						= 1;
+	int32 PlayerLevel						= 2;
+	int32 PlayerHead						= 3;
+	int32 Zan								= 4;
+	int32 BeFocusNum					 	= 5;
+	int32 Charm								= 6;
+	map<int32,int32> Pictures				= 7;
 }

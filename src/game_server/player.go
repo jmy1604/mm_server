@@ -851,6 +851,8 @@ func (this *Player) send_data_on_login(new_player bool) {
 	this.pull_formula_building()
 	this.send_task(0)
 	this.guide_data()
+	this.send_focus_data()
+	this.send_my_picture_data()
 }
 
 func C2SGetInfoHandler(p *Player, msg_data []byte) int32 {
