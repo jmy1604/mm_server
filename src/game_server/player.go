@@ -276,6 +276,8 @@ func (this *Player) OnCreate() {
 		}
 	}
 
+	this.rpc_player_base_info_update()
+
 	return
 }
 

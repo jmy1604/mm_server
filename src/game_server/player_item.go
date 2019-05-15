@@ -11,21 +11,18 @@ import (
 
 // 物品类型
 const (
-	ITEM_TYPE_NONE              = iota
-	ITEM_TYPE_RESOURCE          = 1   // 资源类
-	ITEM_TYPE_DRAW              = 2   // 抽卡券
-	ITEM_TYPE_ELIMINATE         = 3   // 消除类
-	ITEM_TYPE_OBSTACLE          = 4   // 障碍类
-	ITEM_TYPE_DECORATION        = 5   // 装饰材料
-	ITEM_TYPE_FOSTER            = 6   // 寄养卡
-	ITEM_TYPE_CAT_FRAGMENT      = 7   // 猫碎片
-	ITEM_TYPE_SPIRIT            = 8   // 体力道具
-	ITEM_TYPE_JUMP              = 9   // 跳跳道具
-	ITEM_TYPE_CAT               = 10  // 猫道具
-	ITEM_TYPE_BUILDING          = 11  // 建筑物
-	ITEM_TYPE_GIFT              = 12  // 礼包
-	ITEM_TYPE_DECORATION_RECIPE = 13  // 装饰物配方
-	ITEM_TYPE_HEAD              = 100 // 头像  临时定义
+	ITEM_TYPE_NONE         = iota
+	ITEM_TYPE_RESOURCE     = 1  // 资源类
+	ITEM_TYPE_DRAW         = 2  // 抽卡券
+	ITEM_TYPE_ELIMINATE    = 3  // 消除类
+	ITEM_TYPE_OBSTACLE     = 4  // 障碍类
+	ITEM_TYPE_DECORATION   = 5  // 装饰材料
+	ITEM_TYPE_FOSTER       = 6  // 寄养卡
+	ITEM_TYPE_CAT_FRAGMENT = 7  // 猫碎片
+	ITEM_TYPE_SPIRIT       = 8  // 体力道具
+	ITEM_TYPE_JUMP         = 9  // 跳跳道具
+	ITEM_TYPE_CAT          = 10 // 猫道具
+	ITEM_TYPE_HEAD         = 11 // 头像  临时定义
 )
 
 // 其他属性

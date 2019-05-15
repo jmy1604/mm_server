@@ -225,6 +225,11 @@ const (
 )
 
 func (this *Player) my_picture_set(cat_id, cat_pos int32) int32 {
+	if !this.db.Cats.HasIndex(cat_id) {
+		log.Error("Player %v have no cat %v", this.Id, cat_id)
+		return int32(msg_client_message.E_ERR_CAT_NOT_FOUND)
+	}
+
 	has_pic := this.db.MyPictureDatas.HasIndex(cat_id)
 	if has_pic && cat_pos < 0 {
 		this.db.MyPictureDatas.Remove(cat_id)
