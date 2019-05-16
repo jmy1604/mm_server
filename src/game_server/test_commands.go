@@ -1832,17 +1832,23 @@ func my_picture_set_cmd(p *Player, args []string) int32 {
 		log.Error("参数[%v]不够", len(args))
 		return -1
 	}
-	var cat_id, pos int
+	var cat_id, is_cancel int
 	var err error
 	cat_id, err = strconv.Atoi(args[0])
 	if err != nil {
 		return -1
 	}
-	pos, err = strconv.Atoi(args[1])
+	is_cancel, err = strconv.Atoi(args[1])
 	if err != nil {
 		return -1
 	}
-	return p.my_picture_set(int32(cat_id), int32(pos))
+	return p.my_picture_set(int32(cat_id), func() bool {
+		if is_cancel == 0 {
+			return false
+		} else {
+			return true
+		}
+	}())
 }
 
 func space_data_cmd(p *Player, args []string) int32 {

@@ -196,16 +196,12 @@ func (this *Player) unfocus_player(player_id int32) int32 {
 	return 1
 }
 
-func (this *Player) get_my_pics() []*msg_client_message.MyPictureData {
-	var my_pics []*msg_client_message.MyPictureData
+func (this *Player) get_my_pics() []int32 {
+	var my_pics []int32
 	cat_ids := this.db.MyPictureDatas.GetAllIndex()
 	if cat_ids != nil {
 		for _, cat_id := range cat_ids {
-			pos, _ := this.db.MyPictureDatas.GetPos(cat_id)
-			my_pics = append(my_pics, &msg_client_message.MyPictureData{
-				Pos:   pos,
-				CatId: cat_id,
-			})
+			my_pics = append(my_pics, cat_id)
 		}
 	}
 	return my_pics
@@ -213,7 +209,7 @@ func (this *Player) get_my_pics() []*msg_client_message.MyPictureData {
 
 func (this *Player) send_my_picture_data() int32 {
 	response := &msg_client_message.S2CMyPictureDataResponse{
-		Pictures: this.get_my_pics(),
+		CatIds: this.get_my_pics(),
 	}
 	this.Send(uint16(msg_client_message.S2CMyPictureDataResponse_ProtoID), response)
 	log.Trace("Player %v get my pictures data %v", this.Id, response)
@@ -224,47 +220,38 @@ const (
 	MY_PICTURE_NUM = 9
 )
 
-func (this *Player) my_picture_set(cat_id, cat_pos int32) int32 {
+func (this *Player) my_picture_set(cat_id int32, is_cancel bool) int32 {
 	if !this.db.Cats.HasIndex(cat_id) {
 		log.Error("Player %v have no cat %v", this.Id, cat_id)
 		return int32(msg_client_message.E_ERR_CAT_NOT_FOUND)
 	}
 
 	has_pic := this.db.MyPictureDatas.HasIndex(cat_id)
-	if has_pic && cat_pos < 0 {
-		this.db.MyPictureDatas.Remove(cat_id)
+	if has_pic {
+		if is_cancel {
+			this.db.MyPictureDatas.Remove(cat_id)
+		} else {
+			log.Error("Player %v already set cat_id %v in picture", this.Id, cat_id)
+			return -1
+		}
 	} else {
 		cat_ids := this.db.MyPictureDatas.GetAllIndex()
 		if cat_ids != nil {
-			if !has_pic && len(cat_ids) >= MY_PICTURE_NUM {
+			if len(cat_ids) >= MY_PICTURE_NUM {
 				log.Error("Player %v only set %v picture", this.Id, MY_PICTURE_NUM)
 				return int32(msg_client_message.E_ERR_SPACE_ALREADY_FULL)
 			}
-			for _, cat_id := range cat_ids {
-				pos, o := this.db.MyPictureDatas.GetPos(cat_id)
-				if o && pos == cat_pos {
-					log.Error("Player %v picture pos %v already has cat %v", this.Id, pos, cat_id)
-					return -1
-				}
-			}
 		}
-		if !has_pic {
-			this.db.MyPictureDatas.Add(&dbPlayerMyPictureDataData{
-				CatId: cat_id,
-				Pos:   cat_pos,
-			})
-		} else {
-			this.db.MyPictureDatas.SetPos(cat_id, cat_pos)
-		}
+		this.db.MyPictureDatas.Add(&dbPlayerMyPictureDataData{
+			CatId: cat_id,
+		})
 	}
 	response := &msg_client_message.S2CMyPictureSetResponse{
-		PictureData: &msg_client_message.MyPictureData{
-			Pos:   cat_pos,
-			CatId: cat_id,
-		},
+		CatId:    cat_id,
+		IsCancel: is_cancel,
 	}
 	this.Send(uint16(msg_client_message.S2CMyPictureSetResponse_ProtoID), response)
-	log.Trace("Player %v set my picture cat_id(%v) pos(%v)", this.Id, cat_id, cat_pos)
+	log.Trace("Player %v set my picture cat_id(%v) is_cancel(%v)", this.Id, cat_id, is_cancel)
 	return 1
 }
 
@@ -332,7 +319,7 @@ func (this *Player) space_data(player_id int32) int32 {
 
 	var name string
 	var level, head, zan, charm, be_focus_num int32
-	var player_pics []*msg_client_message.MyPictureData
+	var player_pics []int32
 	p := player_mgr.GetPlayerById(player_id)
 	if p != nil {
 		name = p.db.GetName()
@@ -354,11 +341,8 @@ func (this *Player) space_data(player_id int32) int32 {
 		be_focus_num = resp.BeFocusNum
 		charm = resp.Charm
 		if resp.Pictures != nil {
-			for cat_id, pos := range resp.Pictures {
-				player_pics = append(player_pics, &msg_client_message.MyPictureData{
-					CatId: cat_id,
-					Pos:   pos,
-				})
+			for cat_id, _ := range resp.Pictures {
+				player_pics = append(player_pics, cat_id)
 			}
 		}
 	}
@@ -371,7 +355,7 @@ func (this *Player) space_data(player_id int32) int32 {
 		Zaned:       zan,
 		Charm:       charm,
 		BeFocusNum:  be_focus_num,
-		Pictures:    player_pics,
+		CatIds:      player_pics,
 	}
 	this.Send(uint16(msg_client_message.S2CSpaceDataResponse_ProtoID), response)
 	log.Trace("Player %v get player %v space data %v", this.Id, player_id, response)
@@ -537,7 +521,7 @@ func C2SMyPictureSetHandler(p *Player, msg_data []byte) int32 {
 		log.Error("unmarshal msg failed %v", err.Error())
 		return -1
 	}
-	return p.my_picture_set(req.PictureData.GetCatId(), req.PictureData.GetPos())
+	return p.my_picture_set(req.GetCatId(), req.GetIsCancel())
 }
 
 func C2SSpaceDataHandler(p *Player, msg_data []byte) int32 {
