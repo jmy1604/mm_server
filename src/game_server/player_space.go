@@ -431,31 +431,37 @@ func (this *Player) space_cat(player_id, cat_id int32) int32 {
 		return -1
 	}
 
-	var response = msg_client_message.S2CSpaceCatDataResponse{
-		PlayerId: player_id,
-		CatId:    cat_id,
-	}
+	var cat_table_id, coin_ability, match_ability, explore_ability, ouqi int32
 	p := player_mgr.GetPlayerById(player_id)
 	if p != nil {
 		if !p.db.Cats.HasIndex(cat_id) {
 			log.Error("Player %v have not cat %v", this.Id, cat_id)
 			return int32(msg_client_message.E_ERR_CAT_NOT_FOUND)
 		}
-		response.CatTableId, _ = p.db.Cats.GetCfgId(cat_id)
-		response.CoinAbility, _ = p.db.Cats.GetCoinAbility(cat_id)
-		response.MatchAbility, _ = p.db.Cats.GetMatchAbility(cat_id)
-		response.ExploreAbility, _ = p.db.Cats.GetExploreAbility(cat_id)
-		response.CatOuqi = p.db.Cats.CalcOuqi(cat_id)
+		cat_table_id, _ = p.db.Cats.GetCfgId(cat_id)
+		coin_ability, _ = p.db.Cats.GetCoinAbility(cat_id)
+		match_ability, _ = p.db.Cats.GetMatchAbility(cat_id)
+		explore_ability, _ = p.db.Cats.GetExploreAbility(cat_id)
+		ouqi = p.db.Cats.CalcOuqi(cat_id)
 	} else {
 		resp, err_code := remote_space_cat(this.Id, player_id, cat_id)
 		if err_code < 0 {
 			return err_code
 		}
-		response.CatTableId = resp.CatTableId
-		response.CoinAbility = resp.CoinAbility
-		response.MatchAbility = resp.MatchAbility
-		response.ExploreAbility = resp.ExploreAbility
-		response.CatOuqi = resp.Ouqi
+		cat_table_id = resp.CatTableId
+		coin_ability = resp.CoinAbility
+		match_ability = resp.MatchAbility
+		explore_ability = resp.ExploreAbility
+		ouqi = resp.Ouqi
+	}
+	var response = msg_client_message.S2CSpaceCatDataResponse{
+		PlayerId:       player_id,
+		CatId:          cat_id,
+		CatTableId:     cat_table_id,
+		CoinAbility:    coin_ability,
+		MatchAbility:   match_ability,
+		ExploreAbility: explore_ability,
+		CatOuqi:        ouqi,
 	}
 	this.Send(uint16(msg_client_message.S2CSpaceCatDataResponse_ProtoID), &response)
 	log.Trace("Player %v get player %v space cat %v data %v", this.Id, player_id, cat_id, response)

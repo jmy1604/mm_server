@@ -1858,6 +1858,25 @@ func space_data_cmd(p *Player, args []string) int32 {
 	return p.space_data(int32(player_id))
 }
 
+func space_cat_cmd(p *Player, args []string) int32 {
+	if len(args) < 2 {
+		log.Error("参数[%v]不够", len(args))
+		return -1
+	}
+
+	var player_id, cat_id int
+	var err error
+	player_id, err = strconv.Atoi(args[0])
+	if err != nil {
+		return -1
+	}
+	cat_id, err = strconv.Atoi(args[1])
+	if err != nil {
+		return -1
+	}
+	return p.space_cat(int32(player_id), int32(cat_id))
+}
+
 type test_cmd_func func(*Player, []string) int32
 
 var test_cmd2funcs = map[string]test_cmd_func{
@@ -1957,6 +1976,7 @@ var test_cmd2funcs = map[string]test_cmd_func{
 	"my_pictures":               my_pictures_cmd,
 	"my_picture_set":            my_picture_set_cmd,
 	"space_data":                space_data_cmd,
+	"space_cat":                 space_cat_cmd,
 	//"world_chat":                world_chat_cmd,
 	//"pull_world_chat":           pull_world_chat_cmd,
 }
