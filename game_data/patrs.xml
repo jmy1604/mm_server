@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item ID="101" RoleType="1" EquipType="1" />
+	<item ID="102" RoleType="1" EquipType="2" />
+	<item ID="103" RoleType="1" EquipType="3" />
+	<item ID="104" RoleType="1" EquipType="4" />
+	<item ID="201" RoleType="2" EquipType="1" />
+	<item ID="202" RoleType="2" EquipType="2" />
+	<item ID="203" RoleType="2" EquipType="3" />
+	<item ID="204" RoleType="2" EquipType="4" />
+</Config>
