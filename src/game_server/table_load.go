@@ -42,6 +42,7 @@ var vip_table_mgr tables.VipTableMgr
 var activity_table_mgr tables.ActivityTableMgr
 var sub_activity_table_mgr tables.SubActivityTableMgr
 var mail_table_mgr tables.MailTableMgr
+var fashion_table_mgr tables.FashionTableMgr
 
 func table_init() error {
 	if !global_config.Init("") {
@@ -178,6 +179,10 @@ func table_init() error {
 
 	if !mail_table_mgr.Init("") {
 		return errors.New("mail table manager init failed")
+	}
+
+	if !fashion_table_mgr.Init("") {
+		return errors.New("fashion table manager init failed")
 	}
 
 	if !pay_list.LoadConfig(server_config.GetConfPathFile("pay.json")) {

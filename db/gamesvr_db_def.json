@@ -933,8 +933,8 @@
 					]
 				},
 				{
-					"ColumnName":"FocusCommon",
-					"DBColumnName":"FocusCommon",
+					"ColumnName":"SpaceCommon",
+					"DBColumnName":"SpaceCommon",
 					"InUse":true,
 					"Simple":false,
 					"SimpleType":"",
@@ -942,7 +942,9 @@
 					"Map":false,
 					"AutoIndex":false,
 					"Fields":[
-						{"Type":"int32","Index":1,"Name":"BeFocusNum","Incby":true}
+						{"Type":"int32","Index":1,"Name":"BeFocusNum","Incby":true},
+						{"Type":"int32","Index":2,"Name":"Gender"},
+						{"Type":"int32","Index":3,"Name":"FashionIds","Repeated":true}
 					]
 				},
 				{

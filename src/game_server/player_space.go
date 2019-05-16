@@ -43,7 +43,7 @@ func (this *Player) send_focus_data() int32 {
 		}
 	}
 	response := &msg_client_message.S2CFocusDataResponse{
-		BeFocusNum: this.db.FocusCommon.GetBeFocusNum(),
+		BeFocusNum: this.db.SpaceCommon.GetBeFocusNum(),
 		Players:    focus_players,
 	}
 	this.Send(uint16(msg_client_message.S2CFocusDataResponse_ProtoID), response)
@@ -74,7 +74,7 @@ func remote_focus_player_response(from_player_id int32, to_player_id int32, req_
 		return
 	}
 
-	player.db.FocusCommon.IncbyBeFocusNum(1)
+	player.db.SpaceCommon.IncbyBeFocusNum(1)
 
 	var response = msg_rpc_message.G2GFocusPlayerResponse{
 		PlayerId:    to_player_id,
@@ -107,7 +107,7 @@ func (this *Player) focus_player(player_id int32) int32 {
 	var level, head int32
 	p := player_mgr.GetPlayerById(player_id)
 	if p != nil {
-		p.db.FocusCommon.IncbyBeFocusNum(1)
+		p.db.SpaceCommon.IncbyBeFocusNum(1)
 		name = p.db.GetName()
 		level = p.db.GetLevel()
 		head = p.db.Info.GetHead()
@@ -159,7 +159,7 @@ func remote_unfocus_player_response(from_player_id int32, to_player_id int32, re
 		return
 	}
 
-	player.db.FocusCommon.IncbyBeFocusNum(-1)
+	player.db.SpaceCommon.IncbyBeFocusNum(-1)
 
 	var response = msg_rpc_message.G2GUnfocusPlayerResponse{}
 
@@ -180,7 +180,7 @@ func (this *Player) unfocus_player(player_id int32) int32 {
 	}
 	p := player_mgr.GetPlayerById(player_id)
 	if p != nil {
-		p.db.FocusCommon.IncbyBeFocusNum(-1)
+		p.db.SpaceCommon.IncbyBeFocusNum(-1)
 	} else {
 		_, err_code := remote_unfocus_player(this.Id, player_id)
 		if err_code < 0 {
@@ -278,28 +278,17 @@ func remote_space_data_response(from_player_id int32, to_player_id int32, req_da
 		return
 	}
 
-	var pics map[int32]int32
 	cat_ids := player.db.MyPictureDatas.GetAllIndex()
-	if cat_ids != nil {
-		for _, cat_id := range cat_ids {
-			pos, o := player.db.MyPictureDatas.GetPos(cat_id)
-			if o {
-				if pics == nil {
-					pics = make(map[int32]int32)
-				}
-				pics[cat_id] = pos
-			}
-		}
-	}
-
 	var response = msg_rpc_message.G2GSpaceDataResponse{
 		PlayerName:  player.db.GetName(),
 		PlayerLevel: player.db.GetLevel(),
 		PlayerHead:  player.db.Info.GetHead(),
 		Zan:         player.db.Info.GetZan(),
-		BeFocusNum:  player.db.FocusCommon.GetBeFocusNum(),
+		BeFocusNum:  player.db.SpaceCommon.GetBeFocusNum(),
 		Charm:       player.db.Info.GetCharmVal(),
-		Pictures:    pics,
+		CatIds:      cat_ids,
+		Gender:      player.db.SpaceCommon.GetGender(),
+		FashionIds:  player.db.SpaceCommon.GetFashionIds(),
 	}
 
 	resp_data, err = _marshal_msg(&response)
@@ -318,8 +307,8 @@ func (this *Player) space_data(player_id int32) int32 {
 	}
 
 	var name string
-	var level, head, zan, charm, be_focus_num int32
-	var player_pics []int32
+	var level, head, zan, charm, be_focus_num, gender int32
+	var player_pics, fashion_ids []int32
 	p := player_mgr.GetPlayerById(player_id)
 	if p != nil {
 		name = p.db.GetName()
@@ -327,8 +316,10 @@ func (this *Player) space_data(player_id int32) int32 {
 		head = p.db.Info.GetHead()
 		zan = p.db.Info.GetZan()
 		charm = p.db.Info.GetCharmVal()
-		be_focus_num = p.db.FocusCommon.GetBeFocusNum()
+		be_focus_num = p.db.SpaceCommon.GetBeFocusNum()
 		player_pics = p.get_my_pics()
+		gender = p.db.SpaceCommon.GetGender()
+		fashion_ids = p.db.SpaceCommon.GetFashionIds()
 	} else {
 		resp, err_code := remote_space_data(this.Id, player_id)
 		if err_code < 0 {
@@ -340,11 +331,11 @@ func (this *Player) space_data(player_id int32) int32 {
 		zan = resp.Zan
 		be_focus_num = resp.BeFocusNum
 		charm = resp.Charm
-		if resp.Pictures != nil {
-			for cat_id, _ := range resp.Pictures {
-				player_pics = append(player_pics, cat_id)
-			}
+		if resp.CatIds != nil {
+			player_pics = resp.CatIds
 		}
+		gender = resp.Gender
+		fashion_ids = resp.FashionIds
 	}
 
 	response := &msg_client_message.S2CSpaceDataResponse{
@@ -356,6 +347,8 @@ func (this *Player) space_data(player_id int32) int32 {
 		Charm:       charm,
 		BeFocusNum:  be_focus_num,
 		CatIds:      player_pics,
+		Gender:      gender,
+		FashionIds:  fashion_ids,
 	}
 	this.Send(uint16(msg_client_message.S2CSpaceDataResponse_ProtoID), response)
 	log.Trace("Player %v get player %v space data %v", this.Id, player_id, response)
@@ -474,6 +467,69 @@ func (this *Player) space_cat(player_id, cat_id int32) int32 {
 	return 1
 }
 
+func (this *Player) space_set_gender(gender int32) int32 {
+	gen := this.db.SpaceCommon.GetGender()
+	if gen > 0 {
+		log.Error("Player %v space is already set gender", this.Id)
+		return int32(msg_client_message.E_ERR_SPACE_ALREADY_SET_GENDER)
+	}
+
+	if gender != 1 && gender != 2 {
+		log.Error("Player %v set gender type %v invalid", this.Id, gender)
+		return -1
+	}
+
+	this.db.SpaceCommon.SetGender(gender)
+
+	response := &msg_client_message.S2CSpaceSetGenderResponse{
+		Gender: gender,
+	}
+	this.Send(uint16(msg_client_message.S2CSpaceSetGenderResponse_ProtoID), response)
+	log.Trace("Player %v space set gender to %v", this.Id, gender)
+	return 1
+}
+
+func (this *Player) space_fashion_save(fashion_ids []int32) int32 {
+	if fashion_ids == nil || len(fashion_ids) == 0 {
+		this.db.SpaceCommon.SetFashionIds([]int32{})
+	} else {
+		gender := this.db.SpaceCommon.GetGender()
+		var fids_map = make(map[int32]int32)
+		for _, fid := range fashion_ids {
+			fashion := fashion_table_mgr.Map[fid]
+			if fashion == nil {
+				log.Error("Player %v save fashion id %v not found", this.Id, fid)
+				return int32(msg_client_message.E_ERR_SPACE_FASHION_TABLE_ID_NOT_FOUND)
+			}
+			if fashion.Gender != gender {
+				log.Error("Player %v save fashion id %v not suitable to gender %v", this.Id, fid, gender)
+				return int32(msg_client_message.E_ERR_SPACE_FASHION_GENDER_NOT_MATCH)
+			}
+			if fids_map[fid] > 0 {
+				log.Error("Player %v save fashion ids %v has duplicate id %v", this.Id, fashion_ids, fid)
+			}
+			fids_map[fid] = fid
+		}
+		this.db.SpaceCommon.SetFashionIds(fashion_ids)
+	}
+	response := &msg_client_message.S2CSpaceFashionSaveResponse{
+		FashionIds: fashion_ids,
+	}
+	this.Send(uint16(msg_client_message.S2CSpaceFashionSaveResponse_ProtoID), response)
+	log.Trace("Player %v space fashion %v saved", this.Id, fashion_ids)
+	return 1
+}
+
+func (this *Player) space_fashion_data() int32 {
+	response := &msg_client_message.S2CSpaceFashionDataResponse{
+		Gender:     this.db.SpaceCommon.GetGender(),
+		FashionIds: this.db.SpaceCommon.GetFashionIds(),
+	}
+	this.Send(uint16(msg_client_message.S2CSpaceFashionDataResponse_ProtoID), response)
+	log.Trace("Player %v space fashion data %v", this.Id, response)
+	return 1
+}
+
 func C2SFocusDataHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SFocusDataRequest
 	err := proto.Unmarshal(msg_data, &req)
@@ -542,4 +598,34 @@ func C2SSpaceCatHandler(p *Player, msg_data []byte) int32 {
 		return -1
 	}
 	return p.space_cat(req.GetPlayerId(), req.GetCatId())
+}
+
+func C2SSpaceSetGenderHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SSpaceSetGenderRequest
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed %v", err.Error())
+		return -1
+	}
+	return p.space_set_gender(req.GetGender())
+}
+
+func C2SSpaceFashionSaveHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SSpaceFashionSaveRequest
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed %v", err.Error())
+		return -1
+	}
+	return p.space_fashion_save(req.FashionIds)
+}
+
+func C2SSpaceFashionDataHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SSpaceFashionDataRequest
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed %v", err.Error())
+		return -1
+	}
+	return p.space_fashion_data()
 }

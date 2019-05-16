@@ -1883,6 +1883,36 @@ func space_cat_cmd(p *Player, args []string) int32 {
 	return p.space_cat(int32(player_id), int32(cat_id))
 }
 
+func space_gender_set_cmd(p *Player, args []string) int32 {
+	if len(args) < 1 {
+		log.Error("参数[%v]不够", len(args))
+		return -1
+	}
+	var err error
+	var gender int
+	gender, err = strconv.Atoi(args[0])
+	if err != nil {
+		return -1
+	}
+	return p.space_set_gender(int32(gender))
+}
+
+func space_fashion_save_cmd(p *Player, args []string) int32 {
+	var fashion_ids []int32
+	for _, a := range args {
+		fid, err := strconv.Atoi(a)
+		if err != nil {
+			return -1
+		}
+		fashion_ids = append(fashion_ids, int32(fid))
+	}
+	return p.space_fashion_save(fashion_ids)
+}
+
+func space_fashion_data_cmd(p *Player, args []string) int32 {
+	return p.space_fashion_data()
+}
+
 type test_cmd_func func(*Player, []string) int32
 
 var test_cmd2funcs = map[string]test_cmd_func{
@@ -1983,6 +2013,9 @@ var test_cmd2funcs = map[string]test_cmd_func{
 	"my_picture_set":            my_picture_set_cmd,
 	"space_data":                space_data_cmd,
 	"space_cat":                 space_cat_cmd,
+	"space_gender_set":          space_gender_set_cmd,
+	"space_fashion_save":        space_fashion_save_cmd,
+	"space_fashion_data":        space_fashion_data_cmd,
 	//"world_chat":                world_chat_cmd,
 	//"pull_world_chat":           pull_world_chat_cmd,
 }

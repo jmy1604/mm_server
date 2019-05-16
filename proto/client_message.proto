@@ -306,6 +306,9 @@ enum E_ERR{
 	SPACE_NOT_FOCUS_PLAYER						= -102402; // 还未关注某玩家
 	SPACE_NOT_HAVE_CAT_PICTURE					= -102403; // 空间没有猫的照片
 	SPACE_ALREADY_FULL							= -102404; // 空间已满
+	SPACE_ALREADY_SET_GENDER					= -102405; // 空间已设置性别
+	SPACE_FASHION_TABLE_ID_NOT_FOUND			= -102406; // 空间形象时装ID不存在
+	SPACE_FASHION_GENDER_NOT_MATCH				= -102407; // 空间时装性别不匹配
 	
 	// 充值
 	CHARGE_ORDER_DATA_EMPTY						= -102500; // 订单数据为空
@@ -2872,10 +2875,12 @@ message S2CSpaceDataResponse {
 	string PlayerName						= 2;
 	int32 PlayerLevel						= 3;
 	int32 PlayerHead						= 4;
-	int32 Zaned								= 5;
-	int32 BeFocusNum						= 6;
-	int32 Charm								= 7;
-	repeated int32 CatIds					= 8;
+	int32 Zaned								= 5; // 赞数
+	int32 BeFocusNum						= 6; // 被关注数
+	int32 Charm								= 7; // 魅力
+	repeated int32 CatIds					= 8; // 空间照片
+	int32 Gender							= 9; // 性别
+	repeated int32 FashionIds				= 10; // 形象时装
 	enum EProtocol { None = 0; ProtoID = 13011; }
 }
 
@@ -2896,4 +2901,37 @@ message S2CSpaceCatDataResponse {
 	int32 MatchAbility						= 7;
 	int32 ExploreAbility					= 8;
 	enum EProtocol { None = 0; ProtoID = 13013; }
+}
+
+// 空间形象设置性别
+message C2SSpaceSetGenderRequest {
+	int32 Gender							= 1; // 1 男  2 女
+	enum EProtocol { None = 0; ProtoID = 13020; }
+}
+
+message S2CSpaceSetGenderResponse {
+	int32 Gender							= 1;
+	enum EProtocol { None = 0; ProtoID = 13021; }
+}
+
+// 空间形象保存
+message C2SSpaceFashionSaveRequest {
+	repeated int32 FashionIds				= 1; // 空表示还原为初始状态
+	enum EProtocol { None = 0; ProtoID = 13022; }
+}
+
+message S2CSpaceFashionSaveResponse {
+	repeated int32 FashionIds				= 1;
+	enum EProtocol { None = 0; ProtoID = 13023; }
+}
+
+// 获取形象
+message C2SSpaceFashionDataRequest {
+	enum EProtocol { None = 0; ProtoID = 13024; }
+}
+
+message S2CSpaceFashionDataResponse {
+	int32 Gender							= 1;
+	repeated int32 FashionIds				= 2;
+	enum EProtocol { None = 0; ProtoID = 13025; }
 }

@@ -196,7 +196,9 @@ message G2GSpaceDataResponse {
 	int32 Zan								= 4;
 	int32 BeFocusNum					 	= 5;
 	int32 Charm								= 6;
-	map<int32,int32> Pictures				= 7;
+	repeated int32 CatIds					= 7;
+	int32 Gender							= 8;
+	repeated int32 FashionIds				= 9;
 }
 
 // 获取其他玩家个人空间的猫
