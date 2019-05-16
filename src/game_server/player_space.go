@@ -96,11 +96,11 @@ func remote_focus_player_response(from_player_id int32, to_player_id int32, req_
 func (this *Player) focus_player(player_id int32) int32 {
 	if this.Id == player_id {
 		log.Error("Player %v cant focus self", this.Id)
-		return -1
+		return int32(msg_client_message.E_ERR_SPACE_CANT_FOCUS_SELF)
 	}
 	if this.db.FocusPlayers.HasIndex(player_id) {
 		log.Error("Player %v already focus player %v", this.Id, player_id)
-		return -1
+		return int32(msg_client_message.E_ERR_SPACE_ALREADY_FOCUSED_PLAYER)
 	}
 
 	var name string
@@ -176,7 +176,7 @@ func remote_unfocus_player_response(from_player_id int32, to_player_id int32, re
 func (this *Player) unfocus_player(player_id int32) int32 {
 	if !this.db.FocusPlayers.HasIndex(player_id) {
 		log.Error("Player %v no focused player %v", this.Id, player_id)
-		return -1
+		return int32(msg_client_message.E_ERR_SPACE_NOT_FOCUS_PLAYER)
 	}
 	p := player_mgr.GetPlayerById(player_id)
 	if p != nil {
@@ -394,17 +394,12 @@ func remote_space_cat_response(from_player_id int32, to_player_id int32, req_dat
 		return
 	}
 
-	if !player.db.Cats.HasIndex(cat_id) {
-		log.Error("remote request player %v space cat %v not found", to_player_id, cat_id)
-		err_code = int32(msg_client_message.E_ERR_CAT_NOT_FOUND)
+	var cat_name string
+	var cat_table_id, coin_ability, match_ability, explore_ability, ouqi int32
+	cat_name, cat_table_id, coin_ability, match_ability, explore_ability, ouqi, err_code = player.get_space_cat_data(cat_id)
+	if err_code < 0 {
 		return
 	}
-
-	cat_table_id, _ := player.db.Cats.GetCfgId(cat_id)
-	coin_ability, _ := player.db.Cats.GetCoinAbility(cat_id)
-	match_ability, _ := player.db.Cats.GetMatchAbility(cat_id)
-	explore_ability, _ := player.db.Cats.GetExploreAbility(cat_id)
-	ouqi := player.db.Cats.CalcOuqi(cat_id)
 
 	var response = msg_rpc_message.G2GSpaceCatResponse{
 		PlayerId:       to_player_id,
@@ -414,6 +409,7 @@ func remote_space_cat_response(from_player_id int32, to_player_id int32, req_dat
 		MatchAbility:   match_ability,
 		ExploreAbility: explore_ability,
 		Ouqi:           ouqi,
+		CatName:        cat_name,
 	}
 
 	resp_data, err = _marshal_msg(&response)
@@ -426,25 +422,42 @@ func remote_space_cat_response(from_player_id int32, to_player_id int32, req_dat
 	return
 }
 
+func (this *Player) get_space_cat_data(cat_id int32) (cat_name string, cat_table_id, coin_ability, match_ability, explore_ability, ouqi, err_code int32) {
+	if !this.db.Cats.HasIndex(cat_id) {
+		err_code = int32(msg_client_message.E_ERR_CAT_NOT_FOUND)
+		log.Error("Player %v have not cat %v", this.Id, cat_id)
+		return
+	}
+	if !this.db.MyPictureDatas.HasIndex(cat_id) {
+		err_code = int32(msg_client_message.E_ERR_SPACE_NOT_HAVE_CAT_PICTURE)
+		log.Error("Player %v cat %v not have picture", this.Id, cat_id)
+		return
+	}
+	cat_name, _ = this.db.Cats.GetNick(cat_id)
+	cat_table_id, _ = this.db.Cats.GetCfgId(cat_id)
+	coin_ability, _ = this.db.Cats.GetCoinAbility(cat_id)
+	match_ability, _ = this.db.Cats.GetMatchAbility(cat_id)
+	explore_ability, _ = this.db.Cats.GetExploreAbility(cat_id)
+	ouqi = this.db.Cats.CalcOuqi(cat_id)
+	return
+}
+
 func (this *Player) space_cat(player_id, cat_id int32) int32 {
 	if this.Id == player_id {
 		return -1
 	}
 
-	var cat_table_id, coin_ability, match_ability, explore_ability, ouqi int32
+	var cat_name string
+	var cat_table_id, coin_ability, match_ability, explore_ability, ouqi, err_code int32
 	p := player_mgr.GetPlayerById(player_id)
 	if p != nil {
-		if !p.db.Cats.HasIndex(cat_id) {
-			log.Error("Player %v have not cat %v", this.Id, cat_id)
-			return int32(msg_client_message.E_ERR_CAT_NOT_FOUND)
+		cat_name, cat_table_id, coin_ability, match_ability, explore_ability, ouqi, err_code = p.get_space_cat_data(cat_id)
+		if err_code < 0 {
+			return err_code
 		}
-		cat_table_id, _ = p.db.Cats.GetCfgId(cat_id)
-		coin_ability, _ = p.db.Cats.GetCoinAbility(cat_id)
-		match_ability, _ = p.db.Cats.GetMatchAbility(cat_id)
-		explore_ability, _ = p.db.Cats.GetExploreAbility(cat_id)
-		ouqi = p.db.Cats.CalcOuqi(cat_id)
 	} else {
-		resp, err_code := remote_space_cat(this.Id, player_id, cat_id)
+		var resp *msg_rpc_message.G2GSpaceCatResponse
+		resp, err_code = remote_space_cat(this.Id, player_id, cat_id)
 		if err_code < 0 {
 			return err_code
 		}
@@ -453,6 +466,7 @@ func (this *Player) space_cat(player_id, cat_id int32) int32 {
 		match_ability = resp.MatchAbility
 		explore_ability = resp.ExploreAbility
 		ouqi = resp.Ouqi
+		cat_name = resp.CatName
 	}
 	var response = msg_client_message.S2CSpaceCatDataResponse{
 		PlayerId:       player_id,
@@ -462,6 +476,7 @@ func (this *Player) space_cat(player_id, cat_id int32) int32 {
 		MatchAbility:   match_ability,
 		ExploreAbility: explore_ability,
 		CatOuqi:        ouqi,
+		CatName:        cat_name,
 	}
 	this.Send(uint16(msg_client_message.S2CSpaceCatDataResponse_ProtoID), &response)
 	log.Trace("Player %v get player %v space cat %v data %v", this.Id, player_id, cat_id, response)
