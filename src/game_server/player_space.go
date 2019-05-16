@@ -236,9 +236,9 @@ func (this *Player) my_picture_set(cat_id, cat_pos int32) int32 {
 	} else {
 		cat_ids := this.db.MyPictureDatas.GetAllIndex()
 		if cat_ids != nil {
-			if has_pic && len(cat_ids) >= MY_PICTURE_NUM {
+			if !has_pic && len(cat_ids) >= MY_PICTURE_NUM {
 				log.Error("Player %v only set %v picture", this.Id, MY_PICTURE_NUM)
-				return -1
+				return int32(msg_client_message.E_ERR_SPACE_ALREADY_FULL)
 			}
 			for _, cat_id := range cat_ids {
 				pos, o := this.db.MyPictureDatas.GetPos(cat_id)

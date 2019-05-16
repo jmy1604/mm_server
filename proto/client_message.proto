@@ -305,6 +305,7 @@ enum E_ERR{
 	SPACE_ALREADY_FOCUSED_PLAYER				= -102401; // 已经关注过某玩家
 	SPACE_NOT_FOCUS_PLAYER						= -102402; // 还未关注某玩家
 	SPACE_NOT_HAVE_CAT_PICTURE					= -102403; // 空间没有猫的照片
+	SPACE_ALREADY_FULL							= -102404; // 空间已满
 	
 	// 充值
 	CHARGE_ORDER_DATA_EMPTY						= -102500; // 订单数据为空
