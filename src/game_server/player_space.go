@@ -248,7 +248,14 @@ func (this *Player) my_picture_set(cat_id, cat_pos int32) int32 {
 				}
 			}
 		}
-		this.db.MyPictureDatas.SetPos(cat_id, cat_pos)
+		if !has_pic {
+			this.db.MyPictureDatas.Add(&dbPlayerMyPictureDataData{
+				CatId: cat_id,
+				Pos:   cat_pos,
+			})
+		} else {
+			this.db.MyPictureDatas.SetPos(cat_id, cat_pos)
+		}
 	}
 	response := &msg_client_message.S2CMyPictureSetResponse{
 		PictureData: &msg_client_message.MyPictureData{
