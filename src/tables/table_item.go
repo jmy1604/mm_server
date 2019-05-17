@@ -26,6 +26,8 @@ type XmlItemItem struct {
 	ValidTime    int32 `xml:"ValidTime,attr"`
 	Numbers      []int32
 	NumberStr    string `xml:"Number,attr"`
+	Gender       int32  `xml:"RoleType,attr"`
+	EquipType    int32  `xml:"EquipType,attr"`
 }
 
 type XmlItemConfig struct {

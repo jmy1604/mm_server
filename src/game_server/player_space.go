@@ -454,7 +454,7 @@ func (this *Player) space_fashion_save(fashion_ids []int32) int32 {
 		gender := this.db.SpaceCommon.GetGender()
 		var fids_map = make(map[int32]int32)
 		for _, fid := range fashion_ids {
-			fashion := fashion_table_mgr.Map[fid]
+			fashion := item_table_mgr.Map[fid]
 			if fashion == nil {
 				log.Error("Player %v save fashion id %v not found", this.Id, fid)
 				return int32(msg_client_message.E_ERR_SPACE_FASHION_TABLE_ID_NOT_FOUND)
