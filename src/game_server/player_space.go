@@ -451,6 +451,10 @@ func (this *Player) space_fashion_save(fashion_ids []int32) int32 {
 	if fashion_ids == nil || len(fashion_ids) == 0 {
 		this.db.SpaceCommon.SetFashionIds([]int32{})
 	} else {
+		if len(fashion_ids) > FASHION_EQUIP_TOTAL_TYPE {
+			log.Error("Player %v set fashion type over %v", this.Id, FASHION_EQUIP_TOTAL_TYPE)
+			return -1
+		}
 		gender := this.db.SpaceCommon.GetGender()
 		var fids_map = make(map[int32]int32)
 		for _, fid := range fashion_ids {
