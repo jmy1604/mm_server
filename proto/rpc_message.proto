@@ -184,9 +184,14 @@ message G2GUnfocusPlayerResponse {
 message G2GSpaceDataRequest {
 }
 
-message MyPictureData {
-	int32 CatId								= 1;
-	int32 CatPos							= 2;
+message SpaceCatData {
+	int32 CatId								= 2;
+	int32 CatTableId 						= 3;
+	string CatName							= 4;
+	int32 CatOuqi							= 5;
+	int32 CoinAbility					 	= 6;
+	int32 MatchAbility						= 7;
+	int32 ExploreAbility					= 8;
 }
 
 message G2GSpaceDataResponse {
@@ -196,7 +201,7 @@ message G2GSpaceDataResponse {
 	int32 Zan								= 4;
 	int32 BeFocusNum					 	= 5;
 	int32 Charm								= 6;
-	repeated int32 CatIds					= 7;
+	repeated SpaceCatData Cats				= 7;
 	int32 Gender							= 8;
 	repeated int32 FashionIds				= 9;
 }

@@ -342,7 +342,6 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMyPictureDataRequest_ProtoID), C2SMyPictureDataHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SMyPictureSetRequest_ProtoID), C2SMyPictureSetHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceDataRequest_ProtoID), C2SSpaceDataHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceCatDataRequest_ProtoID), C2SSpaceCatHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceSetGenderRequest_ProtoID), C2SSpaceSetGenderHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceFashionSaveRequest_ProtoID), C2SSpaceFashionSaveHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceFashionDataRequest_ProtoID), C2SSpaceFashionDataHandler)
