@@ -443,6 +443,10 @@ func (this *Player) space_set_gender(gender int32) int32 {
 	return 1
 }
 
+const (
+	FASHION_EQUIP_TOTAL_TYPE = 4
+)
+
 func (this *Player) space_fashion_save(fashion_ids []int32) int32 {
 	if fashion_ids == nil || len(fashion_ids) == 0 {
 		this.db.SpaceCommon.SetFashionIds([]int32{})
@@ -461,6 +465,10 @@ func (this *Player) space_fashion_save(fashion_ids []int32) int32 {
 			}
 			if fids_map[fid] > 0 {
 				log.Error("Player %v save fashion ids %v has duplicate id %v", this.Id, fashion_ids, fid)
+			}
+			if this.GetItemResourceValue(fid) < 1 {
+				log.Error("Player %v not found item %v to fashion", this.Id, fid)
+				return int32(msg_client_message.E_ERR_ITEM_NOT_FOUND)
 			}
 			fids_map[fid] = fid
 		}
