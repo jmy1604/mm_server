@@ -152,7 +152,7 @@ func _send_error(w http.ResponseWriter, ret_code int32) {
 	}
 
 	data := final_data
-	data = append(data, byte(0))
+	//data = append(data, byte(0))
 
 	iret, err := w.Write(data)
 	if nil != err {
