@@ -343,7 +343,7 @@ func (this *Player) search_friend(key string) int32 {
 
 	send_search_player_msg(this, result.Players)
 
-	log.Info("Player[%v] searched friend with key[%v]", this.Id, key)
+	log.Trace("Player[%v] searched friend %v with key[%v]", this.Id, result.Players, key)
 
 	return 1
 }
