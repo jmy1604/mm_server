@@ -155,7 +155,7 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 		}
 	}
 
-	left_num := int32(0)
+	//left_num := int32(0)
 	if item.LimitedType == 0 {
 		// 不限量
 	} else if item.LimitedType == 1 {
@@ -184,7 +184,7 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 			log.Error("商品[%v]数量[%v]不足", item_id, item_data.LeftNum)
 			return int32(msg_client_message.E_ERR_SHOP_ITEM_NOT_ENOUGH)
 		}
-		left_num = this.db.ShopItems.IncbyLeftNum(item_id, -num*item.Number)
+		//left_num = this.db.ShopItems.IncbyLeftNum(item_id, -num*item.Number)
 	} else {
 		return int32(msg_client_message.E_ERR_SHOP_LIMITED_TYPE_INVALID)
 	}
@@ -225,13 +225,6 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 		response.CostRes.ResourceType = item.CostResourceId
 		response.CostRes.ResourceValue = item.CostNum
 		this.Send(uint16(msg_client_message.S2CBuyShopItemResult_ProtoID), response)
-
-		item_msg := &msg_client_message.S2CShopItemsResult{}
-		item_msg.Items = make([]*msg_client_message.S2CShopItem, 1)
-		item_msg.Items[0] = &msg_client_message.S2CShopItem{}
-		item_msg.Items[0].ItemId = item_id
-		item_msg.Items[0].LeftNum = left_num
-		this.Send(uint16(msg_client_message.S2CShopItemsResult_ProtoID), item_msg)
 	}
 
 	return 1
