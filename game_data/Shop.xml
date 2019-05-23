@@ -24,7 +24,6 @@
 	<item Id="431" Tag="4" CommodityType="1" CommodityId="3" Number="680" Cost="[1,68]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[3,1880]" BundleID="com.caesars.fantasybay.gem3" />
 	<item Id="432" Tag="4" CommodityType="1" CommodityId="3" Number="980" Cost="[1,98]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[3,2880]" BundleID="com.caesars.fantasybay.gem4" />
 	<item Id="433" Tag="4" CommodityType="1" CommodityId="3" Number="1980" Cost="[1,198]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[3,6880]" BundleID="com.caesars.fantasybay.gem5" />
-	<item Id="434" Tag="7" CommodityType="15" CommodityId="3" Number="0" Cost="[1,25]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[]" BundleID="com.caesars.fantasybay.mcard" />
 	<item Id="435" Tag="5" CommodityType="10" CommodityId="10401" Number="1" Cost="[9,9588]" LimitedType="2" LimitedTime="7" LimitedNumber="1" Level="1" Star="1" Show="[10401,1]" BundleID="0" />
 	<item Id="436" Tag="5" CommodityType="10" CommodityId="10402" Number="1" Cost="[9,11188]" LimitedType="2" LimitedTime="7" LimitedNumber="1" Level="1" Star="1" Show="[10402,1]" BundleID="0" />
 	<item Id="437" Tag="5" CommodityType="10" CommodityId="10403" Number="1" Cost="[9,15988]" LimitedType="2" LimitedTime="7" LimitedNumber="1" Level="1" Star="1" Show="[10403,1]" BundleID="0" />
