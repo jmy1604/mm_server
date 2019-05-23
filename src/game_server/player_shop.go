@@ -184,7 +184,7 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 			log.Error("商品[%v]数量[%v]不足", item_id, item_data.LeftNum)
 			return int32(msg_client_message.E_ERR_SHOP_ITEM_NOT_ENOUGH)
 		}
-		//left_num = this.db.ShopItems.IncbyLeftNum(item_id, -num*item.Number)
+		this.db.ShopItems.IncbyLeftNum(item_id, -num*item.Number)
 	} else {
 		return int32(msg_client_message.E_ERR_SHOP_LIMITED_TYPE_INVALID)
 	}
