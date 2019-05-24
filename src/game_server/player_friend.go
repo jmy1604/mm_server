@@ -895,12 +895,13 @@ func (this *Player) get_friend_list() int32 {
 	}
 
 	req_ids := this.db.FriendReqs.GetAllIndex()
+	log.Trace("Player %v request friend list: %v", req_ids)
 	if req_ids != nil && len(req_ids) > 0 {
 		idx := SplitLocalAndRemotePlayers(req_ids)
 		if idx >= 0 {
 			req_list = this.get_friends_req_info(req_ids)
 		}
-		if int(idx) < len(friend_ids)-1 {
+		if int(idx) < len(req_ids)-1 {
 			result := this.rpc_get_players_base_info(req_ids[idx+1:])
 			if result == nil {
 				log.Error("")
