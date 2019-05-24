@@ -463,6 +463,7 @@ func C2SPlayerChangeNameHandler(p *Player, msg_data []byte) int32 {
 		}
 	}
 	p.db.SetName(req.GetNewName())
+	p.rpc_player_base_info_update()
 	p.Send(uint16(msg_client_message.S2CPlayerChangeNameResponse_ProtoID), &msg_client_message.S2CPlayerChangeNameResponse{
 		NewName: req.GetNewName(),
 	})
