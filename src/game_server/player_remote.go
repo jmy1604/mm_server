@@ -14,13 +14,14 @@ type rpc_mfunc func(int32, []int32, []byte) ([]byte, int32)
 type rpc_broadcast_func func(int32, []byte) ([]byte, int32)
 
 var id2rpc_funcs = map[int32]rpc_func{
-	int32(msg_rpc_message.MSGID_G2G_PLAYER_INFO_REQUEST):    remote_get_player_info_response,
-	int32(msg_rpc_message.MSGID_G2G_FRIEND_ASK_REQUEST):     remote_add_friend_by_id_response,
-	int32(msg_rpc_message.MSGID_G2G_FRIEND_AGREE_REQUEST):   remote_agree_add_friend_response,
-	int32(msg_rpc_message.MSGID_G2G_FRIEND_REMOVE_REQUEST):  remote_remove_friend_response,
-	int32(msg_rpc_message.MSGID_G2G_FOCUS_PLAYER_REQUEST):   remote_focus_player_response,
-	int32(msg_rpc_message.MSGID_G2G_UNFOCUS_PLAYER_REQUEST): remote_unfocus_player_response,
-	int32(msg_rpc_message.MSGID_G2G_SPACE_DATA_REQUEST):     remote_space_data_response,
+	int32(msg_rpc_message.MSGID_G2G_PLAYER_INFO_REQUEST):        remote_get_player_info_response,
+	int32(msg_rpc_message.MSGID_G2G_FRIEND_ASK_REQUEST):         remote_add_friend_by_id_response,
+	int32(msg_rpc_message.MSGID_G2G_FRIEND_AGREE_REQUEST):       remote_agree_add_friend_response,
+	int32(msg_rpc_message.MSGID_G2G_FRIEND_REMOVE_REQUEST):      remote_remove_friend_response,
+	int32(msg_rpc_message.MSGID_G2G_FRIEND_GIVE_POINTS_REQUEST): remote_give_friend_points_response,
+	int32(msg_rpc_message.MSGID_G2G_FOCUS_PLAYER_REQUEST):       remote_focus_player_response,
+	int32(msg_rpc_message.MSGID_G2G_UNFOCUS_PLAYER_REQUEST):     remote_unfocus_player_response,
+	int32(msg_rpc_message.MSGID_G2G_SPACE_DATA_REQUEST):         remote_space_data_response,
 }
 
 var id2rpc_mfuncs = map[int32]rpc_mfunc{
