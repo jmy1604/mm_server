@@ -895,7 +895,6 @@ func (this *Player) get_friend_list() int32 {
 	}
 
 	req_ids := this.db.FriendReqs.GetAllIndex()
-	log.Trace("Player %v request friend list: %v", req_ids)
 	if req_ids != nil && len(req_ids) > 0 {
 		idx := SplitLocalAndRemotePlayers(req_ids)
 		if idx >= 0 {
