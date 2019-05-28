@@ -614,6 +614,14 @@ func (this *Player) IfXYAreaBlockFull(area_xy int32) bool {
 }
 
 func (this *Player) ChkMapBlock() (count int32) {
+	if this.db.GetLevel() < global_config.MapBlockRefreshMinLevel {
+		return
+	}
+
+	if this.db.BuildingCommon.GetBlockNum() >= global_config.MapBlockMaxNum {
+		return
+	}
+
 	cur_unix := int32(time.Now().Unix())
 	last_up_unix := this.db.Info.GetLastMapBlockUpUnix()
 	if 0 >= last_up_unix {
@@ -655,6 +663,14 @@ func (this *Player) ChkMapBlock() (count int32) {
 }
 
 func (this *Player) ChkMapChest() (count int32) {
+	if this.db.GetLevel() < global_config.MapBlockRefreshMinLevel {
+		return
+	}
+
+	if this.db.BuildingCommon.GetBlockNum() >= global_config.MapBlockMaxNum {
+		return
+	}
+
 	cur_unix := int32(time.Now().Unix())
 	last_up_unix := this.db.Info.GetLastMapChestUpUnix()
 	if 0 >= last_up_unix {

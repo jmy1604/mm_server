@@ -89,8 +89,10 @@ type GlobalConfig struct {
 	ExpeditionDayMaxChgCost   int32 // 每日最大刷新花费
 	ExpeditionDayStartCount   int32 // 每日探险次数
 
-	MapBlockRefleshSec int32 // 地图障碍刷新时间间隔
-	MapChestRefleshSec int32 // 地图宝箱刷新时间间隔
+	MapBlockRefleshSec      int32 // 地图障碍刷新时间间隔
+	MapChestRefleshSec      int32 // 地图宝箱刷新时间间隔
+	MapBlockRefreshMinLevel int32 // 刷新障碍物最低等级
+	MapBlockMaxNum          int32 // 障碍物最大数量
 
 	NormalMailLastSec  int32 // 普通邮件持续秒数
 	ReqHelpMailLastSec int32 // 帮助邮件持续秒数

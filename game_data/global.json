@@ -77,6 +77,8 @@
 	
 	"MapBlockRefleshSec":28800,
 	"MapChestRefleshSec":43200,
+	"MapBlockRefreshMinLevel":6,
+	"MapBlockMaxNum":10,
 	
 	"NormalMailLastSec":180,
 	"ReqHelpMailLastSec":180,
