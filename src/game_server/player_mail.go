@@ -59,6 +59,7 @@ func (this *dbPlayerMailColumn) GetMailList() (mails []*msg_client_message.MailB
 			IsGetAttached: is_get_attached,
 			HasAttached:   has_attached,
 			Value:         v.ExtraValue,
+			LeftSecs:      GetRemainSeconds(v.SendUnix, global_config.MailAttachExistDays*24*3600),
 		}
 		mails = append(mails, d)
 	}
@@ -108,6 +109,7 @@ func (this *dbPlayerMailColumn) GetMailListByIds(mail_ids []int32) (mails []*msg
 			IsGetAttached: is_get_attached,
 			HasAttached:   has_attached,
 			Value:         md.ExtraValue,
+			LeftSecs:      GetRemainSeconds(md.SendUnix, global_config.MailAttachExistDays*24*3600),
 		}
 		mails = append(mails, d)
 	}

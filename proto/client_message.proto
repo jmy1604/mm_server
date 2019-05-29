@@ -958,6 +958,7 @@ message MailBasicData {
 	bool IsGetAttached						= 9; // 是否已领取附件
 	bool HasAttached						= 10; // 是否有附件
 	int32 Value								= 11; // 额外数据
+	int32 LeftSecs							= 12; // 剩余时间 秒
 }
 message S2CMailListResponse {
 	repeated MailBasicData Mails            = 1; //
