@@ -654,6 +654,7 @@ func (this *Player) ChkMapBlock() (count int32) {
 			if area_id > 0 {
 				this.cur_areablocknum_map[area_id] = this.cur_areablocknum_map[area_id] + 1
 			}
+			this.db.BuildingCommon.IncbyBlockNum(1)
 		} else {
 			log.Debug("玩家[%d]自动刷新障碍检查尝试增加障碍[%d]失败", this.Id, tmp_block.Id)
 		}
@@ -707,6 +708,7 @@ func (this *Player) ChkMapChest() (count int32) {
 			this.item_cat_building_change_info.building_add(this, new_building.Id)
 			this.db.Info.SetLastMapChestUpUnix(tmp_unix + global_config.MapChestRefleshSec)
 			count++
+			this.db.BuildingCommon.IncbyBlockNum(1)
 		} else {
 			log.Debug("玩家[%d]自动刷新宝箱", this.Id)
 		}
