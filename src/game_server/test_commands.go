@@ -1894,6 +1894,38 @@ func space_fashion_data_cmd(p *Player, args []string) int32 {
 	return p.space_fashion_data()
 }
 
+func send_mail_cmd(p *Player, args []string) int32 {
+	if len(args) < 4 {
+		log.Error("参数[%v]不够", len(args))
+		return -1
+	}
+
+	var receiver_id, mail_type, mail_sub_type int
+	//var title, content string
+	var err error
+	receiver_id, err = strconv.Atoi(args[0])
+	if err != nil {
+		log.Error("接收者ID[%v]转换失败[%v]", receiver_id, err.Error())
+		return -1
+	}
+	mail_type, err = strconv.Atoi(args[1])
+	if err != nil {
+		log.Error("邮件类型[%v]转换失败[%v]", mail_type, err.Error())
+		return -1
+	}
+	mail_sub_type, err = strconv.Atoi(args[2])
+	if err != nil {
+		return -1
+	}
+
+	var sender *Player
+	if mail_type == MAIL_TYPE_PLAYER {
+		sender = p
+	}
+
+	return SendMail(sender, int32(receiver_id), int32(mail_type), int32(mail_sub_type), args[3], args[4], nil, 0)
+}
+
 type test_cmd_func func(*Player, []string) int32
 
 var test_cmd2funcs = map[string]test_cmd_func{
@@ -1996,6 +2028,7 @@ var test_cmd2funcs = map[string]test_cmd_func{
 	"space_gender_set":          space_gender_set_cmd,
 	"space_fashion_save":        space_fashion_save_cmd,
 	"space_fashion_data":        space_fashion_data_cmd,
+	"send_mail":                 send_mail_cmd,
 	//"world_chat":                world_chat_cmd,
 	//"pull_world_chat":           pull_world_chat_cmd,
 }
