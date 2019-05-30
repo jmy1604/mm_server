@@ -863,6 +863,17 @@ func (this *Player) send_data_on_login(new_player bool) {
 	this.space_fashion_data()
 }
 
+func C2SPlayerInfoHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SPlayerInfoRequest
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed err(%s) !", err.Error())
+		return -1
+	}
+	p.send_info()
+	return 1
+}
+
 func C2SGetInfoHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SGetInfo
 	err := proto.Unmarshal(msg_data, &req)

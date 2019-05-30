@@ -147,6 +147,7 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlayerChangeNameRequest_ProtoID), C2SPlayerChangeNameHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlayerChangeHeadRequest_ProtoID), C2SPlayerChangeHeadHandler)
 
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SPlayerInfoRequest_ProtoID), C2SPlayerInfoHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetInfo_ProtoID), C2SGetInfoHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetItemInfos_ProtoID), C2SGetItemInfosHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SGetDepotBuildingInfos_ProtoID), C2SGetDepotBuildingInfosHandler)
