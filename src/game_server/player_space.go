@@ -514,6 +514,7 @@ func (this *Player) space_other_cat_pic_unlock(player_id, cat_id int32) int32 {
 		IsUnlock: true,
 	}
 	this.Send(uint16(msg_client_message.S2CSpaceCatUnlockResponse_ProtoID), response)
+	log.Trace("Player %v unlock player %v cat %v", this.Id, player_id, cat_id)
 	return 1
 }
 
