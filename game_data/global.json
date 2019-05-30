@@ -145,5 +145,7 @@
 	
 	"CatHouseProduceGoldMinutes": 10,
 	
-	"DailyTaskRefreshTime": "04:00:00"
+	"DailyTaskRefreshTime": "04:00:00",
+	
+	"SpaceCatPicUnlockGold": 1000
 }

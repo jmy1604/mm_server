@@ -157,6 +157,8 @@ type GlobalConfig struct {
 	CatHouseProduceGoldMinutes int32 // 猫舍产金分钟
 
 	DailyTaskRefreshTime string // 每日任务刷新时间
+
+	SpaceCatPicUnlockGold int32 // 空间照片解锁金币
 }
 
 func (this *GlobalConfig) Init(conf_file string) bool {

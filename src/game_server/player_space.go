@@ -506,6 +506,7 @@ func (this *Player) space_other_cat_pic_unlock(player_id, cat_id int32) int32 {
 		this.db.OtherCatPictureUnlocks.Add(&dbPlayerOtherCatPictureUnlockData{
 			PlayerCatId: player_cat_id,
 		})
+		this.SubGold(global_config.SpaceCatPicUnlockGold, "cat_unlock", "space")
 	}
 	response := &msg_client_message.S2CSpaceCatUnlockResponse{
 		PlayerId: player_id,
