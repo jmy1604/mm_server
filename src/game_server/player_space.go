@@ -2,6 +2,7 @@ package main
 
 import (
 	"mm_server/libs/log"
+	"mm_server/libs/utils"
 	"mm_server/proto/gen_go/client_message"
 	"mm_server/proto/gen_go/rpc_message"
 	"mm_server/src/rpc_proto"
@@ -369,6 +370,8 @@ func (this *Player) space_data(player_id int32) int32 {
 		charm = resp.Charm
 		if resp.Cats != nil {
 			for _, c := range resp.Cats {
+				pcid := utils.Int64From2Int32(player_id, c.CatId)
+				is_unlock := this.db.OtherCatPictureUnlocks.HasIndex(pcid)
 				cats = append(cats, &msg_client_message.SpaceCatData{
 					CatId:          c.CatId,
 					CatTableId:     c.CatTableId,
@@ -377,6 +380,7 @@ func (this *Player) space_data(player_id int32) int32 {
 					CoinAbility:    c.CoinAbility,
 					MatchAbility:   c.MatchAbility,
 					ExploreAbility: c.ExploreAbility,
+					IsUnlock:       is_unlock,
 				})
 			}
 		}
@@ -496,6 +500,22 @@ func (this *Player) space_fashion_data() int32 {
 	return 1
 }
 
+func (this *Player) space_other_cat_pic_unlock(player_id, cat_id int32) int32 {
+	player_cat_id := utils.Int64From2Int32(player_id, cat_id)
+	if !this.db.OtherCatPictureUnlocks.HasIndex(player_cat_id) {
+		this.db.OtherCatPictureUnlocks.Add(&dbPlayerOtherCatPictureUnlockData{
+			PlayerCatId: player_cat_id,
+		})
+	}
+	response := &msg_client_message.S2CSpaceCatUnlockResponse{
+		PlayerId: player_id,
+		CatId:    cat_id,
+		IsUnlock: true,
+	}
+	this.Send(uint16(msg_client_message.S2CSpaceCatUnlockResponse_ProtoID), response)
+	return 1
+}
+
 func C2SFocusDataHandler(p *Player, msg_data []byte) int32 {
 	var req msg_client_message.C2SFocusDataRequest
 	err := proto.Unmarshal(msg_data, &req)
@@ -584,4 +604,14 @@ func C2SSpaceFashionDataHandler(p *Player, msg_data []byte) int32 {
 		return -1
 	}
 	return p.space_fashion_data()
+}
+
+func C2SSpaceOtherCatUnlockHandler(p *Player, msg_data []byte) int32 {
+	var req msg_client_message.C2SSpaceCatUnlockRequest
+	err := proto.Unmarshal(msg_data, &req)
+	if err != nil {
+		log.Error("unmarshal msg failed %v", err.Error())
+		return -1
+	}
+	return p.space_other_cat_pic_unlock(req.GetPlayerId(), req.GetCatId())
 }

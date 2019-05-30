@@ -2435,6 +2435,25 @@ func (this* dbPlayerMyPictureDataData)clone_to(d *dbPlayerMyPictureDataData){
 	d.Pos = this.Pos
 	return
 }
+type dbPlayerOtherCatPictureUnlockData struct{
+	PlayerCatId int64
+}
+func (this* dbPlayerOtherCatPictureUnlockData)from_pb(pb *db.PlayerOtherCatPictureUnlock){
+	if pb == nil {
+		return
+	}
+	this.PlayerCatId = pb.GetPlayerCatId()
+	return
+}
+func (this* dbPlayerOtherCatPictureUnlockData)to_pb()(pb *db.PlayerOtherCatPictureUnlock){
+	pb = &db.PlayerOtherCatPictureUnlock{}
+	pb.PlayerCatId = proto.Int64(this.PlayerCatId)
+	return
+}
+func (this* dbPlayerOtherCatPictureUnlockData)clone_to(d *dbPlayerOtherCatPictureUnlockData){
+	d.PlayerCatId = this.PlayerCatId
+	return
+}
 type dbSysMailAttachedItemsData struct{
 	ItemList []int32
 }
@@ -13138,6 +13157,133 @@ func (this *dbPlayerMyPictureDataColumn)SetPos(id int32,v int32)(has bool){
 	this.m_changed = true
 	return true
 }
+type dbPlayerOtherCatPictureUnlockColumn struct{
+	m_row *dbPlayerRow
+	m_data map[int64]*dbPlayerOtherCatPictureUnlockData
+	m_changed bool
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)load(data []byte)(err error){
+	if data == nil || len(data) == 0 {
+		this.m_changed = false
+		return nil
+	}
+	pb := &db.PlayerOtherCatPictureUnlockList{}
+	err = proto.Unmarshal(data, pb)
+	if err != nil {
+		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	for _, v := range pb.List {
+		d := &dbPlayerOtherCatPictureUnlockData{}
+		d.from_pb(v)
+		this.m_data[int64(d.PlayerCatId)] = d
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)save( )(data []byte,err error){
+	pb := &db.PlayerOtherCatPictureUnlockList{}
+	pb.List=make([]*db.PlayerOtherCatPictureUnlock,len(this.m_data))
+	i:=0
+	for _, v := range this.m_data {
+		pb.List[i] = v.to_pb()
+		i++
+	}
+	data, err = proto.Marshal(pb)
+	if err != nil {
+		log.Error("Marshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)HasIndex(id int64)(has bool){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerOtherCatPictureUnlockColumn.HasIndex")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	_, has = this.m_data[id]
+	return
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)GetAllIndex()(list []int64){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerOtherCatPictureUnlockColumn.GetAllIndex")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	list = make([]int64, len(this.m_data))
+	i := 0
+	for k, _ := range this.m_data {
+		list[i] = k
+		i++
+	}
+	return
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)GetAll()(list []dbPlayerOtherCatPictureUnlockData){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerOtherCatPictureUnlockColumn.GetAll")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	list = make([]dbPlayerOtherCatPictureUnlockData, len(this.m_data))
+	i := 0
+	for _, v := range this.m_data {
+		v.clone_to(&list[i])
+		i++
+	}
+	return
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)Get(id int64)(v *dbPlayerOtherCatPictureUnlockData){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerOtherCatPictureUnlockColumn.Get")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		return nil
+	}
+	v=&dbPlayerOtherCatPictureUnlockData{}
+	d.clone_to(v)
+	return
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)Set(v dbPlayerOtherCatPictureUnlockData)(has bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerOtherCatPictureUnlockColumn.Set")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	d := this.m_data[int64(v.PlayerCatId)]
+	if d==nil{
+		log.Error("not exist %v %v",this.m_row.GetPlayerId(), v.PlayerCatId)
+		return false
+	}
+	v.clone_to(d)
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)Add(v *dbPlayerOtherCatPictureUnlockData)(ok bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerOtherCatPictureUnlockColumn.Add")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	_, has := this.m_data[int64(v.PlayerCatId)]
+	if has {
+		log.Error("already added %v %v",this.m_row.GetPlayerId(), v.PlayerCatId)
+		return false
+	}
+	d:=&dbPlayerOtherCatPictureUnlockData{}
+	v.clone_to(d)
+	this.m_data[int64(v.PlayerCatId)]=d
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)Remove(id int64){
+	this.m_row.m_lock.UnSafeLock("dbPlayerOtherCatPictureUnlockColumn.Remove")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	_, has := this.m_data[id]
+	if has {
+		delete(this.m_data,id)
+	}
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)Clear(){
+	this.m_row.m_lock.UnSafeLock("dbPlayerOtherCatPictureUnlockColumn.Clear")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data=make(map[int64]*dbPlayerOtherCatPictureUnlockData)
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerOtherCatPictureUnlockColumn)NumAll()(n int32){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerOtherCatPictureUnlockColumn.NumAll")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	return int32(len(this.m_data))
+}
 type dbPlayerRow struct {
 	m_table *dbPlayerTable
 	m_lock       *RWMutex
@@ -13219,6 +13365,7 @@ type dbPlayerRow struct {
 	SpaceCommon dbPlayerSpaceCommonColumn
 	FocusPlayers dbPlayerFocusPlayerColumn
 	MyPictureDatas dbPlayerMyPictureDataColumn
+	OtherCatPictureUnlocks dbPlayerOtherCatPictureUnlockColumn
 }
 func new_dbPlayerRow(table *dbPlayerTable, PlayerId int32) (r *dbPlayerRow) {
 	this := &dbPlayerRow{}
@@ -13352,6 +13499,8 @@ func new_dbPlayerRow(table *dbPlayerTable, PlayerId int32) (r *dbPlayerRow) {
 	this.FocusPlayers.m_data=make(map[int32]*dbPlayerFocusPlayerData)
 	this.MyPictureDatas.m_row=this
 	this.MyPictureDatas.m_data=make(map[int32]*dbPlayerMyPictureDataData)
+	this.OtherCatPictureUnlocks.m_row=this
+	this.OtherCatPictureUnlocks.m_data=make(map[int64]*dbPlayerOtherCatPictureUnlockData)
 	return this
 }
 func (this *dbPlayerRow) GetPlayerId() (r int32) {
@@ -13361,7 +13510,7 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.m_lock.UnSafeLock("dbPlayerRow.save_data")
 	defer this.m_lock.UnSafeUnlock()
 	if this.m_new {
-		db_args:=new_db_args(67)
+		db_args:=new_db_args(68)
 		db_args.Push(this.m_PlayerId)
 		db_args.Push(this.m_UniqueId)
 		db_args.Push(this.m_Account)
@@ -13734,12 +13883,18 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 			return db_err,false,0,"",nil
 		}
 		db_args.Push(dMyPictureDatas)
+		dOtherCatPictureUnlocks,db_err:=this.OtherCatPictureUnlocks.save()
+		if db_err!=nil{
+			log.Error("insert save OtherCatPictureUnlock failed")
+			return db_err,false,0,"",nil
+		}
+		db_args.Push(dOtherCatPictureUnlocks)
 		args=db_args.GetArgs()
 		state = 1
 	} else {
-		if this.m_UniqueId_changed||this.m_Account_changed||this.m_Name_changed||this.m_Token_changed||this.m_Level_changed||this.Info.m_changed||this.Stages.m_changed||this.ChapterUnLock.m_changed||this.Items.m_changed||this.Areas.m_changed||this.BuildingCommon.m_changed||this.Buildings.m_changed||this.BuildingDepots.m_changed||this.DepotBuildingFormulas.m_changed||this.MakingFormulaBuildings.m_changed||this.Crops.m_changed||this.Cats.m_changed||this.CatHouses.m_changed||this.ShopItems.m_changed||this.ShopLimitedInfos.m_changed||this.Chests.m_changed||this.PayBacks.m_changed||this.Options.m_changed||this.TaskCommon.m_changed||this.Tasks.m_changed||this.FinishedTasks.m_changed||this.DailyTaskAllDailys.m_changed||this.SevenActivitys.m_changed||this.SignInfo.m_changed||this.FriendRelative.m_changed||this.Friends.m_changed||this.FriendRecommends.m_changed||this.FriendAsks.m_changed||this.FriendReqs.m_changed||this.FriendPoints.m_changed||this.FriendChatUnreadIds.m_changed||this.FriendChatUnreadMessages.m_changed||this.CustomData.m_changed||this.ChaterOpenRequest.m_changed||this.ExpeditionCommon.m_changed||this.Expeditions.m_changed||this.HandbookItems.m_changed||this.HeadItems.m_changed||this.Activitys.m_changed||this.SuitAwards.m_changed||this.Zans.m_changed||this.Foster.m_changed||this.FosterCats.m_changed||this.FosterCatOnFriends.m_changed||this.FosterFriendCats.m_changed||this.Chats.m_changed||this.Anouncement.m_changed||this.FirstDrawCards.m_changed||this.TalkForbid.m_changed||this.ServerRewards.m_changed||this.MailCommon.m_changed||this.Mails.m_changed||this.PayCommon.m_changed||this.Pays.m_changed||this.GuideData.m_changed||this.ActivityDatas.m_changed||this.SysMail.m_changed||this.Surface.m_changed||this.SpaceCommon.m_changed||this.FocusPlayers.m_changed||this.MyPictureDatas.m_changed{
+		if this.m_UniqueId_changed||this.m_Account_changed||this.m_Name_changed||this.m_Token_changed||this.m_Level_changed||this.Info.m_changed||this.Stages.m_changed||this.ChapterUnLock.m_changed||this.Items.m_changed||this.Areas.m_changed||this.BuildingCommon.m_changed||this.Buildings.m_changed||this.BuildingDepots.m_changed||this.DepotBuildingFormulas.m_changed||this.MakingFormulaBuildings.m_changed||this.Crops.m_changed||this.Cats.m_changed||this.CatHouses.m_changed||this.ShopItems.m_changed||this.ShopLimitedInfos.m_changed||this.Chests.m_changed||this.PayBacks.m_changed||this.Options.m_changed||this.TaskCommon.m_changed||this.Tasks.m_changed||this.FinishedTasks.m_changed||this.DailyTaskAllDailys.m_changed||this.SevenActivitys.m_changed||this.SignInfo.m_changed||this.FriendRelative.m_changed||this.Friends.m_changed||this.FriendRecommends.m_changed||this.FriendAsks.m_changed||this.FriendReqs.m_changed||this.FriendPoints.m_changed||this.FriendChatUnreadIds.m_changed||this.FriendChatUnreadMessages.m_changed||this.CustomData.m_changed||this.ChaterOpenRequest.m_changed||this.ExpeditionCommon.m_changed||this.Expeditions.m_changed||this.HandbookItems.m_changed||this.HeadItems.m_changed||this.Activitys.m_changed||this.SuitAwards.m_changed||this.Zans.m_changed||this.Foster.m_changed||this.FosterCats.m_changed||this.FosterCatOnFriends.m_changed||this.FosterFriendCats.m_changed||this.Chats.m_changed||this.Anouncement.m_changed||this.FirstDrawCards.m_changed||this.TalkForbid.m_changed||this.ServerRewards.m_changed||this.MailCommon.m_changed||this.Mails.m_changed||this.PayCommon.m_changed||this.Pays.m_changed||this.GuideData.m_changed||this.ActivityDatas.m_changed||this.SysMail.m_changed||this.Surface.m_changed||this.SpaceCommon.m_changed||this.FocusPlayers.m_changed||this.MyPictureDatas.m_changed||this.OtherCatPictureUnlocks.m_changed{
 			update_string = "UPDATE Players SET "
-			db_args:=new_db_args(67)
+			db_args:=new_db_args(68)
 			if this.m_UniqueId_changed{
 				update_string+="UniqueId=?,"
 				db_args.Push(this.m_UniqueId)
@@ -14309,6 +14464,15 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 				}
 				db_args.Push(dMyPictureDatas)
 			}
+			if this.OtherCatPictureUnlocks.m_changed{
+				update_string+="OtherCatPictureUnlocks=?,"
+				dOtherCatPictureUnlocks,err:=this.OtherCatPictureUnlocks.save()
+				if err!=nil{
+					log.Error("insert save OtherCatPictureUnlock failed")
+					return err,false,0,"",nil
+				}
+				db_args.Push(dOtherCatPictureUnlocks)
+			}
 			update_string = strings.TrimRight(update_string, ", ")
 			update_string+=" WHERE PlayerId=?"
 			db_args.Push(this.m_PlayerId)
@@ -14383,6 +14547,7 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.SpaceCommon.m_changed = false
 	this.FocusPlayers.m_changed = false
 	this.MyPictureDatas.m_changed = false
+	this.OtherCatPictureUnlocks.m_changed = false
 	if release && this.m_loaded {
 		atomic.AddInt32(&this.m_table.m_gc_n, -1)
 		this.m_loaded = false
@@ -15010,10 +15175,18 @@ func (this *dbPlayerTable) check_create_table() (err error) {
 			return
 		}
 	}
+	_, hasOtherCatPictureUnlock := columns["OtherCatPictureUnlocks"]
+	if !hasOtherCatPictureUnlock {
+		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN OtherCatPictureUnlocks LONGBLOB")
+		if err != nil {
+			log.Error("ADD COLUMN OtherCatPictureUnlocks failed")
+			return
+		}
+	}
 	return
 }
 func (this *dbPlayerTable) prepare_preload_select_stmt() (err error) {
-	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,BuildingCommon,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface,SpaceCommon,FocusPlayers,MyPictureDatas FROM Players")
+	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,BuildingCommon,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface,SpaceCommon,FocusPlayers,MyPictureDatas,OtherCatPictureUnlocks FROM Players")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -15021,7 +15194,7 @@ func (this *dbPlayerTable) prepare_preload_select_stmt() (err error) {
 	return
 }
 func (this *dbPlayerTable) prepare_save_insert_stmt()(err error){
-	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Players (PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,BuildingCommon,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface,SpaceCommon,FocusPlayers,MyPictureDatas) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Players (PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,BuildingCommon,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface,SpaceCommon,FocusPlayers,MyPictureDatas,OtherCatPictureUnlocks) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -15132,9 +15305,10 @@ func (this *dbPlayerTable) Preload() (err error) {
 	var dSpaceCommon []byte
 	var dFocusPlayers []byte
 	var dMyPictureDatas []byte
+	var dOtherCatPictureUnlocks []byte
 		this.m_preload_max_id = 0
 	for r.Next() {
-		err = r.Scan(&PlayerId,&dUniqueId,&dAccount,&dName,&dToken,&dLevel,&dInfo,&dStages,&dChapterUnLock,&dItems,&dAreas,&dBuildingCommon,&dBuildings,&dBuildingDepots,&dDepotBuildingFormulas,&dMakingFormulaBuildings,&dCrops,&dCats,&dCatHouses,&dShopItems,&dShopLimitedInfos,&dChests,&dPayBacks,&dOptions,&dTaskCommon,&dTasks,&dFinishedTasks,&dDailyTaskAllDailys,&dSevenActivitys,&dSignInfo,&dFriendRelative,&dFriends,&dFriendRecommends,&dFriendAsks,&dFriendReqs,&dFriendPoints,&dFriendChatUnreadIds,&dFriendChatUnreadMessages,&dCustomData,&dChaterOpenRequest,&dExpeditionCommon,&dExpeditions,&dHandbookItems,&dHeadItems,&dActivitys,&dSuitAwards,&dZans,&dFoster,&dFosterCats,&dFosterCatOnFriends,&dFosterFriendCats,&dChats,&dAnouncement,&dFirstDrawCards,&dTalkForbid,&dServerRewards,&dMailCommon,&dMails,&dPayCommon,&dPays,&dGuideData,&dActivityDatas,&dSysMail,&dSurface,&dSpaceCommon,&dFocusPlayers,&dMyPictureDatas)
+		err = r.Scan(&PlayerId,&dUniqueId,&dAccount,&dName,&dToken,&dLevel,&dInfo,&dStages,&dChapterUnLock,&dItems,&dAreas,&dBuildingCommon,&dBuildings,&dBuildingDepots,&dDepotBuildingFormulas,&dMakingFormulaBuildings,&dCrops,&dCats,&dCatHouses,&dShopItems,&dShopLimitedInfos,&dChests,&dPayBacks,&dOptions,&dTaskCommon,&dTasks,&dFinishedTasks,&dDailyTaskAllDailys,&dSevenActivitys,&dSignInfo,&dFriendRelative,&dFriends,&dFriendRecommends,&dFriendAsks,&dFriendReqs,&dFriendPoints,&dFriendChatUnreadIds,&dFriendChatUnreadMessages,&dCustomData,&dChaterOpenRequest,&dExpeditionCommon,&dExpeditions,&dHandbookItems,&dHeadItems,&dActivitys,&dSuitAwards,&dZans,&dFoster,&dFosterCats,&dFosterCatOnFriends,&dFosterFriendCats,&dChats,&dAnouncement,&dFirstDrawCards,&dTalkForbid,&dServerRewards,&dMailCommon,&dMails,&dPayCommon,&dPays,&dGuideData,&dActivityDatas,&dSysMail,&dSurface,&dSpaceCommon,&dFocusPlayers,&dMyPictureDatas,&dOtherCatPictureUnlocks)
 		if err != nil {
 			log.Error("Scan err[%v]", err.Error())
 			return
@@ -15451,6 +15625,11 @@ func (this *dbPlayerTable) Preload() (err error) {
 		err = row.MyPictureDatas.load(dMyPictureDatas)
 		if err != nil {
 			log.Error("MyPictureDatas %v", PlayerId)
+			return
+		}
+		err = row.OtherCatPictureUnlocks.load(dOtherCatPictureUnlocks)
+		if err != nil {
+			log.Error("OtherCatPictureUnlocks %v", PlayerId)
 			return
 		}
 		row.m_UniqueId_changed=false

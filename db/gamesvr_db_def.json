@@ -984,6 +984,19 @@
 						{"Type":"int32","Index":1,"Name":"CatId"},
 						{"Type":"int32","Index":2,"Name":"Pos"}
 					]
+				},
+				{
+					"ColumnName":"OtherCatPictureUnlock",
+					"DBColumnName":"OtherCatPictureUnlock",
+					"InUse":true,
+					"Simple":false,
+					"SimpleType":"",
+					"Preload":true,
+					"Map":true,
+					"AutoIndex":false,
+					"Fields":[
+						{"Type":"int64","Index":1,"Name":"PlayerCatId"}
+					]
 				}
 			]
 		},

@@ -113,6 +113,8 @@ It has these top-level messages:
 	PlayerFocusPlayerList
 	PlayerMyPictureData
 	PlayerMyPictureDataList
+	PlayerOtherCatPictureUnlock
+	PlayerOtherCatPictureUnlockList
 	SysMailAttachedItems
 */
 package db
@@ -3417,6 +3419,42 @@ func (m *PlayerMyPictureDataList) GetList() []*PlayerMyPictureData {
 	return nil
 }
 
+type PlayerOtherCatPictureUnlock struct {
+	PlayerCatId      *int64 `protobuf:"varint,1,opt,name=PlayerCatId" json:"PlayerCatId,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
+}
+
+func (m *PlayerOtherCatPictureUnlock) Reset()                    { *m = PlayerOtherCatPictureUnlock{} }
+func (m *PlayerOtherCatPictureUnlock) String() string            { return proto.CompactTextString(m) }
+func (*PlayerOtherCatPictureUnlock) ProtoMessage()               {}
+func (*PlayerOtherCatPictureUnlock) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{105} }
+
+func (m *PlayerOtherCatPictureUnlock) GetPlayerCatId() int64 {
+	if m != nil && m.PlayerCatId != nil {
+		return *m.PlayerCatId
+	}
+	return 0
+}
+
+type PlayerOtherCatPictureUnlockList struct {
+	List             []*PlayerOtherCatPictureUnlock `protobuf:"bytes,1,rep,name=List" json:"List,omitempty"`
+	XXX_unrecognized []byte                         `json:"-"`
+}
+
+func (m *PlayerOtherCatPictureUnlockList) Reset()         { *m = PlayerOtherCatPictureUnlockList{} }
+func (m *PlayerOtherCatPictureUnlockList) String() string { return proto.CompactTextString(m) }
+func (*PlayerOtherCatPictureUnlockList) ProtoMessage()    {}
+func (*PlayerOtherCatPictureUnlockList) Descriptor() ([]byte, []int) {
+	return fileDescriptor0, []int{106}
+}
+
+func (m *PlayerOtherCatPictureUnlockList) GetList() []*PlayerOtherCatPictureUnlock {
+	if m != nil {
+		return m.List
+	}
+	return nil
+}
+
 type SysMailAttachedItems struct {
 	ItemList         []int32 `protobuf:"varint,1,rep,name=ItemList" json:"ItemList,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -3425,7 +3463,7 @@ type SysMailAttachedItems struct {
 func (m *SysMailAttachedItems) Reset()                    { *m = SysMailAttachedItems{} }
 func (m *SysMailAttachedItems) String() string            { return proto.CompactTextString(m) }
 func (*SysMailAttachedItems) ProtoMessage()               {}
-func (*SysMailAttachedItems) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{105} }
+func (*SysMailAttachedItems) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{107} }
 
 func (m *SysMailAttachedItems) GetItemList() []int32 {
 	if m != nil {
@@ -3540,13 +3578,15 @@ func init() {
 	proto.RegisterType((*PlayerFocusPlayerList)(nil), "db.PlayerFocusPlayerList")
 	proto.RegisterType((*PlayerMyPictureData)(nil), "db.PlayerMyPictureData")
 	proto.RegisterType((*PlayerMyPictureDataList)(nil), "db.PlayerMyPictureDataList")
+	proto.RegisterType((*PlayerOtherCatPictureUnlock)(nil), "db.PlayerOtherCatPictureUnlock")
+	proto.RegisterType((*PlayerOtherCatPictureUnlockList)(nil), "db.PlayerOtherCatPictureUnlockList")
 	proto.RegisterType((*SysMailAttachedItems)(nil), "db.SysMailAttachedItems")
 }
 
 func init() { proto.RegisterFile("db_gamesvr.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 3660 bytes of a gzipped FileDescriptorProto
+	// 3692 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x8c, 0x5a, 0x4b, 0x6f, 0x1c, 0xc7,
 	0xb5, 0xc6, 0xcc, 0x88, 0xa4, 0x58, 0xa2, 0x1e, 0x6e, 0x49, 0x54, 0x4b, 0x96, 0x65, 0xaa, 0x2d,
 	0xcb, 0xf2, 0x4b, 0xf6, 0x95, 0x75, 0x7d, 0x7d, 0x0d, 0xe7, 0x41, 0x0d, 0x49, 0x89, 0x0e, 0x49,
@@ -3773,7 +3813,9 @@ var fileDescriptor0 = []byte{
 	0xfc, 0x94, 0xf9, 0x10, 0xbf, 0x0d, 0x33, 0x9f, 0xed, 0x58, 0x24, 0xf8, 0xc4, 0x14, 0xa5, 0x60,
 	0x24, 0xfa, 0x3b, 0xb3, 0x5e, 0x67, 0xcb, 0x44, 0xb6, 0xc3, 0x6b, 0xca, 0x44, 0x96, 0xb1, 0xfe,
 	0x55, 0xc7, 0xf6, 0x64, 0x37, 0x1a, 0x14, 0x65, 0x46, 0x4a, 0xd1, 0x1c, 0x00, 0xf2, 0x2b, 0x58,
-	0xdb, 0xbc, 0x82, 0x59, 0xcf, 0x55, 0xe9, 0x3e, 0xdb, 0x73, 0x55, 0x58, 0xed, 0x17, 0x37, 0x7c,
-	0x60, 0xda, 0xf2, 0x80, 0xfd, 0xc2, 0x4c, 0x5e, 0x67, 0x76, 0xfc, 0xd2, 0x64, 0xe8, 0xff, 0x06,
-	0x00, 0x00, 0xff, 0xff, 0xb3, 0x34, 0xbc, 0x7f, 0xd6, 0x2d, 0x00, 0x00,
+	0xdb, 0xbc, 0x82, 0x59, 0xcf, 0x55, 0xe9, 0x3e, 0xdb, 0x73, 0x55, 0x58, 0x4d, 0xee, 0xc3, 0xe1,
+	0xe3, 0xf3, 0x62, 0x88, 0xe1, 0x20, 0xb3, 0xd0, 0xe7, 0x7d, 0x36, 0x82, 0xb2, 0x42, 0x75, 0x7a,
+	0x2e, 0x64, 0x3f, 0x83, 0x68, 0x1c, 0x60, 0xf6, 0x67, 0x10, 0x8d, 0x5d, 0xec, 0xa7, 0x40, 0xac,
+	0x49, 0xda, 0x24, 0x82, 0x61, 0xc5, 0x12, 0x83, 0x4e, 0x39, 0xf9, 0x09, 0xcc, 0xd0, 0xff, 0x0d,
+	0x00, 0x00, 0xff, 0xff, 0x74, 0x86, 0x1f, 0xf0, 0x6f, 0x2e, 0x00, 0x00,
 }

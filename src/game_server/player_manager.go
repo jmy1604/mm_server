@@ -346,6 +346,7 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceSetGenderRequest_ProtoID), C2SSpaceSetGenderHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceFashionSaveRequest_ProtoID), C2SSpaceFashionSaveHandler)
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceFashionDataRequest_ProtoID), C2SSpaceFashionDataHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSpaceCatUnlockRequest_ProtoID), C2SSpaceOtherCatUnlockHandler)
 }
 
 func C2SEnterGameRequestHandler(msg_data []byte) (int32, *Player) {

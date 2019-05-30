@@ -89,7 +89,7 @@ func (this *ItemTableMgr) LoadProp(prop_table string) bool {
 
 func (this *ItemTableMgr) LoadThings(things_table string) bool {
 	if things_table == "" {
-		things_table = "Things.xml"
+		things_table = "Item.xml"
 	}
 	file_path := server_config.GetGameDataPathFile(things_table)
 	data, err := ioutil.ReadFile(file_path)

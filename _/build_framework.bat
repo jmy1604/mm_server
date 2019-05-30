@@ -10,9 +10,6 @@ if errorlevel 1 goto exit
 go install mm_server/libs/timer
 if errorlevel 1 goto exit
 
-go install mm_server/libs/perf
-if errorlevel 1 goto exit
-
 go install mm_server/libs/socket
 if errorlevel 1 goto exit
 

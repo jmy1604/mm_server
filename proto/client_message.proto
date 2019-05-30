@@ -2880,6 +2880,7 @@ message SpaceCatData {
 	int32 CoinAbility					 	= 6;
 	int32 MatchAbility						= 7;
 	int32 ExploreAbility					= 8;
+	bool IsUnlock							= 9;
 }
 
 message S2CSpaceDataResponse {
@@ -2927,4 +2928,18 @@ message S2CSpaceFashionDataResponse {
 	int32 Gender							= 1;
 	repeated int32 FashionIds				= 2;
 	enum EProtocol { None = 0; ProtoID = 13025; }
+}
+
+// 解锁空间照片
+message C2SSpaceCatUnlockRequest {
+	int32 PlayerId							= 1;
+	int32 CatId								= 2;
+	enum EProtocol { None = 0; ProtoID = 13030; }
+}
+
+message S2CSpaceCatUnlockResponse {
+	int32 PlayerId							= 1;
+	int32 CatId								= 2;
+	bool IsUnlock							= 3;
+	enum EProtocol { None = 0; ProtoID = 13031; }
 }
