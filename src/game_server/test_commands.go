@@ -26,7 +26,7 @@ func player_info_cmd(p *Player, args []string) int32 {
 	log.Info("###### Zan: %v", p.db.Info.GetZan())
 	log.Info("###### CatFood: %v", p.db.Info.GetCatFood())
 	log.Info("###### SoulStone: %v", p.db.Info.GetSoulStone())
-	log.Info("###### Spirit: %v", p.CalcSpirit())
+	log.Info("###### Spirit: %v", p.CalcSpirit(nil))
 	return 0
 }
 

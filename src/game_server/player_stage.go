@@ -97,7 +97,7 @@ func (this *Player) CheckBeginStage(data *StageBeginData) bool {
 		return false
 	}
 
-	if level.NeedPower > this.CalcSpirit() {
+	if level.NeedPower > this.CalcSpirit(nil) {
 		log.Error("Player[%v] not enough stamina to begin stage[%v]", this.Id, data.stage_id)
 		return false
 	}

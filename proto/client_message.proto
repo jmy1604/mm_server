@@ -513,6 +513,7 @@ message S2CPlayerInfoResponse {
 	int32 ChangeNameNum						= 20; // 改名次数
 	int32 ChangeNameFreeNum					= 21; // 已用免费次数
 	int32 ChangeNameCostDiamond				= 22; // 改名价格
+	int32 NextStaminaRemainSecs				= 23; // 下一次回复体力剩余时间
 	
 	enum EProtocol { None = 0; ProtoID = 1151; }
 }

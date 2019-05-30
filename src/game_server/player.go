@@ -337,6 +337,8 @@ func (this *Player) send_enter_game(acc string, id int32) {
 }
 
 func (this *Player) send_info() {
+	var stamina_remain_secs int32
+	stamina := this.CalcSpirit(&stamina_remain_secs)
 	response := &msg_client_message.S2CPlayerInfoResponse{
 		Level:                 this.db.GetLevel(),
 		Exp:                   this.db.Info.GetExp(),
@@ -354,7 +356,8 @@ func (this *Player) send_info() {
 		Zan:                   this.db.Info.GetZan(),
 		FriendPoints:          this.db.Info.GetFriendPoints(),
 		SoulStone:             this.db.Info.GetSoulStone(),
-		Spirit:                this.CalcSpirit(),
+		Spirit:                stamina,
+		NextStaminaRemainSecs: stamina_remain_secs,
 		CharmMetal:            this.db.Info.GetCharmMedal(),
 		HistoricalMaxStar:     this.db.Stages.GetTotalTopStar(),
 		ChangeNameNum:         this.db.Info.GetChangeNameCount(),

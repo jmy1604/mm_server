@@ -465,7 +465,7 @@ func (this *Player) SendDepotBuildingUpdate() {
 }
 
 // 体力增长计算
-func (this *Player) CalcSpirit() int32 {
+func (this *Player) CalcSpirit(remain_next_secs *int32) int32 {
 	curr_stamina := this.db.Info.GetSpirit()
 	cp := player_level_table_mgr.Map[this.db.GetLevel()]
 	if cp == nil {
@@ -475,15 +475,27 @@ func (this *Player) CalcSpirit() int32 {
 	last_save := this.db.Info.GetSaveLastSpiritPointTime()
 	now := time.Now().Unix()
 	used_seconds := int32(now) - last_save
+	if remain_next_secs != nil {
+		*remain_next_secs = global_config.SpiritGrowPointNeedMinute*60 - used_seconds
+		if *remain_next_secs < 0 {
+			*remain_next_secs = 0
+		}
+	}
 	if curr_stamina < cp.MaxPower && used_seconds > global_config.SpiritGrowPointNeedMinute*60 {
 		y := used_seconds % global_config.SpiritGrowPointNeedMinute
 		grow_points := used_seconds / (global_config.SpiritGrowPointNeedMinute * 60)
 		if curr_stamina+grow_points > cp.MaxPower {
 			grow_points = cp.MaxPower - curr_stamina
+			if remain_next_secs != nil {
+				*remain_next_secs = 0
+			}
 		}
 		if grow_points > 0 {
 			this.db.Info.IncbySpirit(grow_points)
 			this.db.Info.SetSaveLastSpiritPointTime(int32(now) - y)
+			if remain_next_secs != nil {
+				*remain_next_secs = global_config.SpiritGrowPointNeedMinute * 60
+			}
 		}
 	}
 	return this.db.Info.GetSpirit()
@@ -510,7 +522,7 @@ func (this *Player) GetItemResourceValue(other_id int32) int32 {
 	case ITEM_RESOURCE_ID_SPIRIT:
 		{
 			// 体力要即时计算
-			return this.CalcSpirit()
+			return this.CalcSpirit(nil)
 		}
 	case ITEM_RESOURCE_ID_FRIEND_POINT:
 		{
@@ -1032,7 +1044,7 @@ func (this *Player) AddFriendPoints(add_val int32, reason, mod string) int32 {
 
 // 玩家体力 =====================================
 func (this *Player) AddSpirit(spirit int32, reason, mod string) int32 {
-	this.CalcSpirit()
+	this.CalcSpirit(nil)
 	if spirit < 0 {
 		log.Error("Player AddSpirit spirit(%v) < 0  reason(%v) mod(%s)", spirit, reason, mod)
 		return this.db.Info.GetSpirit()
@@ -1047,7 +1059,7 @@ func (this *Player) AddSpirit(spirit int32, reason, mod string) int32 {
 }
 
 func (this *Player) SubSpirit(spirit int32, reason, mod string) int32 {
-	this.CalcSpirit()
+	this.CalcSpirit(nil)
 	if spirit < 0 {
 		log.Error("Player SubSpirit spirit(%v) < 0  reason(%v) mod(%s)", spirit, reason, mod)
 		return this.db.Info.GetSpirit()
