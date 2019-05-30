@@ -345,6 +345,8 @@ func (this *Player) space_data(player_id int32) int32 {
 			coin_ability, _ := p.db.Cats.GetCoinAbility(cid)
 			match_ability, _ := p.db.Cats.GetMatchAbility(cid)
 			explore_ability, _ := p.db.Cats.GetExploreAbility(cid)
+			pcid := utils.Int64From2Int32(player_id, cid)
+			is_unlock := this.db.OtherCatPictureUnlocks.HasIndex(pcid)
 			cats = append(cats, &msg_client_message.SpaceCatData{
 				CatId:          cid,
 				CatTableId:     cat_table_id,
@@ -353,6 +355,7 @@ func (this *Player) space_data(player_id int32) int32 {
 				CoinAbility:    coin_ability,
 				MatchAbility:   match_ability,
 				ExploreAbility: explore_ability,
+				IsUnlock:       is_unlock,
 			})
 		}
 		gender = p.db.SpaceCommon.GetGender()
