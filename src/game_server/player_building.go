@@ -799,6 +799,7 @@ func (this *Player) get_player_visit_data() *msg_client_message.S2CVisitPlayerRe
 		PlayerDiamond:  player_diamond,
 		PlayerCharm:    player_charm,
 		Areas:          area,
+		Surfaces:       this.get_surface_data(),
 	}
 	return response
 }

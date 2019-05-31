@@ -32,6 +32,9 @@ func (this *Player) load_surface_data() int32 {
 }
 
 func (this *Player) save_surface_data() int32 {
+	this.surface_data_locker.RLock()
+	defer this.surface_data_locker.RUnlock()
+
 	if this.surface_data == nil {
 		return 0
 	}
@@ -57,7 +60,10 @@ func (this *Player) save_surface_data() int32 {
 	return 1
 }
 
-func (this *Player) send_surface_data() int32 {
+func (this *Player) get_surface_data() []*msg_client_message.BuildingInfo {
+	this.surface_data_locker.RLock()
+	defer this.surface_data_locker.RUnlock()
+
 	var data []*msg_client_message.BuildingInfo
 	if this.surface_data != nil {
 		for x, d := range this.surface_data {
@@ -74,6 +80,12 @@ func (this *Player) send_surface_data() int32 {
 
 		}
 	}
+
+	return data
+}
+
+func (this *Player) send_surface_data() int32 {
+	data := this.get_surface_data()
 	this.Send(uint16(msg_client_message.S2CSurfaceDataResponse_ProtoID), &msg_client_message.S2CSurfaceDataResponse{
 		data,
 	})
@@ -82,6 +94,9 @@ func (this *Player) send_surface_data() int32 {
 }
 
 func (this *Player) surface_update(update_data, remove_data []*msg_client_message.BuildingInfo) int32 {
+	this.surface_data_locker.Lock()
+	defer this.surface_data_locker.Unlock()
+
 	var updated bool
 	// 更新的地板
 	for _, d := range update_data {

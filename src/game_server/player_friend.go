@@ -1276,7 +1276,7 @@ func (this *Player) friend_confirm_unread_message(friend_id int32, message_num i
 }
 
 func (this *Player) open_local_chest(chest_id int32) (chest_table_id int32) {
-	chest_table_id, o := this.db.Buildings.GetCfgId(chest_id)
+	_, o := this.db.Buildings.GetCfgId(chest_id)
 	if !o {
 		log.Error("Player[%v] no building[%v]", this.Id, chest_id)
 		return int32(msg_client_message.E_ERR_BUILDING_NOT_EXIST)
@@ -1287,6 +1287,118 @@ func (this *Player) open_local_chest(chest_id int32) (chest_table_id int32) {
 		return int32(msg_client_message.E_ERR_BUILDING_AREA_NO_CFG)
 	}
 	chest_table_id, _ = this.OpenMapChest(chest_id, false)
+	return
+}
+
+// 远程获取玩家宝箱配置ID
+func remote_get_chest_table_id(from_player_id, to_player_id, chest_id int32) (chest_table_id, err_code int32) {
+	var req msg_rpc_message.G2GGetPlayerChestTableIdRequest
+	var response msg_rpc_message.G2GGetPlayerChestTableIdResponse
+	err_code = RemoteGetUsePB(from_player_id, rpc_proto.OBJECT_TYPE_PLAYER, to_player_id, int32(msg_rpc_message.MSGID_G2G_GET_PLAYER_CHEST_TABLE_ID_REQUEST), &req, &response)
+	chest_table_id = response.GetChestTableId()
+	return
+}
+
+// 远程获取玩家宝箱配置ID返回
+func remote_get_chest_table_id_response(from_player_id int32, to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
+	var req msg_rpc_message.G2GGetPlayerChestTableIdRequest
+	err := _unmarshal_msg(req_data, &req)
+	if err != nil {
+		err_code = -1
+		return
+	}
+
+	player := player_mgr.GetPlayerById(to_player_id)
+	if player == nil {
+		log.Error("remote request get chest table id by player id %v and chest_id %v not found", to_player_id, req.GetChestId())
+		err_code = int32(msg_client_message.E_ERR_PLAYER_NOT_EXIST)
+		return
+	}
+
+	chest_table_id, o := player.db.Buildings.GetCfgId(req.GetChestId())
+	if !o {
+		log.Error("remote get chest building %v not found", req.GetChestId())
+		err_code = int32(msg_client_message.E_ERR_BUILDING_NOT_EXIST)
+	}
+
+	var response = msg_rpc_message.G2GGetPlayerChestTableIdResponse{
+		ChestTableId: chest_table_id,
+	}
+	resp_data, err = _marshal_msg(&response)
+	if err != nil {
+		err_code = -1
+		return
+	}
+
+	err_code = 1
+	return
+}
+
+// 远程打开玩家宝箱
+func remote_open_chest(from_player_id, to_player_id, chest_id int32) (chest_table_id, err_code int32) {
+	var req msg_rpc_message.G2GOpenPlayerChestRequest
+	var response msg_rpc_message.G2GOpenPlayerChestResposne
+	err_code = RemoteGetUsePB(from_player_id, rpc_proto.OBJECT_TYPE_PLAYER, to_player_id, int32(msg_rpc_message.MSGID_G2G_OPEN_PLAYER_CHEST_TABLE_REQUEST), &req, &response)
+	chest_table_id = response.GetChestTableId()
+	return
+}
+
+// 远程打开玩家宝箱返回
+func remote_open_chest_response(from_player_id int32, to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
+	var req msg_rpc_message.G2GOpenPlayerChestRequest
+	err := _unmarshal_msg(req_data, &req)
+	if err != nil {
+		err_code = -1
+		return
+	}
+
+	chest_id := req.GetChestId()
+	player := player_mgr.GetPlayerById(to_player_id)
+	if player == nil {
+		err_code = int32(msg_client_message.E_ERR_PLAYER_NOT_EXIST)
+		log.Error("remote open chest by player id %v and chest_id %v not found", to_player_id, chest_id)
+		return
+	}
+
+	chest_table_id, o := player.db.Buildings.GetCfgId(chest_id)
+	if !o {
+		err_code = int32(msg_client_message.E_ERR_BUILDING_NOT_EXIST)
+		log.Error("remote open chest building %v not found", chest_id)
+		return
+	}
+
+	dir, _ := player.db.Buildings.GetDir(chest_id)
+	building_cfg := building_table_mgr.Map[chest_table_id]
+	if nil == building_cfg {
+		err_code = int32(msg_client_message.E_ERR_BUILDING_NOT_CFG)
+		log.Error("remote open chest building table[%d] data not found !", chest_table_id)
+		return
+	}
+	var width, height int32
+	if tables.BUILDING_DIR_BIG_X_DIR == dir {
+		width, height = building_cfg.MapSizes[0], building_cfg.MapSizes[1]
+	} else {
+		width, height = building_cfg.MapSizes[1], building_cfg.MapSizes[0]
+	}
+
+	player.ChkUpdateMyBuildingAreas()
+	x, _ := player.db.Buildings.GetX(chest_id)
+	y, _ := player.db.Buildings.GetY(chest_id)
+	player.RemoveAreaBuilding(chest_id, x, y, width, height)
+
+	player.item_cat_building_change_info.building_remove(player, chest_id)
+	player.item_cat_building_change_info.send_buildings_update(player)
+
+	var response = msg_rpc_message.G2GOpenPlayerChestResposne{
+		ChestTableId: chest_table_id,
+	}
+	resp_data, err = _marshal_msg(&response)
+	if err != nil {
+		err_code = -1
+		return
+	}
+
+	err_code = 1
 	return
 }
 
@@ -1308,44 +1420,39 @@ func (this *Player) open_friend_chest(friend_id int32, chest_id int32) int32 {
 		}
 	} else {
 		// 获得宝箱配置ID
-		/*get_res := this.rpc_call_get_friend_chest_table_id(friend_id, chest_id)
-		if get_res == nil {
-			log.Error("Player[%v] get friend[%v] chest[%v] table id from rpc failed", this.Id, friend_id, chest_id)
-			return -1
-		}
-		if get_res.Error < 0 {
-			log.Error("Player[%v] get friend[%v] chest[%v] table id from rpc error[%v]", this.Id, friend_id, chest_id, get_res.Error)
-			return get_res.Error
+		chest_table_id, err_code := remote_get_chest_table_id(this.Id, friend_id, chest_id)
+		if err_code < 0 {
+			log.Error("Player[%v] get friend[%v] chest[%v] table id err %v", this.Id, friend_id, chest_id, err_code)
+			return err_code
 		}
 		// 花费
-		err := this.open_chest_cost(get_res.ChestTableId)
-		if err < 0 {
-			return err
+		err_code = this.open_chest_cost(chest_table_id)
+		if err_code < 0 {
+			return err_code
 		}
 		// 打开
-		res := this.rpc_call_open_friend_chest(friend_id, chest_id)
-		if res == nil {
-			this.return_chest_cost(get_res.ChestTableId)
-			log.Error("Player[%v] open friend[%v] chest[%v] failed", this.Id, friend_id, chest_id)
+		var ct_id int32
+		ct_id, err_code = remote_open_chest(this.Id, friend_id, chest_id)
+		if err_code < 0 {
+			this.return_chest_cost(chest_table_id)
+			log.Error("Player[%v] open friend[%v] chest[%v] err: %v", this.Id, friend_id, chest_id, err_code)
+			return err_code
+		}
+		if ct_id != chest_table_id {
+			this.return_chest_cost(chest_table_id)
+			log.Error("Player %v open friend %v chest %v table_id %v not equal to %v", this.Id, friend_id, chest_id, ct_id, chest_table_id)
 			return -1
 		}
-		if res.ChestTableId <= 0 {
-			this.return_chest_cost(get_res.ChestTableId)
-			return res.ChestTableId
-		}
-		result = this.open_chest_result(res.ChestTableId)
+		result = this.open_chest_result(chest_table_id)
 		if result == nil {
-			this.return_chest_cost(get_res.ChestTableId)
+			this.return_chest_cost(chest_table_id)
 			return -1
-		}*/
+		}
 	}
 
 	result.BuildingId = chest_id
 	result.FriendId = friend_id
 	this.Send(uint16(msg_client_message.S2COpenMapChest_ProtoID), result)
-
-	this.item_cat_building_change_info.building_remove(this, chest_id)
-	this.item_cat_building_change_info.send_buildings_update(this)
 
 	this.TaskUpdate(tables.TASK_COMPLETE_TYPE_OPEN_FRIEND_TREATURE_BOX, false, 0, 1)
 

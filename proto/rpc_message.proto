@@ -39,6 +39,9 @@ enum MSGID {
 	G2G_SPACE_DATA_RESPONSE					= 211;
 	G2G_SPACE_CAT_REQUEST					= 212; // 空间猫
 	G2G_SPACE_CAT_RESPONSE					= 213;
+	
+	G2G_GET_PLAYER_CHEST_TABLE_ID_REQUEST	= 300; // 获取玩家宝箱配置ID
+	G2G_OPEN_PLAYER_CHEST_TABLE_REQUEST		= 301; // 打开玩家宝箱
 }
 
 // 玩家信息请求
@@ -221,4 +224,22 @@ message G2GSpaceCatResponse {
 	int32 MatchAbility						= 6;
 	int32 ExploreAbility					= 7;
 	int32 Ouqi								= 8;
+}
+
+// 获得玩家宝箱配置ID
+message G2GGetPlayerChestTableIdRequest {
+	int32 ChestId							= 1;
+}
+
+message G2GGetPlayerChestTableIdResponse {
+	int32 ChestTableId						= 1;
+}
+
+// 打开玩家宝箱
+message G2GOpenPlayerChestRequest {
+	int32 ChestId							= 1;
+}
+
+message G2GOpenPlayerChestResposne {
+	int32 ChestTableId						= 1;
 }

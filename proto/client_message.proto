@@ -2403,6 +2403,7 @@ message S2CVisitPlayerResult {
 	int32 PlayerHead						= 8; // 玩家头像
 	repeated ViewBuildingInfo Buildings 	= 9; // 建筑物数据
 	repeated AreaInfo Areas 				= 10; // 区域信息
+	repeated BuildingInfo Surfaces			= 11; // 地板
 	enum EProtocol { None = 0; ProtoID = 12401; }
 }
 

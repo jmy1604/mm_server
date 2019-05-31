@@ -414,19 +414,21 @@ func bind_new_account_handler(server_id int32, account, password, new_account, n
 		return
 	}
 
-	if row.GetPassword() != password {
-		err_code = int32(msg_client_message.E_ERR_ACCOUNT_PASSWORD_INVALID)
-		log.Error("Account %v password %v invalid, cant bind new account", account, password)
-		return
-	}
-
-	if row.GetChannel() != "guest" && row.GetChannel() != "facebook" {
+	channel := row.GetChannel()
+	if channel != "guest" && channel != "facebook" {
 		err_code = int32(msg_client_message.E_ERR_ACCOUNT_NOT_GUEST)
 		log.Error("Account %v not guest and not facebook user", account)
 		return
 	}
 
-	if row.GetChannel() != "facebook" && row.GetBindNewAccount() != "" {
+	if channel == "facebook" {
+		err_code = _verify_facebook_login(account, password)
+		if err_code < 0 {
+			return
+		}
+	}
+
+	if channel != "facebook" && row.GetBindNewAccount() != "" {
 		err_code = int32(msg_client_message.E_ERR_ACCOUNT_ALREADY_BIND)
 		log.Error("Account %v already bind", account)
 		return

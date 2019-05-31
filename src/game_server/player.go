@@ -79,7 +79,8 @@ type Player struct {
 	new_mail_ids         []int32      // 新邮件ID列表
 	receive_mail_locker  sync.RWMutex // 接受邮件锁
 
-	surface_data map[int32]map[int32]int32 // 地块
+	surface_data        map[int32]map[int32]int32 // 地块
+	surface_data_locker sync.RWMutex
 
 	msg_acts_lock    sync.Mutex
 	cur_msg_acts_len int32
