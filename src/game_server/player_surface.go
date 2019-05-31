@@ -95,7 +95,6 @@ func (this *Player) send_surface_data() int32 {
 
 func (this *Player) surface_update(update_data, remove_data []*msg_client_message.BuildingInfo) int32 {
 	this.surface_data_locker.Lock()
-	defer this.surface_data_locker.Unlock()
 
 	var updated bool
 	// 更新的地板
@@ -123,6 +122,9 @@ func (this *Player) surface_update(update_data, remove_data []*msg_client_messag
 			updated = true
 		}
 	}
+
+	this.surface_data_locker.Unlock()
+
 	// 保存
 	if updated {
 		res := this.save_surface_data()
