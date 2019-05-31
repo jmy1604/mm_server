@@ -605,7 +605,9 @@ func login_handler(account, password, channel string) (err_code int32, resp_data
 					return -1, nil
 				}
 				acc_row.SetChannel("facebook")
+				acc_row.SetRegisterTime(int32(now_time.Unix()))
 			}
+			acc_row.SetPassword(password)
 		} else if channel == "guest" {
 			if acc_row == nil {
 				acc_row = dbc.Accounts.AddRow(account)
@@ -614,6 +616,7 @@ func login_handler(account, password, channel string) (err_code int32, resp_data
 					return -1, nil
 				}
 				acc_row.SetChannel("guest")
+				acc_row.SetRegisterTime(int32(now_time.Unix()))
 			} else {
 				if acc_row.GetPassword() != password {
 					err_code = int32(msg_client_message.E_ERR_PLAYER_ACC_OR_PASSWORD_ERROR)
@@ -632,6 +635,7 @@ func login_handler(account, password, channel string) (err_code int32, resp_data
 				log.Error("Account %v add row without verify failed")
 				return -1, nil
 			}
+			acc_row.SetRegisterTime(int32(now_time.Unix()))
 		}
 	}
 
