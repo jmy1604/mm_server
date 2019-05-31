@@ -579,6 +579,7 @@ func _verify_facebook_login(user_id, input_token string) int32 {
 }
 
 func login_handler(account, password, channel string) (err_code int32, resp_data []byte) {
+	now_time := time.Now()
 	var err error
 	acc_row := dbc.Accounts.GetRow(account)
 	if config.VerifyAccount {
