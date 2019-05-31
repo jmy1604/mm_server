@@ -43,6 +43,7 @@ var activity_table_mgr tables.ActivityTableMgr
 var sub_activity_table_mgr tables.SubActivityTableMgr
 var mail_table_mgr tables.MailTableMgr
 var fashion_table_mgr tables.FashionTableMgr
+var activity_old_table_mgr tables.ActivityOldTableMgr
 
 func table_init() error {
 	if !global_config.Init("") {
@@ -183,6 +184,10 @@ func table_init() error {
 
 	if !fashion_table_mgr.Init("") {
 		return errors.New("fashion table manager init failed")
+	}
+
+	if !activity_old_table_mgr.Init("", "", "", "") {
+		return errors.New("activity old table manager init failed")
 	}
 
 	if !pay_list.LoadConfig(server_config.GetConfPathFile("pay.json")) {

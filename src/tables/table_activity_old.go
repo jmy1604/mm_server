@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"io/ioutil"
 	"mm_server/libs/log"
-
+	"mm_server/src/server_config"
 	"time"
 )
 
@@ -34,7 +34,7 @@ const (
 	PLAYER_ACTIVITY_END_MONTH_DAY    = 7 // 每月几号
 )
 
-type XmlActivityItem struct {
+type XmlActivityOldItem struct {
 	CfgId             int32  `xml:"Id,attr"`
 	ActivityType      int32  `xml:"Type,attr"`
 	ActivityParamsStr string `xml:"ActivityParam,attr"`
@@ -59,96 +59,101 @@ type XmlActivityItem struct {
 	//SumDayReward *ActSumDayReward
 }
 
-type XmlActivityConfig struct {
-	Items []XmlActivityItem `xml:"item"`
+type XmlActivityOldConfig struct {
+	Items []XmlActivityOldItem `xml:"item"`
 }
 
-type XmlActLvlRewardItem struct {
+type XmlActOldLvlRewardItem struct {
 	Lvl        int32  `xml:"Lvl,attr"`
 	RewardsStr string `xml:"Rewards,attr"`
 	Rewards    []int32
 }
 
-type XmlActLvlRewardConfig struct {
-	Items []XmlActLvlRewardItem `xml:"item"`
+type XmlActOldLvlRewardConfig struct {
+	Items []XmlActOldLvlRewardItem `xml:"item"`
 }
 
-type XmlActDayRewardItem struct {
+type XmlActOldDayRewardItem struct {
 	Day        int32  `xml:"Date,attr"`
 	RewardsStr string `xml:"Rewards,attr"`
 	Rewards    []int32
 }
 
-type XmlActDayRewardConfig struct {
-	Items []XmlActDayRewardItem `xml:"item"`
+type XmlActOldDayRewardConfig struct {
+	Items []XmlActOldDayRewardItem `xml:"item"`
 }
 
-type XmlActSumDayRewardItem struct {
+type XmlActOldSumDayRewardItem struct {
 	SumDay     int32  `xml:"Day,attr"`
 	RewardsStr string `xml:"Rewards,attr"`
 	Rewards    []int32
 }
 
-type XmlActSumDayRewardConfig struct {
-	Items []XmlActSumDayRewardItem `xml:"item"`
+type XmlActOldSumDayRewardConfig struct {
+	Items []XmlActOldSumDayRewardItem `xml:"item"`
 }
 
-type ActSumDayReward struct {
-	SumDay2Reward map[int32]*XmlActSumDayRewardItem
+type ActOldSumDayReward struct {
+	SumDay2Reward map[int32]*XmlActOldSumDayRewardItem
 }
 
-type CfgActivityMgr struct {
-	Array []*XmlActivityItem
-	Map   map[int32]*XmlActivityItem
+type ActivityOldTableMgr struct {
+	Array []*XmlActivityOldItem
+	Map   map[int32]*XmlActivityOldItem
 
-	Lvl2Reward    map[int32]*XmlActLvlRewardItem
-	Day2Reward    map[int32]*XmlActDayRewardItem
-	SumDay2Reward map[int32]*XmlActSumDayRewardItem
+	Lvl2Reward    map[int32]*XmlActOldLvlRewardItem
+	Day2Reward    map[int32]*XmlActOldDayRewardItem
+	SumDay2Reward map[int32]*XmlActOldSumDayRewardItem
 }
 
-func (this *CfgActivityMgr) Init() bool {
-	if !this.LoadActs() {
+func (this *ActivityOldTableMgr) Init(act_table, lvl_reward_table, day_reward_table, sum_day_reward_table string) bool {
+	if !this.LoadActs(act_table) {
 		return false
 	}
 
-	if !this.LoadLvlReward() {
+	if !this.LoadLvlReward(lvl_reward_table) {
 		return false
 	}
 
-	if !this.LoadDayReward() {
+	if !this.LoadDayReward(day_reward_table) {
 		return false
 	}
 
-	if !this.LoadSumDayReward() {
+	if !this.LoadSumDayReward(sum_day_reward_table) {
 		return false
 	}
 
 	return true
 }
 
-func (this *CfgActivityMgr) LoadActs() bool {
-	content, err := ioutil.ReadFile("../game_data/Activity.xml")
+func (this *ActivityOldTableMgr) LoadActs(table_file string) bool {
+	if table_file == "" {
+		table_file = "Activity.xml"
+	}
+
+	table_path := server_config.GetGameDataPathFile(table_file)
+	data, err := ioutil.ReadFile(table_path)
 	if nil != err {
-		log.Error("CfgActivityMgr LoadActs ReadFile failed [%s]", err.Error())
+		log.Error("ActivityOldTableMgr read file err[%s] !", err.Error())
 		return false
 	}
 
-	tmp_config := &XmlActivityConfig{}
-	err = xml.Unmarshal(content, tmp_config)
+	tmp_config := &XmlActivityOldConfig{}
+	err = xml.Unmarshal(data, tmp_config)
 	if nil != err {
-		log.Error("CfgActivityMgr LoadActs xml Unmarshal failed [%s]", err.Error())
+		log.Error("ActivityOldTableMgr LoadActs xml Unmarshal failed [%s]", err.Error())
 		return false
 	}
 
 	tmp_len := int32(len(tmp_config.Items))
 	if tmp_len <= 0 {
-		log.Error("CfgActivityMgr LoadActs no items")
+		log.Error("ActivityOldTableMgr LoadActs no items")
 		return false
 	}
-	this.Map = make(map[int32]*XmlActivityItem)
-	this.Array = make([]*XmlActivityItem, 0, tmp_len)
+	this.Map = make(map[int32]*XmlActivityOldItem)
+	this.Array = make([]*XmlActivityOldItem, 0, tmp_len)
 
-	var tmp_item *XmlActivityItem
+	var tmp_item *XmlActivityOldItem
 	for idx := int32(0); idx < tmp_len; idx++ {
 		tmp_item = &tmp_config.Items[idx]
 		if nil == tmp_item {
@@ -183,7 +188,7 @@ func (this *CfgActivityMgr) LoadActs() bool {
 			tmp_item.ActivityParams = parse_xml_str_arr(tmp_item.ActivityParamsStr, ",")
 			tmp_item.Rewards = parse_xml_str_arr(tmp_item.RewardsStr, ",")
 			if len(tmp_item.Rewards)%2 != 0 {
-				log.Error("CfgActivityMgr LoadActs rewards error [%s]", tmp_item.Rewards)
+				log.Error("ActivityOldTableMgr LoadActs rewards error [%s]", tmp_item.Rewards)
 				return false
 			}
 		}
@@ -193,7 +198,7 @@ func (this *CfgActivityMgr) LoadActs() bool {
 			{
 				tmp_t, err := time.Parse("2006-01-02 15:04:05", tmp_item.StartTimeParamStr)
 				if nil != err {
-					log.Error("CfgActivityMgr LoadActs Parse Date[%s] failed[%s] !", tmp_item.StartTimeParamStr, err.Error())
+					log.Error("ActivityOldTableMgr LoadActs Parse Date[%s] failed[%s] !", tmp_item.StartTimeParamStr, err.Error())
 					return false
 				}
 				tmp_item.StartTime = &tmp_t
@@ -212,7 +217,7 @@ func (this *CfgActivityMgr) LoadActs() bool {
 			{
 				tmp_item.StartTimeParams = parse_xml_str_arr(tmp_item.StartTimeParamStr, ",")
 				if len(tmp_item.EndTimeParams) < 1 {
-					log.Error("CfgActivityMgr LoadActs EndTimeParamStr[%s] error !", tmp_item.EndTimeParamStr)
+					log.Error("ActivityOldTableMgr LoadActs EndTimeParamStr[%s] error !", tmp_item.EndTimeParamStr)
 					return false
 				}
 			}
@@ -223,7 +228,7 @@ func (this *CfgActivityMgr) LoadActs() bool {
 			{
 				tmp_t, err := time.Parse("2006-01-02 15:04:05", tmp_item.EndTimeParamStr)
 				if nil != err {
-					log.Error("CfgActivityMgr LoadActs Parse Date[%s] failed[%s] !", tmp_item.EndTimeParamStr, err.Error())
+					log.Error("ActivityOldTableMgr LoadActs Parse Date[%s] failed[%s] !", tmp_item.EndTimeParamStr, err.Error())
 					return false
 				}
 				tmp_item.EndTime = &tmp_t
@@ -242,7 +247,7 @@ func (this *CfgActivityMgr) LoadActs() bool {
 			{
 				tmp_item.EndTimeParams = parse_xml_str_arr(tmp_item.EndTimeParamStr, ",")
 				if len(tmp_item.EndTimeParams) < 1 {
-					log.Error("CfgActivityMgr LoadActs EndTimeParamStr[%s] error !", tmp_item.EndTimeParamStr)
+					log.Error("ActivityOldTableMgr LoadActs EndTimeParamStr[%s] error !", tmp_item.EndTimeParamStr)
 					return false
 				}
 			}
@@ -262,29 +267,34 @@ func (this *CfgActivityMgr) LoadActs() bool {
 	return true
 }
 
-func (this *CfgActivityMgr) LoadLvlReward() bool {
-	content, err := ioutil.ReadFile("../game_data/ActivityLvlReward.xml")
+func (this *ActivityOldTableMgr) LoadLvlReward(table_file string) bool {
+	if table_file == "" {
+		table_file = "ActivityLvlReward.xml"
+	}
+
+	table_path := server_config.GetGameDataPathFile(table_file)
+	data, err := ioutil.ReadFile(table_path)
 	if nil != err {
-		log.Error("CfgActivityMgr LoadLvlReward ReadFile failed [%s]", err.Error())
+		log.Error("ActivityOldTableMgr read file err[%s] !", err.Error())
 		return false
 	}
 
-	tmp_config := &XmlActLvlRewardConfig{}
-	err = xml.Unmarshal(content, tmp_config)
+	tmp_config := &XmlActOldLvlRewardConfig{}
+	err = xml.Unmarshal(data, tmp_config)
 	if nil != err {
-		log.Error("CfgActivityMgr LoadLvlReward xml Unmarshal failed [%s]", err.Error())
+		log.Error("ActivityOldTableMgr LoadLvlReward xml Unmarshal failed [%s]", err.Error())
 		return false
 	}
 
 	tmp_len := int32(len(tmp_config.Items))
 	if tmp_len <= 0 {
-		log.Error("CfgActivityMgr LoadLvlReward no items")
+		log.Error("ActivityOldTableMgr LoadLvlReward no items")
 		return false
 	}
 
-	this.Lvl2Reward = make(map[int32]*XmlActLvlRewardItem)
+	this.Lvl2Reward = make(map[int32]*XmlActOldLvlRewardItem)
 
-	var tmp_item *XmlActLvlRewardItem
+	var tmp_item *XmlActOldLvlRewardItem
 	for idx := int32(0); idx < tmp_len; idx++ {
 		tmp_item = &tmp_config.Items[idx]
 		if nil == tmp_item {
@@ -293,7 +303,7 @@ func (this *CfgActivityMgr) LoadLvlReward() bool {
 
 		tmp_item.Rewards = parse_xml_str_arr(tmp_item.RewardsStr, ",")
 		if len(tmp_item.Rewards)%2 != 0 {
-			log.Error("CfgActivityMgr LoadLvlReward ")
+			log.Error("ActivityOldTableMgr LoadLvlReward ")
 			return false
 		}
 
@@ -307,29 +317,34 @@ func (this *CfgActivityMgr) LoadLvlReward() bool {
 	return true
 }
 
-func (this *CfgActivityMgr) LoadDayReward() bool {
-	content, err := ioutil.ReadFile("../game_data/ActivityDayReward.xml")
+func (this *ActivityOldTableMgr) LoadDayReward(table_file string) bool {
+	if table_file == "" {
+		table_file = "ActivityDayReward.xml"
+	}
+
+	table_path := server_config.GetGameDataPathFile(table_file)
+	data, err := ioutil.ReadFile(table_path)
 	if nil != err {
-		log.Error("CfgActivityMgr LoadDayReward ReadFile failed [%s]", err.Error())
+		log.Error("ActivityOldTableMgr read file err[%s] !", err.Error())
 		return false
 	}
 
-	tmp_config := &XmlActDayRewardConfig{}
-	err = xml.Unmarshal(content, tmp_config)
+	tmp_config := &XmlActOldDayRewardConfig{}
+	err = xml.Unmarshal(data, tmp_config)
 	if nil != err {
-		log.Error("CfgActivityMgr LoadDayReward xml Unmarshal failed [%s]", err.Error())
+		log.Error("ActivityOldTableMgr LoadDayReward xml Unmarshal failed [%s]", err.Error())
 		return false
 	}
 
 	tmp_len := int32(len(tmp_config.Items))
 	if tmp_len <= 0 {
-		log.Error("CfgActivityMgr LoadDayReward no items")
+		log.Error("ActivityOldTableMgr LoadDayReward no items")
 		return false
 	}
 
-	this.Day2Reward = make(map[int32]*XmlActDayRewardItem)
+	this.Day2Reward = make(map[int32]*XmlActOldDayRewardItem)
 
-	var tmp_item *XmlActDayRewardItem
+	var tmp_item *XmlActOldDayRewardItem
 	for idx := int32(0); idx < tmp_len; idx++ {
 		tmp_item = &tmp_config.Items[idx]
 		if nil == tmp_item {
@@ -338,7 +353,7 @@ func (this *CfgActivityMgr) LoadDayReward() bool {
 
 		tmp_item.Rewards = parse_xml_str_arr(tmp_item.RewardsStr, ",")
 		if len(tmp_item.Rewards)%2 != 0 {
-			log.Error("CfgActivityMgr LoadDayReward ")
+			log.Error("ActivityOldTableMgr LoadDayReward ")
 			return false
 		}
 
@@ -348,29 +363,34 @@ func (this *CfgActivityMgr) LoadDayReward() bool {
 	return true
 }
 
-func (this *CfgActivityMgr) LoadSumDayReward() bool {
-	content, err := ioutil.ReadFile("../game_data/ActivitySignInReward.xml")
+func (this *ActivityOldTableMgr) LoadSumDayReward(table_file string) bool {
+	if table_file == "" {
+		table_file = "ActivitySignInReward.xml"
+	}
+
+	table_path := server_config.GetGameDataPathFile(table_file)
+	data, err := ioutil.ReadFile(table_path)
 	if nil != err {
-		log.Error("CfgActivityMgr LoadSumDayReward ReadFile failed [%s]", err.Error())
+		log.Error("ActivityOldTableMgr read file err[%s] !", err.Error())
 		return false
 	}
 
-	tmp_config := &XmlActSumDayRewardConfig{}
-	err = xml.Unmarshal(content, tmp_config)
+	tmp_config := &XmlActOldSumDayRewardConfig{}
+	err = xml.Unmarshal(data, tmp_config)
 	if nil != err {
-		log.Error("CfgActivityMgr LoadSumDayReward xml Unmarshal failed [%s]", err.Error())
+		log.Error("ActivityOldTableMgr LoadSumDayReward xml Unmarshal failed [%s]", err.Error())
 		return false
 	}
 
 	tmp_len := int32(len(tmp_config.Items))
 	if tmp_len <= 0 {
-		log.Error("CfgActivityMgr LoadSumDayReward no items")
+		log.Error("ActivityOldTableMgr LoadSumDayReward no items")
 		return false
 	}
 
-	this.SumDay2Reward = make(map[int32]*XmlActSumDayRewardItem)
+	this.SumDay2Reward = make(map[int32]*XmlActOldSumDayRewardItem)
 
-	var tmp_item *XmlActSumDayRewardItem
+	var tmp_item *XmlActOldSumDayRewardItem
 	for idx := int32(0); idx < tmp_len; idx++ {
 		tmp_item = &tmp_config.Items[idx]
 		if nil == tmp_item {
@@ -379,7 +399,7 @@ func (this *CfgActivityMgr) LoadSumDayReward() bool {
 
 		tmp_item.Rewards = parse_xml_str_arr(tmp_item.RewardsStr, ",")
 		if len(tmp_item.Rewards)%2 != 0 {
-			log.Error("CfgActivityMgr LoadSumDayReward ")
+			log.Error("ActivityOldTableMgr LoadSumDayReward ")
 			return false
 		}
 

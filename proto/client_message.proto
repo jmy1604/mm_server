@@ -2749,6 +2749,34 @@ message S2CActivityExchangeResponse {
 	enum EProtocol { None = 0; ProtoID = 12804; }
 }
 
+// ----------------------------------- 老活动 ---------------------------------
+message ActivityInfo {
+	int32 CfgId 							= 1; // 活动配置Id
+	repeated int32 States 					= 2; // 活动状态值 对于普通活动（第一个值0表示未完成1表示可以领取2已经领取, 其他的值根据具体活动来定）
+	repeated int32 Vals 					= 3; // 活动本身的值
+}
+
+message C2SGetAllActivityInfos {
+	enum EProtocol { None = 0; ProtoID = 12850; }
+}
+
+message S2CActivityInfosUpdate {
+	repeated ActivityInfo Activityinfos 	= 1; // 活动信息
+	enum EProtocol { None = 0; ProtoID = 12851; }
+}
+
+message C2SGetActivityReward {
+	int32 ActivityCfgId 					= 1; // 活动Id
+	repeated int32 ExtraParams 				= 2; // 附加参数
+	enum EProtocol { None = 0; ProtoID = 12852; }
+}
+
+message S2CRetActivityReward {
+	int32 ActivityCfgId 					= 1; // 活动Id
+	repeated IdNum Rewards 					= 2; // 奖励
+	enum EProtocol { None = 0; ProtoID = 12853; }
+}
+
 // --------------------------------- 红点提示 ---------------------------------
 // 红点功能枚举
 enum RED_POINT {

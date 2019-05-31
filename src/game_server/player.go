@@ -80,6 +80,11 @@ type Player struct {
 	receive_mail_locker  sync.RWMutex // 接受邮件锁
 
 	surface_data map[int32]map[int32]int32 // 地块
+
+	msg_acts_lock    sync.Mutex
+	cur_msg_acts_len int32
+	max_msg_acts_len int32
+	msg_acts         []*msg_client_message.ActivityInfo
 }
 
 func new_player(id int32, uid, account, token string, db *dbPlayerRow) *Player {
