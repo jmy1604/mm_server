@@ -3,6 +3,8 @@ package rpc_proto
 import (
 	"mm_server/libs/rpc"
 	"mm_server/src/common"
+
+	"mm_server/proto/gen_go/client_message"
 )
 
 // 修改基本信息
@@ -340,6 +342,17 @@ type G2G_PlayerCatInfoResult struct {
 	Error                 int32
 }
 
+// 访问玩家
+type G2G_PlayerVisitPlayer struct {
+	FromPlayerId int32
+	ToPlayerId   int32
+}
+type G2G_PlayerVisitPlayerResult struct {
+	FromPlayerId int32
+	ToPlayerId   int32
+	VisitData    *msg_client_message.S2CVisitPlayerResult
+}
+
 func RegisterRpcUserType() {
 	rpc.RegisterUserType(&G2G_BaseInfo{})
 	rpc.RegisterUserType(&G2G_BaseInfoResult{})
@@ -378,4 +391,7 @@ func RegisterRpcUserType() {
 	rpc.RegisterUserType(&common.PlayerInt32RankItem{})
 	rpc.RegisterUserType(&common.PlayerInt64RankItem{})
 	rpc.RegisterUserType(&common.PlayerCatOuqiRankItem{})
+	rpc.RegisterUserType(&msg_client_message.ViewBuildingInfo{})
+	rpc.RegisterUserType(&msg_client_message.AreaInfo{})
+	rpc.RegisterUserType(&msg_client_message.S2CVisitPlayerResult{})
 }

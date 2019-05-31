@@ -22,6 +22,7 @@ var id2rpc_funcs = map[int32]rpc_func{
 	int32(msg_rpc_message.MSGID_G2G_FOCUS_PLAYER_REQUEST):       remote_focus_player_response,
 	int32(msg_rpc_message.MSGID_G2G_UNFOCUS_PLAYER_REQUEST):     remote_unfocus_player_response,
 	int32(msg_rpc_message.MSGID_G2G_SPACE_DATA_REQUEST):         remote_space_data_response,
+	int32(msg_client_message.S2CVisitPlayerResult_ProtoID):      remote_visit_player_response,
 }
 
 var id2rpc_mfuncs = map[int32]rpc_mfunc{

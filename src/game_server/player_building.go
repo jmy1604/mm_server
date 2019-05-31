@@ -3,6 +3,7 @@ package main
 import (
 	"mm_server/libs/log"
 	"mm_server/proto/gen_go/client_message"
+	"mm_server/src/rpc_proto"
 	"mm_server/src/tables"
 	"time"
 
@@ -717,141 +718,79 @@ func (this *Player) ChkMapChest() (count int32) {
 	return
 }
 
-func (this *Player) VisitPlayerBuildings(player_id int32) int32 {
-	if player_id == this.Id {
-		log.Error("no need to visit self buildings")
-		return -1
-	}
-
+func (this *Player) get_player_visit_data() *msg_client_message.S2CVisitPlayerResult {
 	var player_name string
 	var player_level, player_head, player_vip_level, player_gold, player_diamond, player_charm int32
 	var buildings_info []*msg_client_message.ViewBuildingInfo
 	var area []*msg_client_message.AreaInfo
-	player := player_mgr.GetPlayerById(player_id)
-	if player != nil {
-		building_ids := player.db.Buildings.GetAllIndex()
-		if building_ids == nil {
-			buildings_info = make([]*msg_client_message.ViewBuildingInfo, 0)
-		} else {
-			for i := 0; i < len(building_ids); i++ {
-				cfg_id, o := player.db.Buildings.GetCfgId(building_ids[i])
-				if !o {
-					continue
-				}
-				building := building_table_mgr.Map[cfg_id]
-				if building == nil {
-					continue
-				}
-				x, _ := player.db.Buildings.GetX(building_ids[i])
-				y, _ := player.db.Buildings.GetY(building_ids[i])
-				dir, _ := player.db.Buildings.GetDir(building_ids[i])
-				base_data := &msg_client_message.BuildingInfo{
-					Id:    building_ids[i],
-					CfgId: cfg_id,
-					X:     x,
-					Y:     y,
-					Dir:   dir,
-				}
-				building_info := &msg_client_message.ViewBuildingInfo{
-					BaseData: base_data,
-				}
-				var crop_data *msg_client_message.CropInfo
-				var cathouse_data *msg_client_message.CatHouseInfo
-				if building.Type == PLAYER_BUILDING_TYPE_FARMLAND {
-					// 农田
-					crop_data = player.db.Crops.GetCropInfo(building_ids[i])
-					if crop_data != nil {
-						building_info.CropData = crop_data
-					}
-				} else if building.Type == PLAYER_BUILDING_TYPE_CAT_HOME {
-					// 猫舍
-					if player.db.CatHouses.HasIndex(building_ids[i]) {
-						level, _ := player.db.CatHouses.GetLevel(building_ids[i])
-						cat_ids, _ := player.db.CatHouses.GetCatIds(building_ids[i])
-						if cat_ids != nil && len(cat_ids) > 0 {
-							for n := 0; n < len(cat_ids); n++ {
-								cat_ids[n], _ = player.db.Cats.GetCfgId(cat_ids[n])
-							}
-						}
-						is_done, _ := player.db.CatHouses.GetIsDone(building_ids[i])
-						cathouse_data = &msg_client_message.CatHouseInfo{
-							Level:  level,
-							CatIds: cat_ids,
-							IsDone: is_done,
-						}
-						building_info.CatHouseData = cathouse_data
-					}
-				}
-
-				buildings_info = append(buildings_info, building_info)
-			}
-		}
-		area = this.db.Areas.GetAllAreaInfo()
-		player_name = player.db.GetName()
-		player_head = player.db.Info.GetHead()
-		player_level = player.db.GetLevel()
-		player_vip_level = player.db.Info.GetVipLvl()
-		player_gold = player.GetGold()
-		player_diamond = player.db.Info.GetDiamond()
-		player_charm = player.db.Info.GetCharmVal()
+	building_ids := this.db.Buildings.GetAllIndex()
+	if building_ids == nil {
+		buildings_info = make([]*msg_client_message.ViewBuildingInfo, 0)
 	} else {
-		/*result := this.rpc_call_visit_player(player_id)
-		if result == nil {
-			log.Error("### Player[%v] remote visit player[%v] failed", this.Id, player_id)
-			return -1
-		}
-		buildings_info = make([]*msg_client_message.ViewBuildingInfo, len(result.Buildings))
-		for i := 0; i < len(result.Buildings); i++ {
-			r := result.Buildings[i]
-			base_data := &msg_client_message.BuildingInfo{
-				Id:    r.BuildingId,
-				CfgId: r.BuildingTableId,
-				X:     r.CordX,
-				Y:     r.CordY,
-				Dir:   r.Dir,
+		for i := 0; i < len(building_ids); i++ {
+			cfg_id, o := this.db.Buildings.GetCfgId(building_ids[i])
+			if !o {
+				continue
 			}
-			buildings_info[i] = &msg_client_message.ViewBuildingInfo{
+			building := building_table_mgr.Map[cfg_id]
+			if building == nil {
+				continue
+			}
+			x, _ := this.db.Buildings.GetX(building_ids[i])
+			y, _ := this.db.Buildings.GetY(building_ids[i])
+			dir, _ := this.db.Buildings.GetDir(building_ids[i])
+			base_data := &msg_client_message.BuildingInfo{
+				Id:    building_ids[i],
+				CfgId: cfg_id,
+				X:     x,
+				Y:     y,
+				Dir:   dir,
+			}
+			building_info := &msg_client_message.ViewBuildingInfo{
 				BaseData: base_data,
 			}
-			if r.CropData != nil {
-				buildings_info[i].CropData = &msg_client_message.CropInfo{
-					CropId:        r.CropData.CropId,
-					RemainSeconds: r.CropData.RemainSeconds,
+			var crop_data *msg_client_message.CropInfo
+			var cathouse_data *msg_client_message.CatHouseInfo
+			if building.Type == PLAYER_BUILDING_TYPE_FARMLAND {
+				// 农田
+				crop_data = this.db.Crops.GetCropInfo(building_ids[i])
+				if crop_data != nil {
+					building_info.CropData = crop_data
 				}
-			} else if r.CatHouseData != nil {
-				is_done := int32(0)
-				if r.CatHouseData.IsDone {
-					is_done = int32(1)
-				}
-				buildings_info[i].CatHouseData = &msg_client_message.CatHouseInfo{
-					Level:  r.CatHouseData.CatHouseLevel,
-					CatIds: r.CatHouseData.CatIds,
-					IsDone: is_done,
+			} else if building.Type == PLAYER_BUILDING_TYPE_CAT_HOME {
+				// 猫舍
+				if this.db.CatHouses.HasIndex(building_ids[i]) {
+					level, _ := this.db.CatHouses.GetLevel(building_ids[i])
+					cat_ids, _ := this.db.CatHouses.GetCatIds(building_ids[i])
+					if cat_ids != nil && len(cat_ids) > 0 {
+						for n := 0; n < len(cat_ids); n++ {
+							cat_ids[n], _ = this.db.Cats.GetCfgId(cat_ids[n])
+						}
+					}
+					is_done, _ := this.db.CatHouses.GetIsDone(building_ids[i])
+					cathouse_data = &msg_client_message.CatHouseInfo{
+						Level:  level,
+						CatIds: cat_ids,
+						IsDone: is_done,
+					}
+					building_info.CatHouseData = cathouse_data
 				}
 			}
-		}
-		player_name = result.ToPlayerName
-		player_head = result.ToPlayerHead
-		player_level = result.ToPlayerLevel
-		player_vip_level = result.ToPlayerVipLevel
-		player_gold = result.ToPlayerGold
-		player_diamond = result.ToPlayerDiamond
-		player_charm = result.ToPlayerCharm
-		if result.Areas == nil {
-			area = make([]*msg_client_message.AreaInfo, 0)
-		} else {
-			for i := 0; i < len(result.Areas); i++ {
-				a := &msg_client_message.AreaInfo{
-					CfgId: result.Areas[i].TableId,
-				}
-				area = append(area, a)
-			}
-		}*/
-	}
 
+			buildings_info = append(buildings_info, building_info)
+		}
+	}
+	area = this.db.Areas.GetAllAreaInfo()
+	player_name = this.db.GetName()
+	player_head = this.db.Info.GetHead()
+	player_level = this.db.GetLevel()
+	player_vip_level = this.db.Info.GetVipLvl()
+	player_gold = this.GetGold()
+	player_diamond = this.db.Info.GetDiamond()
+	player_charm = this.db.Info.GetCharmVal()
 	response := &msg_client_message.S2CVisitPlayerResult{
 		Buildings:      buildings_info,
-		PlayerId:       player_id,
+		PlayerId:       this.Id,
 		PlayerName:     player_name,
 		PlayerLevel:    player_level,
 		PlayerVipLevel: player_vip_level,
@@ -861,9 +800,62 @@ func (this *Player) VisitPlayerBuildings(player_id int32) int32 {
 		PlayerCharm:    player_charm,
 		Areas:          area,
 	}
+	return response
+}
+
+// 远程访问玩家
+func remote_visit_player(from_player_id, to_player_id int32) (resp *msg_client_message.S2CVisitPlayerResult, err_code int32) {
+	var req msg_client_message.C2SVisitPlayer
+	var response msg_client_message.S2CVisitPlayerResult
+	err_code = RemoteGetUsePB(from_player_id, rpc_proto.OBJECT_TYPE_PLAYER, to_player_id, int32(msg_client_message.C2SVisitPlayer_ProtoID), &req, &response)
+	resp = &response
+	return
+}
+
+// 远程访问玩家返回
+func remote_visit_player_response(from_player_id int32, to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
+	player := player_mgr.GetPlayerById(to_player_id)
+	if player == nil {
+		log.Error("remote request visit player by id %v not found", to_player_id)
+		err_code = int32(msg_client_message.E_ERR_PLAYER_NOT_EXIST)
+		return
+	}
+
+	var response *msg_client_message.S2CVisitPlayerResult = player.get_player_visit_data()
+	var err error
+	resp_data, err = _marshal_msg(response)
+	if err != nil {
+		err_code = -1
+		return
+	}
+
+	err_code = 1
+	return
+}
+
+func (this *Player) VisitPlayerBuildings(player_id int32) int32 {
+	if player_id == this.Id {
+		log.Error("no need to visit self buildings")
+		return -1
+	}
+
+	var response *msg_client_message.S2CVisitPlayerResult
+	player := player_mgr.GetPlayerById(player_id)
+	if player != nil {
+		response = player.get_player_visit_data()
+	} else {
+		var err_code int32
+		response, err_code = remote_visit_player(this.Id, player_id)
+		if err_code < 0 {
+			return err_code
+		}
+	}
+
 	this.Send(uint16(msg_client_message.S2CVisitPlayerResult_ProtoID), response)
 
 	this.TaskUpdate(tables.TASK_COMPLETE_TYPE_VISIT_FRIEND_NUM, false, 0, 1)
+
+	log.Trace("Player %v visit player %v", this.Id, player_id)
 
 	return 1
 }
