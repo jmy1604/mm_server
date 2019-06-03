@@ -284,7 +284,7 @@ func (this *Player) _charge_with_bundle_id(channel int32, bundle_id string, purc
 }
 
 func (this *Player) charge_with_bundle_id(channel int32, bundle_id string, purchase_data []byte, extra_data []byte, index int32) int32 {
-	if channel <= 0 {
+	if config.DisableTestCommand && channel <= 0 {
 		log.Error("Player %v charge bundle id %v with channel %v invalid", this.Id, bundle_id, channel)
 		return -1
 	}
