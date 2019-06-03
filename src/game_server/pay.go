@@ -215,7 +215,7 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 	}
 
 	if bundle_id != data.ProductId {
-		log.Error("Player purchase %v product id not match %v\n", player.Id, bundle_id, data.ProductId)
+		log.Error("Player purchase %v product id %v not match %v\n", player.Id, bundle_id, data.ProductId)
 		return int32(msg_client_message.E_ERR_CHARGE_PRODUCT_ID_NOT_MATCH)
 	}
 
