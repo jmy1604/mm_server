@@ -14,17 +14,17 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"ih_server/libs/log"
+	"mm_server/libs/log"
 	"time"
 
-	"ih_server/proto/gen_go/client_message"
+	"mm_server/proto/gen_go/client_message"
 
 	"github.com/gomodule/redigo/redis"
 )
 
 const (
-	GOOGLE_PAY_REDIS_KEY = "ih:hall_server:google_pay"
-	APPLE_PAY_REDIS_KEY  = "ih:hall_server:apple_pay"
+	GOOGLE_PAY_REDIS_KEY = "mm:hall_server:google_pay"
+	APPLE_PAY_REDIS_KEY  = "mmhall_server:apple_pay"
 )
 
 type RedisPayInfo struct {
@@ -212,6 +212,11 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 	if !atomic.CompareAndSwapInt32(&player.is_paying, 0, 1) {
 		log.Error("Player[%v] is paying for google purchase", player.Id)
 		return int32(msg_client_message.E_ERR_CHARGE_PAY_REPEATED_VERIFY)
+	}
+
+	if bundle_id != data.ProductId {
+		log.Error("Player purchase %v product id not match %v\n", player.Id, bundle_id, data.ProductId)
+		return int32(msg_client_message.E_ERR_CHARGE_PRODUCT_ID_NOT_MATCH)
 	}
 
 	if check_google_order_exist(data.OrderId) {
