@@ -209,6 +209,8 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 		return -1
 	}
 
+	log.Trace("Player %v purchase_data unmarshaled: %v", player.Id, *data)
+
 	if !atomic.CompareAndSwapInt32(&player.is_paying, 0, 1) {
 		log.Error("Player[%v] is paying for google purchase", player.Id)
 		return int32(msg_client_message.E_ERR_CHARGE_PAY_REPEATED_VERIFY)
