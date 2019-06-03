@@ -275,7 +275,7 @@ func (this *LoginHttpHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		act_str = string([]byte(url_str)[:idx])
 	}
-	log.Info("ServeHTTP actstr(%s)", act_str)
+	log.Info("ServeHTTP url(%v) actstr(%s)", url_str, act_str)
 	if h, ok := login_http_mux[act_str]; ok {
 		h(w, r)
 	}
