@@ -77,28 +77,21 @@ type GmPlayerInfoCmd struct {
 
 // 查询玩家信息结果
 type GmPlayerInfoResponse struct {
-	Id               int32
-	Account          string
-	UniqueId         string
-	CreateTime       int32
-	IsLogin          int32
-	LastLoginTime    int32
-	LogoutTime       int32
-	Level            int32
-	VipLevel         int32
-	Gold             int32
-	Diamond          int32
-	GuildId          int32
-	GuildName        string
-	GuildLevel       int32
-	UnlockCampaignId int32
-	HungupCampaignId int32
-	ArenaScore       int32
-	TalentList       []int32
-	TowerId          int32
-	SignIn           int32
-	Roles            []int32
-	Items            []int32
+	Id            int32
+	Account       string
+	UniqueId      string
+	CreateTime    int32
+	IsLogin       int32
+	LastLoginTime int32
+	LogoutTime    int32
+	Level         int32
+	VipLevel      int32
+	Gold          int32
+	Diamond       int32
+	CurStage      int32
+	SignIn        int32
+	Cats          []int32
+	Items         []int32
 }
 
 // 查询在线人数

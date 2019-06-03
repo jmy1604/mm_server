@@ -12,10 +12,10 @@ import (
 )
 
 // GM调用
-type G2H_Proc struct {
+type G2G_Proc struct {
 }
 
-func (this *G2H_Proc) Test(args *rpc_proto.GmTestCmd, result *rpc_proto.GmCommonResponse) error {
+func (this *G2G_Proc) Test(args *rpc_proto.GmTestCmd, result *rpc_proto.GmCommonResponse) error {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Stack(err)
@@ -24,11 +24,11 @@ func (this *G2H_Proc) Test(args *rpc_proto.GmTestCmd, result *rpc_proto.GmCommon
 
 	result.Res = 1
 
-	log.Trace("@@@ G2H_Proc::Test %v", args)
+	log.Trace("@@@ G2G_Proc::Test %v", args)
 	return nil
 }
 
-func (this *G2H_Proc) Anouncement(args *rpc_proto.GmAnouncementCmd, result *rpc_proto.GmCommonResponse) error {
+func (this *G2G_Proc) Anouncement(args *rpc_proto.GmAnouncementCmd, result *rpc_proto.GmCommonResponse) error {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Stack(err)
@@ -36,17 +36,17 @@ func (this *G2H_Proc) Anouncement(args *rpc_proto.GmAnouncementCmd, result *rpc_
 	}()
 
 	if !system_chat_mgr.push_chat_msg(args.Content, args.RemainSeconds, 0, 0, "", 0) {
-		err_str := fmt.Sprintf("@@@ G2H_Proc::Anouncement %v failed", args)
+		err_str := fmt.Sprintf("@@@ G2G_Proc::Anouncement %v failed", args)
 		return errors.New(err_str)
 	}
 
 	result.Res = 1
 
-	log.Trace("@@@ G2H_Proc::Anouncement %v", args)
+	log.Trace("@@@ G2G_Proc::Anouncement %v", args)
 	return nil
 }
 
-func (this *G2H_Proc) SysMail(args *rpc_proto.GmSendSysMailCmd, result *rpc_proto.GmCommonResponse) error {
+func (this *G2G_Proc) SysMail(args *rpc_proto.GmSendSysMailCmd, result *rpc_proto.GmCommonResponse) error {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Stack(err)
@@ -57,7 +57,7 @@ func (this *G2H_Proc) SysMail(args *rpc_proto.GmSendSysMailCmd, result *rpc_prot
 	if args.PlayerId <= 0 {
 		row := dbc.SysMails.AddRow()
 		if row == nil {
-			log.Error("@@@ G2H_Proc::SysMail add new db row failed")
+			log.Error("@@@ G2G_Proc::SysMail add new db row failed")
 			result.Res = -1
 		}
 		result.Res = mail_has_subtype(args.MailTableID)
@@ -71,11 +71,11 @@ func (this *G2H_Proc) SysMail(args *rpc_proto.GmSendSysMailCmd, result *rpc_prot
 		result.Res = RealSendMail(nil, args.PlayerId, MAIL_TYPE_SYSTEM, args.MailTableID, "", "", args.AttachItems, 0)
 	}
 
-	log.Trace("@@@ G2H_Proc::SysMail %v", args)
+	log.Trace("@@@ G2G_Proc::SysMail %v", args)
 	return nil
 }
 
-func (this *G2H_Proc) PlayerInfo(args *rpc_proto.GmPlayerInfoCmd, result *rpc_proto.GmPlayerInfoResponse) error {
+func (this *G2G_Proc) PlayerInfo(args *rpc_proto.GmPlayerInfoCmd, result *rpc_proto.GmPlayerInfoResponse) error {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Stack(err)
@@ -99,12 +99,30 @@ func (this *G2H_Proc) PlayerInfo(args *rpc_proto.GmPlayerInfoCmd, result *rpc_pr
 	result.VipLevel = p.db.Info.GetVipLvl()
 	result.Gold = p.db.Info.GetGold()
 	result.Diamond = p.db.Info.GetDiamond()
-	log.Trace("@@@ G2H_Proc::PlayerInfo %v %v", args, result)
+	result.CurStage = p.db.Info.GetCurPassMaxStage()
+	items := p.db.Items.GetAllIndex()
+	if items != nil {
+		for _, item_id := range items {
+			item_num, _ := p.db.Items.GetItemNum(item_id)
+			result.Items = append(result.Items, []int32{item_id, item_num}...)
+		}
+	}
+	cats := p.db.Cats.GetAllIndex()
+	if cats != nil {
+		for _, cat_id := range cats {
+			cat_table_id, _ := p.db.Cats.GetCfgId(cat_id)
+			coin_ability, _ := p.db.Cats.GetCoinAbility(cat_id)
+			match_ability, _ := p.db.Cats.GetMatchAbility(cat_id)
+			explore_ability, _ := p.db.Cats.GetExploreAbility(cat_id)
+			result.Cats = append(result.Cats, []int32{cat_id, cat_table_id, coin_ability, match_ability, explore_ability}...)
+		}
+	}
+	log.Trace("@@@ G2G_Proc::PlayerInfo %v %v", args, result)
 
 	return nil
 }
 
-func (this *G2H_Proc) OnlinePlayerNum(args *rpc_proto.GmOnlinePlayerNumCmd, result *rpc_proto.GmOnlinePlayerNumResponse) error {
+func (this *G2G_Proc) OnlinePlayerNum(args *rpc_proto.GmOnlinePlayerNumCmd, result *rpc_proto.GmOnlinePlayerNumResponse) error {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Stack(err)
@@ -113,12 +131,12 @@ func (this *G2H_Proc) OnlinePlayerNum(args *rpc_proto.GmOnlinePlayerNumCmd, resu
 
 	result.PlayerNum = []int32{conn_timer_wheel.GetCurrPlayerNum(), player_mgr.GetPlayersNum()}
 
-	log.Trace("@@@ G2H_Proc::OnlinePlayerNum")
+	log.Trace("@@@ G2G_Proc::OnlinePlayerNum")
 
 	return nil
 }
 
-func (this *G2H_Proc) MonthCardSend(args *rpc_proto.GmMonthCardSendCmd, result *rpc_proto.GmCommonResponse) error {
+func (this *G2G_Proc) MonthCardSend(args *rpc_proto.GmMonthCardSendCmd, result *rpc_proto.GmCommonResponse) error {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Stack(err)
@@ -160,12 +178,12 @@ func (this *G2H_Proc) MonthCardSend(args *rpc_proto.GmMonthCardSendCmd, result *
 		return nil
 	}
 
-	log.Trace("@@@ G2H_Proc::MonthCardSend %v", args)
+	log.Trace("@@@ G2G_Proc::MonthCardSend %v", args)
 
 	return nil
 }
 
-func (this *G2H_Proc) GetPlayerUniqueId(args *rpc_proto.GmGetPlayerUniqueIdCmd, result *rpc_proto.GmGetPlayerUniqueIdResponse) error {
+func (this *G2G_Proc) GetPlayerUniqueId(args *rpc_proto.GmGetPlayerUniqueIdCmd, result *rpc_proto.GmGetPlayerUniqueIdResponse) error {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Stack(err)
@@ -183,12 +201,12 @@ func (this *G2H_Proc) GetPlayerUniqueId(args *rpc_proto.GmGetPlayerUniqueIdCmd, 
 		result.PlayerUniqueId = p.db.GetUniqueId()
 	}
 
-	log.Trace("@@@ G2H_Proc::GetPlayerUniqueId %v", args)
+	log.Trace("@@@ G2G_Proc::GetPlayerUniqueId %v", args)
 
 	return nil
 }
 
-func (this *G2H_Proc) BanPlayer(args *rpc_proto.GmBanPlayerByUniqueIdCmd, result *rpc_proto.GmCommonResponse) error {
+func (this *G2G_Proc) BanPlayer(args *rpc_proto.GmBanPlayerByUniqueIdCmd, result *rpc_proto.GmCommonResponse) error {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Stack(err)
@@ -230,7 +248,7 @@ func (this *G2H_Proc) BanPlayer(args *rpc_proto.GmBanPlayerByUniqueIdCmd, result
 		})
 	}
 
-	log.Trace("@@@ G2H_Proc::BanPlayer %v", args)
+	log.Trace("@@@ G2G_Proc::BanPlayer %v", args)
 
 	return nil
 }

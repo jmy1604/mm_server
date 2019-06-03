@@ -73,7 +73,7 @@ func (this *GameServer) init_rpc_service() bool {
 		return false
 	}
 
-	if !this.rpc_service.Register(&R2G_PlayerProc{}) {
+	if !this.rpc_service.Register(&G2G_Proc{}) {
 		return false
 	}
 
