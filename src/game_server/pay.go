@@ -240,7 +240,7 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 	pay_channel := pay_list.Verify(hashedReceipt, decodedSignature)
 	if pay_channel == nil {
 		atomic.CompareAndSwapInt32(&player.is_paying, 1, 0)
-		log.Error("Player[%v] failed to verify decoded signature[%v] with hashed purchase data[%v]: %v", player.Id, decodedSignature, hashedReceipt, err.Error())
+		log.Error("Player[%v] failed to verify decoded signature[%v] with hashed purchase data[%v]", player.Id, decodedSignature, hashedReceipt)
 		return int32(msg_client_message.E_ERR_CHARGE_GOOGLE_SIGNATURE_INVALID)
 	}
 
