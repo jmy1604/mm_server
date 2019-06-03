@@ -336,6 +336,7 @@ enum E_ERR{
 	CHARGE_CHANNEL_INVALID						= -102524; // 充值渠道非法
 	CHARGE_PAY_REPEATED_VERIFY					= -102525; // 充值支付重复验证
 	CHARGE_NO_ACTIVITY_ON_THIS_TIME				= -102526; // 无充值活动可用
+	CHARGE_PRODUCT_ID_NOT_MATCH					= -102527; // 商品ID验证不符
 	
 	// 排行榜
 	RANK_LIST_TYPE_INVALID						= -102600; // 排行榜类型错误
