@@ -555,6 +555,10 @@ func (this *Player) GetMailAttachedItems(mail_ids []int32) int32 {
 	}
 	this.Send(uint16(msg_client_message.S2CMailGetAttachedItemsResponse_ProtoID), response)
 
+	this.SendItemsUpdate()
+	this.SendCatsUpdate()
+	this.SendBuildingUpdate()
+
 	log.Trace("Player[%v] mails[%v] get attached items: %v", this.Id, mail_ids, attached_items)
 
 	return 1
