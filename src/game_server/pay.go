@@ -121,8 +121,8 @@ type GooglePurchaseInfoJson struct {
 }
 
 type GooglePurchaseInfo struct {
-	Json      *GooglePurchaseInfoJson `json:"json"`
-	Signature string                  `json:"signature"`
+	Json      GooglePurchaseInfoJson `json:"json"`
+	Signature string                 `json:"signature"`
 }
 
 type GoogleAccessTokenResp struct {
