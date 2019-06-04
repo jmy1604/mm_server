@@ -201,7 +201,8 @@ func (this *Player) charge(channel, id int32) int32 {
 }
 
 func (this *Player) _charge_with_bundle_id(item_id int32, channel int32, bundle_id string, purchase_data []byte, extra_data []byte, index int32) (int32, bool) {
-	pay_item := pay_table_mgr.GetByBundle(bundle_id)
+	//pay_item := pay_table_mgr.GetByBundle(bundle_id)
+	pay_item := pay_table_mgr.Get(item_id)
 	if pay_item == nil {
 		log.Error("pay %v table data not found", bundle_id)
 		return int32(msg_client_message.E_ERR_CHARGE_TABLE_DATA_NOT_FOUND), false
