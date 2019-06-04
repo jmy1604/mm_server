@@ -231,7 +231,7 @@ func (this *Player) _charge_with_bundle_id(item_id int32, channel int32, bundle_
 	}
 
 	if channel == 1 {
-		err_code := verify_google_purchase_data(this, bundle_id, purchase_data)
+		err_code := verify_google_purchase_data(this, bundle_id, purchase_data, extra_data)
 		if err_code < 0 {
 			return err_code, false
 		}
