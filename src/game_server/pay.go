@@ -109,7 +109,7 @@ func check_apple_order_exist(order_id string) bool {
 	return true
 }
 
-type GooglePurchaseInfo struct {
+type GooglePurchaseInfoJson struct {
 	OrderId          string `json:"orderId"`
 	PackageName      string `json:"packageName"`
 	ProductId        string `json:"productId"`
@@ -118,6 +118,10 @@ type GooglePurchaseInfo struct {
 	DeveloperPayload string `json:"developerPayload"`
 	PurchaseToken    string `json:"purchaseToken"`
 	AutoRenewing     bool   `json:"autoRenewing"`
+}
+
+type GooglePurchaseInfo struct {
+	Json *GooglePurchaseInfoJson `json:""json`
 }
 
 type GoogleAccessTokenResp struct {
@@ -204,7 +208,7 @@ func _verify_google_purchase_token(package_name, product_id, purchase_token stri
 func verify_google_purchase_data(player *Player, bundle_id string, purchase_data, signature []byte) int32 {
 	log.Trace("Purchase data: %v", string(purchase_data))
 	data := &GooglePurchaseInfo{}
-	err := json.Unmarshal(purchase_data, &data)
+	err := json.Unmarshal(purchase_data, &data.Json)
 	if err != nil {
 		log.Error("Player[%v] unmarshal Purchase data error %v", GOOGLE_PAY_REDIS_KEY, err.Error())
 		return -1
@@ -217,14 +221,14 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 		return int32(msg_client_message.E_ERR_CHARGE_PAY_REPEATED_VERIFY)
 	}
 
-	if bundle_id != data.ProductId {
-		log.Error("Player purchase %v product id %v not match %v\n", player.Id, bundle_id, data.ProductId)
+	if bundle_id != data.Json.ProductId {
+		log.Error("Player purchase %v product id %v not match %v\n", player.Id, bundle_id, data.Json.ProductId)
 		return int32(msg_client_message.E_ERR_CHARGE_PRODUCT_ID_NOT_MATCH)
 	}
 
-	if check_google_order_exist(data.OrderId) {
+	if check_google_order_exist(data.Json.OrderId) {
 		atomic.CompareAndSwapInt32(&player.is_paying, 1, 0)
-		log.Error("Player[%v] google order[%v] already exists", player.Id, data.OrderId)
+		log.Error("Player[%v] google order[%v] already exists", player.Id, data.Json.OrderId)
 		return int32(msg_client_message.E_ERR_CHARGE_GOOGLE_ORDER_ALREADY_EXIST)
 	}
 
@@ -252,7 +256,7 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 		return int32(msg_client_message.E_ERR_CHARGE_GOOGLE_SIGNATURE_INVALID)
 	}
 
-	google_pay_save(data.OrderId, bundle_id, player.Account, player)
+	google_pay_save(data.Json.OrderId, bundle_id, player.Account, player)
 
 	atomic.CompareAndSwapInt32(&player.is_paying, 1, 0)
 
@@ -265,7 +269,7 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 
 	pay_item := pay_table_mgr.GetByBundle(bundle_id)
 	if pay_item != nil {
-		_post_talking_data(player.Account, "google pay", config.ServerName, config.InnerVersion, pay_channel.Partner, data.OrderId, "android", "charge", "success", player.db.GetLevel(), pay_item.RecordGold, "USD", float64(pay_item.GemReward))
+		_post_talking_data(player.Account, "google pay", config.ServerName, config.InnerVersion, pay_channel.Partner, data.Json.OrderId, "android", "charge", "success", player.db.GetLevel(), pay_item.RecordGold, "USD", float64(pay_item.GemReward))
 	}
 
 	log.Trace("Player[%v] google pay bunder_id[%v] purchase_data[%v] signature[%v] verify success", player.Id, bundle_id, purchase_data, signature)

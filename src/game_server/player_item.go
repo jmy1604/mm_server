@@ -556,23 +556,29 @@ func (this *Player) GetItemResourceValue(other_id int32) int32 {
 }
 
 func (this *Player) get_item(item_id int32) int32 {
-	return 0
+	num, o := this.db.Items.GetItemNum(item_id)
+	if !o {
+		return 0
+	}
+	return num
 }
 
-func (this *Player) add_diamond(diamond int32) {
-
+func (this *Player) add_diamond(diamond int32) int32 {
+	return this.AddDiamond(diamond, "normal", "")
 }
 
 func (this *Player) get_resource(resource_id int32) int32 {
-	return 0
+	return this.GetItemResourceValue(resource_id)
 }
 
 func (this *Player) add_resource(item_id, item_num int32) {
-
+	this.AddItemResource(item_id, item_num, "normal", "")
 }
 
 func (this *Player) add_resources(resources []int32) {
-
+	for i := 0; i < len(resources)/2; i++ {
+		this.AddItemResource(resources[2*i], resources[2*i+1], "normal", "")
+	}
 }
 
 func (this *Player) AddItemResource(cid, num int32, reason, mod string) int32 {
