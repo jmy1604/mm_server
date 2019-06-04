@@ -203,15 +203,8 @@ func _verify_google_purchase_token(package_name, product_id, purchase_token stri
 
 func verify_google_purchase_data(player *Player, bundle_id string, purchase_data, signature []byte) int32 {
 	log.Trace("Purchase data: %v", string(purchase_data))
-	var err error
-	purchase_data, err = base64.StdEncoding.DecodeString(string(purchase_data))
-	if err != nil {
-		log.Error("Player[%v] failed to decode purchase_data[%v], err %v", player.Id, purchase_data, err.Error())
-		return -1
-	}
-
 	data := &GooglePurchaseInfo{}
-	err = json.Unmarshal(purchase_data, &data)
+	err := json.Unmarshal(purchase_data, &data)
 	if err != nil {
 		log.Error("Player[%v] unmarshal Purchase data error %v", GOOGLE_PAY_REDIS_KEY, err.Error())
 		return -1
