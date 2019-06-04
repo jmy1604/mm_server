@@ -171,7 +171,7 @@ func (this *G2G_Proc) MonthCardSend(args *rpc_proto.GmMonthCardSendCmd, result *
 		return nil
 	}
 
-	res, _ := p._charge_with_bundle_id(0, args.BundleId, nil, nil, -1)
+	res, _ := p._charge_with_bundle_id(args.ItemId, 0, args.BundleId, nil, nil, -1)
 	if res < 0 {
 		log.Error("@@@ Month card send with error %v", res)
 		result.Res = res

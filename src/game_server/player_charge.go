@@ -196,11 +196,11 @@ func (this *Player) charge(channel, id int32) int32 {
 	if pay_item == nil {
 		return -1
 	}
-	res, _ := this._charge_with_bundle_id(channel, pay_item.BundleId, nil, nil, 0)
+	res, _ := this._charge_with_bundle_id(id, channel, pay_item.BundleId, nil, nil, 0)
 	return res
 }
 
-func (this *Player) _charge_with_bundle_id(channel int32, bundle_id string, purchase_data []byte, extra_data []byte, index int32) (int32, bool) {
+func (this *Player) _charge_with_bundle_id(item_id int32, channel int32, bundle_id string, purchase_data []byte, extra_data []byte, index int32) (int32, bool) {
 	pay_item := pay_table_mgr.GetByBundle(bundle_id)
 	if pay_item == nil {
 		log.Error("pay %v table data not found", bundle_id)
@@ -283,18 +283,20 @@ func (this *Player) _charge_with_bundle_id(channel int32, bundle_id string, purc
 	return 1, !has
 }
 
-func (this *Player) charge_with_bundle_id(channel int32, bundle_id string, purchase_data []byte, extra_data []byte, index int32) int32 {
+func (this *Player) charge_with_bundle_id(item_id, channel int32, bundle_id string, purchase_data []byte, extra_data []byte, index int32) int32 {
 	if config.DisableTestCommand && channel <= 0 {
 		log.Error("Player %v charge bundle id %v with channel %v invalid", this.Id, bundle_id, channel)
 		return -1
 	}
 
-	res, is_first := this._charge_with_bundle_id(channel, bundle_id, purchase_data, extra_data, index)
+	res, is_first := this._charge_with_bundle_id(item_id, channel, bundle_id, purchase_data, extra_data, index)
 	if res < 0 {
 		return res
 	}
 
 	response := &msg_client_message.S2CChargeResponse{
+		ItemId:      item_id,
+		Channel:     channel,
 		BundleId:    bundle_id,
 		IsFirst:     is_first,
 		ClientIndex: index,
@@ -363,7 +365,7 @@ func C2SChargeHandler(p *Player, msg_data []byte) int32 {
 		log.Error("Unmarshal msg failed err(%v)", err.Error())
 		return -1
 	}
-	return p.charge_with_bundle_id(req.GetChannel(), req.GetBundleId(), req.GetPurchareData(), req.GetExtraData(), req.GetClientIndex())
+	return p.charge_with_bundle_id(req.GetItemId(), req.GetChannel(), req.GetBundleId(), req.GetPurchareData(), req.GetExtraData(), req.GetClientIndex())
 }
 
 func C2SChargeFirstAwardHandler(p *Player, msg_data []byte) int32 {

@@ -107,6 +107,7 @@ type GmOnlinePlayerNumResponse struct {
 // 发送月卡
 type GmMonthCardSendCmd struct {
 	PlayerId int32
+	ItemId   int32
 	BundleId string
 }
 
