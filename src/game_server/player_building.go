@@ -596,18 +596,18 @@ func (this *Player) GetBackMapBuilding(building_id int32) int32 {
 func (this *Player) IfXYAreaBlockFull(area_xy int32) bool {
 	area_id := build_area_mgr.AreaXY2AreaId[area_xy]
 	if area_id < 0 {
-		log.Error("Player[%d] IfXYAreaBlockFull failed to find area_id for xy[%d] !", this.Id, area_xy)
+		//log.Error("Player[%d] IfXYAreaBlockFull failed to find area_id for xy[%d] !", this.Id, area_xy)
 		return true
 	}
 
 	area_un_cfg := area_unlock_mgr.Map[area_id]
 	if nil == area_un_cfg {
-		log.Error("Player[%d] IfXYAreaBlockFull failed to find un_cfg for area_id[%d] !", this.Id, area_id)
+		//log.Error("Player[%d] IfXYAreaBlockFull failed to find un_cfg for area_id[%d] !", this.Id, area_id)
 		return true
 	}
 
 	if area_un_cfg.MaxObstacle <= this.cur_areablocknum_map[area_id] {
-		log.Error("Player[%d] IfXYAreaBlockFull area[%d] block num[%d] over max !", this.Id, area_id, this.cur_areablocknum_map[area_id], area_un_cfg.MaxObstacle)
+		//log.Error("Player[%d] IfXYAreaBlockFull area[%d] block num[%d] over max !", this.Id, area_id, this.cur_areablocknum_map[area_id], area_un_cfg.MaxObstacle)
 		return true
 	}
 
