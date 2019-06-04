@@ -180,6 +180,8 @@ func (this *Player) PopCurMsgData() []byte {
 
 	this.CheckAndAnouncement()
 
+	this.CheckNewMail()
+
 	this.msg_items_lock.Lock()
 	defer this.msg_items_lock.Unlock()
 
