@@ -121,7 +121,8 @@ type GooglePurchaseInfoJson struct {
 }
 
 type GooglePurchaseInfo struct {
-	Json *GooglePurchaseInfoJson `json:"json"`
+	Json      *GooglePurchaseInfoJson `json:"json"`
+	Signature string                  `json:"signature"`
 }
 
 type GoogleAccessTokenResp struct {
@@ -205,7 +206,7 @@ func _verify_google_purchase_token(package_name, product_id, purchase_token stri
 	return nil
 }
 
-func verify_google_purchase_data(player *Player, bundle_id string, purchase_data, signature []byte) int32 {
+func verify_google_purchase_data(player *Player, bundle_id string, purchase_data []byte) int32 {
 	log.Trace("Purchase data: %v", string(purchase_data))
 	data := &GooglePurchaseInfo{}
 	err := json.Unmarshal(purchase_data, &data)
@@ -234,10 +235,10 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 
 	// 验证签名
 	var decodedSignature []byte
-	decodedSignature, err = base64.StdEncoding.DecodeString(string(signature))
+	decodedSignature, err = base64.StdEncoding.DecodeString(data.Signature)
 	if err != nil {
 		atomic.CompareAndSwapInt32(&player.is_paying, 1, 0)
-		log.Error("Player[%v] failed to decode signature[%v], err %v", player.Id, signature, err.Error())
+		log.Error("Player[%v] failed to decode signature[%v], err %v", player.Id, data.Signature, err.Error())
 		return -1
 	}
 	sha1 := sha1.New()
@@ -272,7 +273,7 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 		_post_talking_data(player.Account, "google pay", config.ServerName, config.InnerVersion, pay_channel.Partner, data.Json.OrderId, "android", "charge", "success", player.db.GetLevel(), pay_item.RecordGold, "USD", float64(pay_item.GemReward))
 	}
 
-	log.Trace("Player[%v] google pay bunder_id[%v] purchase_data[%v] signature[%v] verify success", player.Id, bundle_id, purchase_data, signature)
+	log.Trace("Player[%v] google pay bunder_id[%v] purchase_data[%v] verify success", player.Id, bundle_id, purchase_data)
 
 	return 1
 }
