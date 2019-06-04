@@ -202,7 +202,7 @@ func _verify_google_purchase_token(package_name, product_id, purchase_token stri
 }
 
 func verify_google_purchase_data(player *Player, bundle_id string, purchase_data, signature []byte) int32 {
-	log.Trace("Purchase data: %v", purchase_data)
+	log.Trace("Purchase data: %v", string(purchase_data))
 	var err error
 	purchase_data, err = base64.StdEncoding.DecodeString(string(purchase_data))
 	if err != nil {
