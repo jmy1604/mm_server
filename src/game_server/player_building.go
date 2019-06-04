@@ -153,18 +153,18 @@ func (this *Player) if_pos_can_set_building(x, y, width, height, extra_id, area_
 		for tmp_y := int32(0); tmp_y < height; tmp_y++ {
 			arena_xy := ((x + tmp_x) << 16) | (y+tmp_y)&0x0000FFFF
 			if build_area_mgr.AreaXY2Type[arena_xy]&area_type <= 0 {
-				log.Info("ChkIfPosCanSetBuilding 位置%d[%d+%d, %d+%d]的地理类型不匹配 %d %d", arena_xy, x, tmp_x, y, tmp_y, build_area_mgr.AreaXY2Type[arena_xy], area_type)
+				//log.Info("ChkIfPosCanSetBuilding 位置%d[%d+%d, %d+%d]的地理类型不匹配 %d %d", arena_xy, x, tmp_x, y, tmp_y, build_area_mgr.AreaXY2Type[arena_xy], area_type)
 				return int32(msg_client_message.E_ERR_BUILDING_AREA_TYPE_NOT_MATCH)
 			}
 
 			cur_building_id = this.cur_building_map[arena_xy]
 			if cur_building_id > 0 && cur_building_id != extra_id {
-				log.Info("ChkIfPosCanSetBuilding 位置%d[%d+%d, %d+%d]上已经有建筑 %d", arena_xy, x, tmp_x, y, tmp_y, cur_building_id)
+				//log.Info("ChkIfPosCanSetBuilding 位置%d[%d+%d, %d+%d]上已经有建筑 %d", arena_xy, x, tmp_x, y, tmp_y, cur_building_id)
 				return int32(msg_client_message.E_ERR_BUILDING_POS_FORBIDEN)
 			}
 
 			if 1 != this.cur_open_pos_map[arena_xy] {
-				log.Info("ChkIfPosCanSetBuilding 没有在当前开放区域中找到位置%d[%d+%d, %d+%d]", arena_xy, x, tmp_x, y, tmp_y)
+				//log.Info("ChkIfPosCanSetBuilding 没有在当前开放区域中找到位置%d[%d+%d, %d+%d]", arena_xy, x, tmp_x, y, tmp_y)
 				return int32(msg_client_message.E_ERR_BUILDING_AREA_TYPE_NO_POS)
 			}
 		}
@@ -686,7 +686,7 @@ func (this *Player) ChkMapChest() (count int32) {
 	var new_building *dbPlayerBuildingData
 	//log.Debug("玩家[%d]自动刷新宝箱检查 %s %s", this.Id, time.Unix(int64(last_up_unix), 0).Format("2006-01-02 15:04:05.999999999"), time.Unix(int64(cur_unix), 0).Format("2006-01-02 15:04:05.999999999"))
 	for tmp_unix := last_up_unix; tmp_unix+global_config.MapChestRefleshSec < cur_unix; tmp_unix += global_config.MapChestRefleshSec {
-		log.Debug("玩家[%d]自动刷新宝箱时间递增 %s", this.Id, time.Unix(int64(tmp_unix), 0).Format("2006-01-02 15:04:05.999999999"))
+		//log.Debug("玩家[%d]自动刷新宝箱时间递增 %s", this.Id, time.Unix(int64(tmp_unix), 0).Format("2006-01-02 15:04:05.999999999"))
 		if cur_unix-tmp_unix > map_chest_mgr.MaxBoxLastSec {
 			continue
 		}
