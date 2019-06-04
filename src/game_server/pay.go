@@ -208,7 +208,7 @@ func _verify_google_purchase_token(package_name, product_id, purchase_token stri
 func verify_google_purchase_data(player *Player, bundle_id string, purchase_data, signature []byte) int32 {
 	log.Trace("Purchase data: %v", string(purchase_data))
 	data := &GooglePurchaseInfo{}
-	err := json.Unmarshal(purchase_data, &data.Json)
+	err := json.Unmarshal(purchase_data, &data)
 	if err != nil {
 		log.Error("Player[%v] unmarshal Purchase data error %v", GOOGLE_PAY_REDIS_KEY, err.Error())
 		return -1
