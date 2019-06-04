@@ -638,7 +638,7 @@ func (this *Player) ChkMapBlock() (count int32) {
 	//log.Debug("玩家[%d]自动刷新障碍检查 %v %v", this.Id, time.Unix(int64(last_up_unix), 0).Format("2006-01-02 15:04:05.999999999"), time.Unix(int64(cur_unix), 0).Format("2006-01-02 15:04:05.999999999"))
 	for tmp_unix := last_up_unix; tmp_unix+global_config.MapBlockRefleshSec < cur_unix; tmp_unix += global_config.MapBlockRefleshSec {
 		tmp_block = block_table_mgr.RandBlock()
-		log.Info("玩家[%d]自动刷新障碍检查时间递增 %s 刷出障碍[%s]", this.Id, time.Unix(int64(tmp_unix), 0).Format("2006-01-02 15:04:05.999999999"), tmp_block.Id)
+		//log.Info("玩家[%d]自动刷新障碍检查时间递增 %s 刷出障碍[%s]", this.Id, time.Unix(int64(tmp_unix), 0).Format("2006-01-02 15:04:05.999999999"), tmp_block.Id)
 		if nil == tmp_block {
 			log.Error("Player ChkMapBlock failed !")
 			continue
@@ -646,7 +646,7 @@ func (this *Player) ChkMapBlock() (count int32) {
 
 		new_building = this.TrySetMapBuildingDefDir(tmp_block.Id)
 		if nil != new_building {
-			log.Debug("玩家[%d]自动刷新障碍检查尝试增加障碍 %v  %v", this.Id, tmp_block.Id, new_building.Id)
+			//log.Debug("玩家[%d]自动刷新障碍检查尝试增加障碍 %v  %v", this.Id, tmp_block.Id, new_building.Id)
 			this.item_cat_building_change_info.building_add(this, new_building.Id)
 			count++
 			this.db.Info.SetLastMapBlockUpUnix(tmp_unix + global_config.MapBlockRefleshSec)
@@ -657,7 +657,7 @@ func (this *Player) ChkMapBlock() (count int32) {
 			}
 			this.db.BuildingCommon.IncbyBlockNum(1)
 		} else {
-			log.Debug("玩家[%d]自动刷新障碍检查尝试增加障碍[%d]失败", this.Id, tmp_block.Id)
+			//log.Debug("玩家[%d]自动刷新障碍检查尝试增加障碍[%d]失败", this.Id, tmp_block.Id)
 		}
 	}
 
