@@ -108,7 +108,7 @@ func (this *Player) _charge_month_card_award(month_card *tables.XmlPayItem, now_
 		}
 	}
 	RealSendMail(nil, this.Id, MAIL_TYPE_SYSTEM, 1105, "", "", bonus, 0)
-	send_num = this.db.Pays.IncbySendMailNum(month_card.BundleId, 1)
+	send_num = this.db.Pays.IncbySendMailNum(month_card.Id, 1)
 	log.Trace("Player[%v] charge month card %v get reward, send_num %v", this.Id, month_card.BundleId, send_num)
 	return
 }
@@ -118,11 +118,11 @@ func (this *Player) charge_month_card_award(month_cards []*tables.XmlPayItem, no
 		return false
 	}
 	for _, m := range month_cards {
-		last_award_time, o := this.db.Pays.GetLastAwardTime(m.BundleId)
+		last_award_time, o := this.db.Pays.GetLastAwardTime(m.Id)
 		if !o {
 			continue
 		}
-		send_num, _ := this.db.Pays.GetSendMailNum(m.BundleId)
+		send_num, _ := this.db.Pays.GetSendMailNum(m.Id)
 		if send_num >= MONTH_CARD_DAYS_NUM {
 			continue
 		}
@@ -134,7 +134,7 @@ func (this *Player) charge_month_card_award(month_cards []*tables.XmlPayItem, no
 			}
 		}
 		if num > 0 {
-			this.db.Pays.SetLastAwardTime(m.BundleId, int32(now_time.Unix()))
+			this.db.Pays.SetLastAwardTime(m.Id, int32(now_time.Unix()))
 		}
 	}
 	return true
@@ -148,8 +148,8 @@ func (this *Player) charge_has_month_card() bool {
 	}
 
 	for i := 0; i < len(arr); i++ {
-		bundle_id := arr[i].BundleId
-		send_num, o := this.db.Pays.GetSendMailNum(bundle_id)
+		id := arr[i].Id
+		send_num, o := this.db.Pays.GetSendMailNum(id)
 		if o && send_num < MONTH_CARD_DAYS_NUM {
 			return true
 		}
@@ -159,11 +159,11 @@ func (this *Player) charge_has_month_card() bool {
 }
 
 func (this *Player) charge_data() int32 {
-	var charged_ids []string
+	var charged_ids []int32
 	var datas []*msg_client_message.MonthCardData
 	all_index := this.db.Pays.GetAllIndex()
 	for _, idx := range all_index {
-		pay_item := pay_table_mgr.GetByBundle(idx)
+		pay_item := pay_table_mgr.Get(idx)
 		if pay_item == nil {
 			continue
 		}
@@ -171,7 +171,7 @@ func (this *Player) charge_data() int32 {
 			payed_time, _ := this.db.Pays.GetLastPayedTime(idx)
 			send_mail_num, _ := this.db.Pays.GetSendMailNum(idx)
 			datas = append(datas, &msg_client_message.MonthCardData{
-				BundleId:    idx,
+				Id:          idx,
 				EndTime:     payed_time + MONTH_CARD_DAYS_NUM*24*3600,
 				SendMailNum: send_mail_num,
 			})
@@ -182,7 +182,7 @@ func (this *Player) charge_data() int32 {
 	response := &msg_client_message.S2CChargeDataResponse{
 		FirstChargeState: this.db.PayCommon.GetFirstPayState(),
 		Datas:            datas,
-		ChargedBundleIds: charged_ids,
+		ChargedIds:       charged_ids,
 	}
 	this.Send(uint16(msg_client_message.S2CChargeDataResponse_ProtoID), response)
 
@@ -219,12 +219,12 @@ func (this *Player) _charge_with_bundle_id(item_id int32, channel int32, bundle_
 	}
 
 	var has bool
-	has = this.db.Pays.HasIndex(bundle_id)
+	has = this.db.Pays.HasIndex(item_id)
 	if has {
 		if pay_item.PayType == tables.PAY_TYPE_MONTH_CARD {
-			mail_num, o := this.db.Pays.GetSendMailNum(bundle_id)
+			mail_num, o := this.db.Pays.GetSendMailNum(item_id)
 			if o && mail_num < MONTH_CARD_DAYS_NUM {
-				log.Error("Player[%v] payed month card %v is using, not outdate", this.Id, bundle_id)
+				log.Error("Player[%v] payed month card %v is using, not outdate", this.Id, item_id)
 				return int32(msg_client_message.E_ERR_CHARGE_MONTH_CARD_ALREADY_PAYED), false
 			}
 		}
@@ -248,15 +248,15 @@ func (this *Player) _charge_with_bundle_id(item_id int32, channel int32, bundle_
 	}
 
 	if has {
-		this.db.Pays.IncbyChargeNum(bundle_id, 1)
+		this.db.Pays.IncbyChargeNum(item_id, 1)
 		this.add_diamond(pay_item.GemReward) // 充值获得钻石
 		if pay_item.PayType == tables.PAY_TYPE_MONTH_CARD {
-			this.db.Pays.SetSendMailNum(bundle_id, 0)
-			this.db.Pays.SetLastAwardTime(bundle_id, 0)
+			this.db.Pays.SetSendMailNum(item_id, 0)
+			this.db.Pays.SetLastAwardTime(item_id, 0)
 		}
 	} else {
 		this.db.Pays.Add(&dbPlayerPayData{
-			BundleId: bundle_id,
+			ItemId: item_id,
 		})
 		this.add_diamond(pay_item.GemRewardFirst) // 首次充值奖励
 	}
@@ -268,7 +268,7 @@ func (this *Player) _charge_with_bundle_id(item_id int32, channel int32, bundle_
 	}
 
 	now_time := time.Now()
-	this.db.Pays.SetLastPayedTime(bundle_id, int32(now_time.Unix()))
+	this.db.Pays.SetLastPayedTime(item_id, int32(now_time.Unix()))
 
 	if aid > 0 && sa != nil {
 		this.activity_update_one_charge(aid, sa)

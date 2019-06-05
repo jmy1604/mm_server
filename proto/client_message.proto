@@ -2669,7 +2669,7 @@ message C2SChargeDataRequest {
 }
 
 message MonthCardData {
-	string BundleId							= 1; // BundleId
+	int32 Id								= 1; // BundleId
 	int32 EndTime							= 2; // 结束时间
 	int32 SendMailNum						= 3; // 已发送奖励邮件数
 }
@@ -2677,7 +2677,7 @@ message MonthCardData {
 message S2CChargeDataResponse {
 	int32 FirstChargeState					= 1; // 首充状态 0 未充  1 已充可领取  2 已领取
 	repeated MonthCardData Datas			= 2; // 月卡数据
-	repeated string ChargedBundleIds		= 3; // 已充过值的BundleId
+	repeated int32 ChargedIds				= 3; // 已充过值的BundleId
 	enum EProtocol { None = 0; ProtoID = 12701; }
 }
 

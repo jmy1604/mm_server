@@ -2272,7 +2272,7 @@ func (this* dbPlayerPayCommonData)clone_to(d *dbPlayerPayCommonData){
 	return
 }
 type dbPlayerPayData struct{
-	BundleId string
+	ItemId int32
 	LastPayedTime int32
 	LastAwardTime int32
 	SendMailNum int32
@@ -2282,7 +2282,7 @@ func (this* dbPlayerPayData)from_pb(pb *db.PlayerPay){
 	if pb == nil {
 		return
 	}
-	this.BundleId = pb.GetBundleId()
+	this.ItemId = pb.GetItemId()
 	this.LastPayedTime = pb.GetLastPayedTime()
 	this.LastAwardTime = pb.GetLastAwardTime()
 	this.SendMailNum = pb.GetSendMailNum()
@@ -2291,7 +2291,7 @@ func (this* dbPlayerPayData)from_pb(pb *db.PlayerPay){
 }
 func (this* dbPlayerPayData)to_pb()(pb *db.PlayerPay){
 	pb = &db.PlayerPay{}
-	pb.BundleId = proto.String(this.BundleId)
+	pb.ItemId = proto.Int32(this.ItemId)
 	pb.LastPayedTime = proto.Int32(this.LastPayedTime)
 	pb.LastAwardTime = proto.Int32(this.LastAwardTime)
 	pb.SendMailNum = proto.Int32(this.SendMailNum)
@@ -2299,7 +2299,7 @@ func (this* dbPlayerPayData)to_pb()(pb *db.PlayerPay){
 	return
 }
 func (this* dbPlayerPayData)clone_to(d *dbPlayerPayData){
-	d.BundleId = this.BundleId
+	d.ItemId = this.ItemId
 	d.LastPayedTime = this.LastPayedTime
 	d.LastAwardTime = this.LastAwardTime
 	d.SendMailNum = this.SendMailNum
@@ -12378,7 +12378,7 @@ func (this *dbPlayerPayCommonColumn)SetFirstPayState(v int32){
 }
 type dbPlayerPayColumn struct{
 	m_row *dbPlayerRow
-	m_data map[string]*dbPlayerPayData
+	m_data map[int32]*dbPlayerPayData
 	m_changed bool
 }
 func (this *dbPlayerPayColumn)load(data []byte)(err error){
@@ -12395,7 +12395,7 @@ func (this *dbPlayerPayColumn)load(data []byte)(err error){
 	for _, v := range pb.List {
 		d := &dbPlayerPayData{}
 		d.from_pb(v)
-		this.m_data[string(d.BundleId)] = d
+		this.m_data[int32(d.ItemId)] = d
 	}
 	this.m_changed = false
 	return
@@ -12416,16 +12416,16 @@ func (this *dbPlayerPayColumn)save( )(data []byte,err error){
 	this.m_changed = false
 	return
 }
-func (this *dbPlayerPayColumn)HasIndex(id string)(has bool){
+func (this *dbPlayerPayColumn)HasIndex(id int32)(has bool){
 	this.m_row.m_lock.UnSafeRLock("dbPlayerPayColumn.HasIndex")
 	defer this.m_row.m_lock.UnSafeRUnlock()
 	_, has = this.m_data[id]
 	return
 }
-func (this *dbPlayerPayColumn)GetAllIndex()(list []string){
+func (this *dbPlayerPayColumn)GetAllIndex()(list []int32){
 	this.m_row.m_lock.UnSafeRLock("dbPlayerPayColumn.GetAllIndex")
 	defer this.m_row.m_lock.UnSafeRUnlock()
-	list = make([]string, len(this.m_data))
+	list = make([]int32, len(this.m_data))
 	i := 0
 	for k, _ := range this.m_data {
 		list[i] = k
@@ -12444,7 +12444,7 @@ func (this *dbPlayerPayColumn)GetAll()(list []dbPlayerPayData){
 	}
 	return
 }
-func (this *dbPlayerPayColumn)Get(id string)(v *dbPlayerPayData){
+func (this *dbPlayerPayColumn)Get(id int32)(v *dbPlayerPayData){
 	this.m_row.m_lock.UnSafeRLock("dbPlayerPayColumn.Get")
 	defer this.m_row.m_lock.UnSafeRUnlock()
 	d := this.m_data[id]
@@ -12458,9 +12458,9 @@ func (this *dbPlayerPayColumn)Get(id string)(v *dbPlayerPayData){
 func (this *dbPlayerPayColumn)Set(v dbPlayerPayData)(has bool){
 	this.m_row.m_lock.UnSafeLock("dbPlayerPayColumn.Set")
 	defer this.m_row.m_lock.UnSafeUnlock()
-	d := this.m_data[string(v.BundleId)]
+	d := this.m_data[int32(v.ItemId)]
 	if d==nil{
-		log.Error("not exist %v %v",this.m_row.GetPlayerId(), v.BundleId)
+		log.Error("not exist %v %v",this.m_row.GetPlayerId(), v.ItemId)
 		return false
 	}
 	v.clone_to(d)
@@ -12470,18 +12470,18 @@ func (this *dbPlayerPayColumn)Set(v dbPlayerPayData)(has bool){
 func (this *dbPlayerPayColumn)Add(v *dbPlayerPayData)(ok bool){
 	this.m_row.m_lock.UnSafeLock("dbPlayerPayColumn.Add")
 	defer this.m_row.m_lock.UnSafeUnlock()
-	_, has := this.m_data[string(v.BundleId)]
+	_, has := this.m_data[int32(v.ItemId)]
 	if has {
-		log.Error("already added %v %v",this.m_row.GetPlayerId(), v.BundleId)
+		log.Error("already added %v %v",this.m_row.GetPlayerId(), v.ItemId)
 		return false
 	}
 	d:=&dbPlayerPayData{}
 	v.clone_to(d)
-	this.m_data[string(v.BundleId)]=d
+	this.m_data[int32(v.ItemId)]=d
 	this.m_changed = true
 	return true
 }
-func (this *dbPlayerPayColumn)Remove(id string){
+func (this *dbPlayerPayColumn)Remove(id int32){
 	this.m_row.m_lock.UnSafeLock("dbPlayerPayColumn.Remove")
 	defer this.m_row.m_lock.UnSafeUnlock()
 	_, has := this.m_data[id]
@@ -12494,7 +12494,7 @@ func (this *dbPlayerPayColumn)Remove(id string){
 func (this *dbPlayerPayColumn)Clear(){
 	this.m_row.m_lock.UnSafeLock("dbPlayerPayColumn.Clear")
 	defer this.m_row.m_lock.UnSafeUnlock()
-	this.m_data=make(map[string]*dbPlayerPayData)
+	this.m_data=make(map[int32]*dbPlayerPayData)
 	this.m_changed = true
 	return
 }
@@ -12503,7 +12503,7 @@ func (this *dbPlayerPayColumn)NumAll()(n int32){
 	defer this.m_row.m_lock.UnSafeRUnlock()
 	return int32(len(this.m_data))
 }
-func (this *dbPlayerPayColumn)GetLastPayedTime(id string)(v int32 ,has bool){
+func (this *dbPlayerPayColumn)GetLastPayedTime(id int32)(v int32 ,has bool){
 	this.m_row.m_lock.UnSafeRLock("dbPlayerPayColumn.GetLastPayedTime")
 	defer this.m_row.m_lock.UnSafeRUnlock()
 	d := this.m_data[id]
@@ -12513,7 +12513,7 @@ func (this *dbPlayerPayColumn)GetLastPayedTime(id string)(v int32 ,has bool){
 	v = d.LastPayedTime
 	return v,true
 }
-func (this *dbPlayerPayColumn)SetLastPayedTime(id string,v int32)(has bool){
+func (this *dbPlayerPayColumn)SetLastPayedTime(id int32,v int32)(has bool){
 	this.m_row.m_lock.UnSafeLock("dbPlayerPayColumn.SetLastPayedTime")
 	defer this.m_row.m_lock.UnSafeUnlock()
 	d := this.m_data[id]
@@ -12525,7 +12525,7 @@ func (this *dbPlayerPayColumn)SetLastPayedTime(id string,v int32)(has bool){
 	this.m_changed = true
 	return true
 }
-func (this *dbPlayerPayColumn)GetLastAwardTime(id string)(v int32 ,has bool){
+func (this *dbPlayerPayColumn)GetLastAwardTime(id int32)(v int32 ,has bool){
 	this.m_row.m_lock.UnSafeRLock("dbPlayerPayColumn.GetLastAwardTime")
 	defer this.m_row.m_lock.UnSafeRUnlock()
 	d := this.m_data[id]
@@ -12535,7 +12535,7 @@ func (this *dbPlayerPayColumn)GetLastAwardTime(id string)(v int32 ,has bool){
 	v = d.LastAwardTime
 	return v,true
 }
-func (this *dbPlayerPayColumn)SetLastAwardTime(id string,v int32)(has bool){
+func (this *dbPlayerPayColumn)SetLastAwardTime(id int32,v int32)(has bool){
 	this.m_row.m_lock.UnSafeLock("dbPlayerPayColumn.SetLastAwardTime")
 	defer this.m_row.m_lock.UnSafeUnlock()
 	d := this.m_data[id]
@@ -12547,7 +12547,7 @@ func (this *dbPlayerPayColumn)SetLastAwardTime(id string,v int32)(has bool){
 	this.m_changed = true
 	return true
 }
-func (this *dbPlayerPayColumn)GetSendMailNum(id string)(v int32 ,has bool){
+func (this *dbPlayerPayColumn)GetSendMailNum(id int32)(v int32 ,has bool){
 	this.m_row.m_lock.UnSafeRLock("dbPlayerPayColumn.GetSendMailNum")
 	defer this.m_row.m_lock.UnSafeRUnlock()
 	d := this.m_data[id]
@@ -12557,7 +12557,7 @@ func (this *dbPlayerPayColumn)GetSendMailNum(id string)(v int32 ,has bool){
 	v = d.SendMailNum
 	return v,true
 }
-func (this *dbPlayerPayColumn)SetSendMailNum(id string,v int32)(has bool){
+func (this *dbPlayerPayColumn)SetSendMailNum(id int32,v int32)(has bool){
 	this.m_row.m_lock.UnSafeLock("dbPlayerPayColumn.SetSendMailNum")
 	defer this.m_row.m_lock.UnSafeUnlock()
 	d := this.m_data[id]
@@ -12569,7 +12569,7 @@ func (this *dbPlayerPayColumn)SetSendMailNum(id string,v int32)(has bool){
 	this.m_changed = true
 	return true
 }
-func (this *dbPlayerPayColumn)IncbySendMailNum(id string,v int32)(r int32){
+func (this *dbPlayerPayColumn)IncbySendMailNum(id int32,v int32)(r int32){
 	this.m_row.m_lock.UnSafeLock("dbPlayerPayColumn.IncbySendMailNum")
 	defer this.m_row.m_lock.UnSafeUnlock()
 	d := this.m_data[id]
@@ -12581,7 +12581,7 @@ func (this *dbPlayerPayColumn)IncbySendMailNum(id string,v int32)(r int32){
 	this.m_changed = true
 	return d.SendMailNum
 }
-func (this *dbPlayerPayColumn)GetChargeNum(id string)(v int32 ,has bool){
+func (this *dbPlayerPayColumn)GetChargeNum(id int32)(v int32 ,has bool){
 	this.m_row.m_lock.UnSafeRLock("dbPlayerPayColumn.GetChargeNum")
 	defer this.m_row.m_lock.UnSafeRUnlock()
 	d := this.m_data[id]
@@ -12591,7 +12591,7 @@ func (this *dbPlayerPayColumn)GetChargeNum(id string)(v int32 ,has bool){
 	v = d.ChargeNum
 	return v,true
 }
-func (this *dbPlayerPayColumn)SetChargeNum(id string,v int32)(has bool){
+func (this *dbPlayerPayColumn)SetChargeNum(id int32,v int32)(has bool){
 	this.m_row.m_lock.UnSafeLock("dbPlayerPayColumn.SetChargeNum")
 	defer this.m_row.m_lock.UnSafeUnlock()
 	d := this.m_data[id]
@@ -12603,7 +12603,7 @@ func (this *dbPlayerPayColumn)SetChargeNum(id string,v int32)(has bool){
 	this.m_changed = true
 	return true
 }
-func (this *dbPlayerPayColumn)IncbyChargeNum(id string,v int32)(r int32){
+func (this *dbPlayerPayColumn)IncbyChargeNum(id int32,v int32)(r int32){
 	this.m_row.m_lock.UnSafeLock("dbPlayerPayColumn.IncbyChargeNum")
 	defer this.m_row.m_lock.UnSafeUnlock()
 	d := this.m_data[id]
@@ -13732,7 +13732,7 @@ func new_dbPlayerRow(table *dbPlayerTable, PlayerId int32) (r *dbPlayerRow) {
 	this.PayCommon.m_row=this
 	this.PayCommon.m_data=&dbPlayerPayCommonData{}
 	this.Pays.m_row=this
-	this.Pays.m_data=make(map[string]*dbPlayerPayData)
+	this.Pays.m_data=make(map[int32]*dbPlayerPayData)
 	this.GuideData.m_row=this
 	this.GuideData.m_data=&dbPlayerGuideDataData{}
 	this.ActivityDatas.m_row=this
