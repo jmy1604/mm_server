@@ -137,6 +137,7 @@ func (this *Player) charge_month_card_award(month_cards []*tables.XmlPayItem, no
 			this.db.Pays.SetLastAwardTime(m.Id, int32(now_time.Unix()))
 		}
 	}
+	this.charge_data()
 	return true
 }
 
@@ -305,8 +306,6 @@ func (this *Player) charge_with_bundle_id(item_id, channel int32, bundle_id stri
 	this.Send(uint16(msg_client_message.S2CChargeResponse_ProtoID), response)
 
 	log.Trace("Player[%v] charged bundle %v with channel %v", this.Id, response, channel)
-
-	this.charge_data()
 
 	return 1
 }
