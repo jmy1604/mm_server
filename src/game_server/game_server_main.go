@@ -92,7 +92,7 @@ func main() {
 	friend_recommend_mgr.Init()
 
 	// 月卡管理
-	//charge_month_card_manager.Init()
+	charge_month_card_manager.Init()
 
 	if nil != dbc.Preload() {
 		log.Error("dbc Preload Failed !!")
