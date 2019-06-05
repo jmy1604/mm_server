@@ -869,7 +869,7 @@ func (this *Player) send_data_on_login(new_player bool) {
 	this.send_focus_data()
 	this.send_my_picture_data()
 	this.space_fashion_data()
-	this.seven_days_data()
+	//this.seven_days_data()
 	this.get_sign_data()
 	this.charge_data()
 }
