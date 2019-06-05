@@ -281,8 +281,6 @@ func (this *Player) _charge_with_bundle_id(item_id int32, channel int32, bundle_
 		this.Send(uint16(msg_client_message.S2CChargeFirstRewardNotify_ProtoID), notify)
 	}
 
-	this.charge_data()
-
 	return 1, !has
 }
 
@@ -307,6 +305,8 @@ func (this *Player) charge_with_bundle_id(item_id, channel int32, bundle_id stri
 	this.Send(uint16(msg_client_message.S2CChargeResponse_ProtoID), response)
 
 	log.Trace("Player[%v] charged bundle %v with channel %v", this.Id, response, channel)
+
+	this.charge_data()
 
 	return 1
 }
