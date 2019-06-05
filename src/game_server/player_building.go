@@ -145,8 +145,8 @@ func (this *Player) RemoveAreaBuilding(building_id, pos_x, pos_y, width, height 
 }
 
 func (this *Player) if_pos_can_set_building(x, y, width, height, extra_id, area_type int32) int32 {
-	myidxs := this.db.Areas.GetAllIdxs()
-	log.Info("ChkIfPosCanSetBuilding %d %d %d %d %d %d [%v]", x, y, width, height, extra_id, area_type, myidxs)
+	//myidxs := this.db.Areas.GetAllIdxs()
+	//log.Info("ChkIfPosCanSetBuilding %d %d %d %d %d %d [%v]", x, y, width, height, extra_id, area_type, myidxs)
 
 	var cur_building_id int32
 	for tmp_x := int32(0); tmp_x < width; tmp_x++ {
