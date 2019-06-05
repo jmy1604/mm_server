@@ -233,7 +233,7 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 	decodedSignature, err = base64.StdEncoding.DecodeString(string(signature_data))
 	if err != nil {
 		atomic.CompareAndSwapInt32(&player.is_paying, 1, 0)
-		log.Error("Player[%v] failed to decode signature[%v], err %v", player.Id, signature_data, err.Error())
+		log.Error("Player[%v] failed to decode signature[%v], err %v", player.Id, string(signature_data), err.Error())
 		return -1
 	}
 	sha1 := sha1.New()
