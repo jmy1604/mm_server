@@ -871,6 +871,7 @@ func (this *Player) send_data_on_login(new_player bool) {
 	this.space_fashion_data()
 	this.seven_days_data()
 	this.get_sign_data()
+	this.charge_data()
 }
 
 func C2SPlayerInfoHandler(p *Player, msg_data []byte) int32 {
