@@ -133,7 +133,7 @@
 	"ChangeNameCostDiamond": 600,
 	"ChangeNameFreeNum": 1,
 	
-	"FirstChargeRewards": [56054,50,2,20000,15051,1],
+	"FirstChargeRewards": [58299,10,3,1000,2,1000],
 	"MonthCardSendRewardTime": "00:00:00",
 	
 	"MailTitleBytes":32,

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Config>
-	<item ID="1" ActivePay="0" BundleID="com.caesars.fantasybay.gem5" GemRewardFirst="250" GemReward="250" MonthCardDay="30" MonthCardReward="75" RewardShow="250" RewardBonusShow="75" ItemReward="21,250" RecordGold="4.99" />
-	<item ID="2" ActivePay="0" BundleID="com.caesars.fantasybay.gem6" GemRewardFirst="750" GemReward="750" MonthCardDay="30" MonthCardReward="300" RewardShow="750" RewardBonusShow="300" ItemReward="21,750" RecordGold="14.99" />
-	<item ID="3" ActivePay="0" BundleID="com.caesars.fantasybay.gem0" GemRewardFirst="100" GemReward="50" MonthCardDay="0" MonthCardReward="0" RewardShow="50" RewardBonusShow="0" ItemReward="21,50" RecordGold="0.99" />
-	<item ID="4" ActivePay="0" BundleID="com.caesars.fantasybay.gem1" GemRewardFirst="500" GemReward="250" MonthCardDay="0" MonthCardReward="0" RewardShow="250" RewardBonusShow="0" ItemReward="21,250" RecordGold="4.99" />
-	<item ID="5" ActivePay="0" BundleID="com.caesars.fantasybay.gem2" GemRewardFirst="1100" GemReward="550" MonthCardDay="0" MonthCardReward="0" RewardShow="500" RewardBonusShow="50" ItemReward="21,500" RecordGold="9.99" />
-	<item ID="6" ActivePay="0" BundleID="com.caesars.fantasybay.gem3" GemRewardFirst="2400" GemReward="1200" MonthCardDay="0" MonthCardReward="0" RewardShow="1000" RewardBonusShow="200" ItemReward="21,1000" RecordGold="19.98" />
-	<item ID="7" ActivePay="0" BundleID="com.caesars.fantasybay.gem4" GemRewardFirst="6500" GemReward="3250" MonthCardDay="0" MonthCardReward="0" RewardShow="2500" RewardBonusShow="750" ItemReward="21,2500" RecordGold="49.99" />
-	<item ID="8" ActivePay="0" BundleID="com.caesars.fantasybay.gem5" GemRewardFirst="14000" GemReward="7000" MonthCardDay="0" MonthCardReward="0" RewardShow="5000" RewardBonusShow="2000" ItemReward="21,5000" RecordGold="99.99" />
+	<item ID="1" ActivePay="0" BundleID="com.caesars.fantasybay.gem5" GemRewardFirst="250" GemReward="250" MonthCardDay="30" MonthCardReward="75" RewardShow="250" RewardBonusShow="75" ItemReward="2,25000" RecordGold="4.99" />
+	<item ID="2" ActivePay="0" BundleID="com.caesars.fantasybay.gem6" GemRewardFirst="750" GemReward="750" MonthCardDay="30" MonthCardReward="300" RewardShow="750" RewardBonusShow="300" ItemReward="2,75000" RecordGold="14.99" />
+	<item ID="3" ActivePay="0" BundleID="com.caesars.fantasybay.gem0" GemRewardFirst="100" GemReward="50" MonthCardDay="0" MonthCardReward="0" RewardShow="50" RewardBonusShow="0" ItemReward="2,5000" RecordGold="0.99" />
+	<item ID="4" ActivePay="0" BundleID="com.caesars.fantasybay.gem1" GemRewardFirst="500" GemReward="250" MonthCardDay="0" MonthCardReward="0" RewardShow="250" RewardBonusShow="0" ItemReward="2,25000" RecordGold="4.99" />
+	<item ID="5" ActivePay="0" BundleID="com.caesars.fantasybay.gem2" GemRewardFirst="1100" GemReward="550" MonthCardDay="0" MonthCardReward="0" RewardShow="500" RewardBonusShow="50" ItemReward="2,50000" RecordGold="9.99" />
+	<item ID="6" ActivePay="0" BundleID="com.caesars.fantasybay.gem3" GemRewardFirst="2400" GemReward="1200" MonthCardDay="0" MonthCardReward="0" RewardShow="1000" RewardBonusShow="200" ItemReward="2,100000" RecordGold="19.989999999999998" />
+	<item ID="7" ActivePay="0" BundleID="com.caesars.fantasybay.gem4" GemRewardFirst="6500" GemReward="3250" MonthCardDay="0" MonthCardReward="0" RewardShow="2500" RewardBonusShow="750" ItemReward="2,250000" RecordGold="49.99" />
+	<item ID="8" ActivePay="0" BundleID="com.caesars.fantasybay.gem5" GemRewardFirst="14000" GemReward="7000" MonthCardDay="0" MonthCardReward="0" RewardShow="5000" RewardBonusShow="2000" ItemReward="2,500000" RecordGold="99.99" />
 </Config>
