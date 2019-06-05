@@ -44,6 +44,8 @@ var sub_activity_table_mgr tables.SubActivityTableMgr
 var mail_table_mgr tables.MailTableMgr
 var fashion_table_mgr tables.FashionTableMgr
 var activity_old_table_mgr tables.ActivityOldTableMgr
+var sign_table_mgr tables.SignTableMgr
+var seven_days_table_mgr tables.SevenDaysTableMgr
 
 func table_init() error {
 	if !global_config.Init("") {
@@ -188,6 +190,14 @@ func table_init() error {
 
 	if !activity_old_table_mgr.Init("", "", "", "") {
 		return errors.New("activity old table manager init failed")
+	}
+
+	if !sign_table_mgr.Init("") {
+		return errors.New("sign table manager init failed")
+	}
+
+	if !seven_days_table_mgr.Init("") {
+		return errors.New("seven day table manager init failed")
 	}
 
 	if !pay_list.LoadConfig(server_config.GetConfPathFile("pay.json")) {

@@ -315,12 +315,12 @@ func (this *PlayerManager) RegMsgHandler() {
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChatMsgPullRequest_ProtoID), C2SChatPullMsgHandler)
 
 	// 签到
-	/*msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_SIGN_DATA_REQUEST), C2SSignDataHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_SIGN_AWARD_REQUEST), C2SSignAwardHandler)*/
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSignDataRequest_ProtoID), C2SSignDataHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSignAwardRequest_ProtoID), C2SSignAwardHandler)
 
 	// 七天乐
-	/*msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_SEVENDAYS_DATA_REQUEST), C2SSevenDaysDataHandler)
-	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message_id.MSGID_C2S_SEVENDAYS_AWARD_REQUEST), C2SSevenDaysAwardHandler)*/
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSevenDaysDataRequest_ProtoID), C2SSevenDaysDataHandler)
+	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SSevenDaysAwardRequest_ProtoID), C2SSevenDaysAwardHandler)
 
 	// 充值
 	msg_handler_mgr.SetPlayerMsgHandler(uint16(msg_client_message.C2SChargeDataRequest_ProtoID), C2SChargeDataHandler)

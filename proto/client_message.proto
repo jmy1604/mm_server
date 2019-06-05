@@ -340,6 +340,16 @@ enum E_ERR{
 	
 	// 排行榜
 	RANK_LIST_TYPE_INVALID						= -102600; // 排行榜类型错误
+	
+	// 签到
+	SIGN_TABLE_DATA_NOT_FOUND					= -102700; // 签到配置数据不存在
+	SIGN_ALREADY_AWARD							= -102701; // 已领取过奖励
+	SIGN_MUST_AWARD_IN_SEQUENCE					= -102702; // 必须按签到顺序领奖
+	SIGN_ALL_AWARDED							= -102703; // 签到的奖励都已领完
+	
+	// 七天乐
+	SEVEN_DAYS_FINISHED							= -102800; // 活动已结束
+	SEVEN_DAYS_AWARDED							= -102801; // 已领奖
 }
 
 // =================================== end ====================================
@@ -2974,4 +2984,54 @@ message S2CSpaceCatUnlockResponse {
 	int32 CatId								= 2;
 	bool IsUnlock							= 3;
 	enum EProtocol { None = 0; ProtoID = 13031; }
+}
+
+// ---------------------------------- 签到 ------------------------------------
+// 签到数据
+message C2SSignDataRequest {
+	enum EProtocol { None = 0; ProtoID = 14000; }
+}
+
+message S2CSignDataResponse {
+	int32 Group                        		= 1; // 签到周期索引
+	int32 TakeAwardIndex					= 2; // 已领奖的索引
+	int32 SignedIndex					 	= 3; // 已签到的索引
+	int32 NextSignRemainSeconds				= 4; // 下次领奖剩余秒数
+	enum EProtocol { None = 0; ProtoID = 14001; }
+}
+
+// 领奖
+message C2SSignAwardRequest {
+	int32 Index								= 1; // 领奖的索引  0 表示领取所有
+	enum EProtocol { None = 0; ProtoID = 14002; }
+}
+
+message S2CSignAwardResponse {
+	int32 Index								= 1; // 领奖的索引
+	repeated ItemInfo Rewards               = 2; // 领到的奖
+	enum EProtocol { None = 0; ProtoID = 14003; }
+}
+
+// ---------------------------------- 七天乐 ----------------------------------
+// 七天乐数据
+message C2SSevenDaysDataRequest {
+	enum EProtocol { None = 0; ProtoID = 15000; }
+}
+
+message S2CSevenDaysDataResponse {
+	repeated int32 AwardStates				= 1; // 领奖状态序列，最大长度为7，0表示未领奖，1表示已领奖
+	int32 StartTime							= 2; // 开始时间
+	int32 RemainSeconds						= 3; // 剩余时间
+	enum EProtocol { None = 0; ProtoID = 15001; }
+}
+
+// 领奖
+message C2SSevenDaysAwardRequest {
+	enum EProtocol { None = 0; ProtoID = 15002; }
+}
+
+message S2CSevenDaysAwardResponse {
+	int32 Days								= 1; // 对应天数
+	repeated ItemInfo Rewards				= 2; // 获得的奖励
+	enum EProtocol { None = 0; ProtoID = 15003; }
 }

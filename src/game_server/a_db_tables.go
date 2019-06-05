@@ -2188,6 +2188,70 @@ func (this* dbPlayerMailData)clone_to(d *dbPlayerMailData){
 	d.ExtraValue = this.ExtraValue
 	return
 }
+type dbPlayerSignData struct{
+	CurrGroup int32
+	AwardIndex int32
+	SignedIndex int32
+	LastSignedTime int32
+}
+func (this* dbPlayerSignData)from_pb(pb *db.PlayerSign){
+	if pb == nil {
+		return
+	}
+	this.CurrGroup = pb.GetCurrGroup()
+	this.AwardIndex = pb.GetAwardIndex()
+	this.SignedIndex = pb.GetSignedIndex()
+	this.LastSignedTime = pb.GetLastSignedTime()
+	return
+}
+func (this* dbPlayerSignData)to_pb()(pb *db.PlayerSign){
+	pb = &db.PlayerSign{}
+	pb.CurrGroup = proto.Int32(this.CurrGroup)
+	pb.AwardIndex = proto.Int32(this.AwardIndex)
+	pb.SignedIndex = proto.Int32(this.SignedIndex)
+	pb.LastSignedTime = proto.Int32(this.LastSignedTime)
+	return
+}
+func (this* dbPlayerSignData)clone_to(d *dbPlayerSignData){
+	d.CurrGroup = this.CurrGroup
+	d.AwardIndex = this.AwardIndex
+	d.SignedIndex = this.SignedIndex
+	d.LastSignedTime = this.LastSignedTime
+	return
+}
+type dbPlayerSevenDaysData struct{
+	Awards []int32
+	Days int32
+}
+func (this* dbPlayerSevenDaysData)from_pb(pb *db.PlayerSevenDays){
+	if pb == nil {
+		this.Awards = make([]int32,0)
+		return
+	}
+	this.Awards = make([]int32,len(pb.GetAwards()))
+	for i, v := range pb.GetAwards() {
+		this.Awards[i] = v
+	}
+	this.Days = pb.GetDays()
+	return
+}
+func (this* dbPlayerSevenDaysData)to_pb()(pb *db.PlayerSevenDays){
+	pb = &db.PlayerSevenDays{}
+	pb.Awards = make([]int32, len(this.Awards))
+	for i, v := range this.Awards {
+		pb.Awards[i]=v
+	}
+	pb.Days = proto.Int32(this.Days)
+	return
+}
+func (this* dbPlayerSevenDaysData)clone_to(d *dbPlayerSevenDaysData){
+	d.Awards = make([]int32, len(this.Awards))
+	for _ii, _vv := range this.Awards {
+		d.Awards[_ii]=_vv
+	}
+	d.Days = this.Days
+	return
+}
 type dbPlayerPayCommonData struct{
 	FirstPayState int32
 }
@@ -12074,6 +12138,184 @@ func (this *dbPlayerMailColumn)SetExtraValue(id int32,v int32)(has bool){
 	this.m_changed = true
 	return true
 }
+type dbPlayerSignColumn struct{
+	m_row *dbPlayerRow
+	m_data *dbPlayerSignData
+	m_changed bool
+}
+func (this *dbPlayerSignColumn)load(data []byte)(err error){
+	if data == nil || len(data) == 0 {
+		this.m_data = &dbPlayerSignData{}
+		this.m_changed = false
+		return nil
+	}
+	pb := &db.PlayerSign{}
+	err = proto.Unmarshal(data, pb)
+	if err != nil {
+		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_data = &dbPlayerSignData{}
+	this.m_data.from_pb(pb)
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerSignColumn)save( )(data []byte,err error){
+	pb:=this.m_data.to_pb()
+	data, err = proto.Marshal(pb)
+	if err != nil {
+		log.Error("Marshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerSignColumn)Get( )(v *dbPlayerSignData ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerSignColumn.Get")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v=&dbPlayerSignData{}
+	this.m_data.clone_to(v)
+	return
+}
+func (this *dbPlayerSignColumn)Set(v dbPlayerSignData ){
+	this.m_row.m_lock.UnSafeLock("dbPlayerSignColumn.Set")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data=&dbPlayerSignData{}
+	v.clone_to(this.m_data)
+	this.m_changed=true
+	return
+}
+func (this *dbPlayerSignColumn)GetCurrGroup( )(v int32 ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerSignColumn.GetCurrGroup")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v = this.m_data.CurrGroup
+	return
+}
+func (this *dbPlayerSignColumn)SetCurrGroup(v int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerSignColumn.SetCurrGroup")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data.CurrGroup = v
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerSignColumn)GetAwardIndex( )(v int32 ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerSignColumn.GetAwardIndex")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v = this.m_data.AwardIndex
+	return
+}
+func (this *dbPlayerSignColumn)SetAwardIndex(v int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerSignColumn.SetAwardIndex")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data.AwardIndex = v
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerSignColumn)GetSignedIndex( )(v int32 ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerSignColumn.GetSignedIndex")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v = this.m_data.SignedIndex
+	return
+}
+func (this *dbPlayerSignColumn)SetSignedIndex(v int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerSignColumn.SetSignedIndex")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data.SignedIndex = v
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerSignColumn)GetLastSignedTime( )(v int32 ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerSignColumn.GetLastSignedTime")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v = this.m_data.LastSignedTime
+	return
+}
+func (this *dbPlayerSignColumn)SetLastSignedTime(v int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerSignColumn.SetLastSignedTime")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data.LastSignedTime = v
+	this.m_changed = true
+	return
+}
+type dbPlayerSevenDaysColumn struct{
+	m_row *dbPlayerRow
+	m_data *dbPlayerSevenDaysData
+	m_changed bool
+}
+func (this *dbPlayerSevenDaysColumn)load(data []byte)(err error){
+	if data == nil || len(data) == 0 {
+		this.m_data = &dbPlayerSevenDaysData{}
+		this.m_changed = false
+		return nil
+	}
+	pb := &db.PlayerSevenDays{}
+	err = proto.Unmarshal(data, pb)
+	if err != nil {
+		log.Error("Unmarshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_data = &dbPlayerSevenDaysData{}
+	this.m_data.from_pb(pb)
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerSevenDaysColumn)save( )(data []byte,err error){
+	pb:=this.m_data.to_pb()
+	data, err = proto.Marshal(pb)
+	if err != nil {
+		log.Error("Marshal %v", this.m_row.GetPlayerId())
+		return
+	}
+	this.m_changed = false
+	return
+}
+func (this *dbPlayerSevenDaysColumn)Get( )(v *dbPlayerSevenDaysData ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerSevenDaysColumn.Get")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v=&dbPlayerSevenDaysData{}
+	this.m_data.clone_to(v)
+	return
+}
+func (this *dbPlayerSevenDaysColumn)Set(v dbPlayerSevenDaysData ){
+	this.m_row.m_lock.UnSafeLock("dbPlayerSevenDaysColumn.Set")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data=&dbPlayerSevenDaysData{}
+	v.clone_to(this.m_data)
+	this.m_changed=true
+	return
+}
+func (this *dbPlayerSevenDaysColumn)GetAwards( )(v []int32 ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerSevenDaysColumn.GetAwards")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v = make([]int32, len(this.m_data.Awards))
+	for _ii, _vv := range this.m_data.Awards {
+		v[_ii]=_vv
+	}
+	return
+}
+func (this *dbPlayerSevenDaysColumn)SetAwards(v []int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerSevenDaysColumn.SetAwards")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data.Awards = make([]int32, len(v))
+	for _ii, _vv := range v {
+		this.m_data.Awards[_ii]=_vv
+	}
+	this.m_changed = true
+	return
+}
+func (this *dbPlayerSevenDaysColumn)GetDays( )(v int32 ){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerSevenDaysColumn.GetDays")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	v = this.m_data.Days
+	return
+}
+func (this *dbPlayerSevenDaysColumn)SetDays(v int32){
+	this.m_row.m_lock.UnSafeLock("dbPlayerSevenDaysColumn.SetDays")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	this.m_data.Days = v
+	this.m_changed = true
+	return
+}
 type dbPlayerPayCommonColumn struct{
 	m_row *dbPlayerRow
 	m_data *dbPlayerPayCommonData
@@ -13356,6 +13598,8 @@ type dbPlayerRow struct {
 	ServerRewards dbPlayerServerRewardColumn
 	MailCommon dbPlayerMailCommonColumn
 	Mails dbPlayerMailColumn
+	Sign dbPlayerSignColumn
+	SevenDays dbPlayerSevenDaysColumn
 	PayCommon dbPlayerPayCommonColumn
 	Pays dbPlayerPayColumn
 	GuideData dbPlayerGuideDataColumn
@@ -13481,6 +13725,10 @@ func new_dbPlayerRow(table *dbPlayerTable, PlayerId int32) (r *dbPlayerRow) {
 	this.MailCommon.m_data=&dbPlayerMailCommonData{}
 	this.Mails.m_row=this
 	this.Mails.m_data=make(map[int32]*dbPlayerMailData)
+	this.Sign.m_row=this
+	this.Sign.m_data=&dbPlayerSignData{}
+	this.SevenDays.m_row=this
+	this.SevenDays.m_data=&dbPlayerSevenDaysData{}
 	this.PayCommon.m_row=this
 	this.PayCommon.m_data=&dbPlayerPayCommonData{}
 	this.Pays.m_row=this
@@ -13510,7 +13758,7 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.m_lock.UnSafeLock("dbPlayerRow.save_data")
 	defer this.m_lock.UnSafeUnlock()
 	if this.m_new {
-		db_args:=new_db_args(68)
+		db_args:=new_db_args(70)
 		db_args.Push(this.m_PlayerId)
 		db_args.Push(this.m_UniqueId)
 		db_args.Push(this.m_Account)
@@ -13829,6 +14077,18 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 			return db_err,false,0,"",nil
 		}
 		db_args.Push(dMails)
+		dSign,db_err:=this.Sign.save()
+		if db_err!=nil{
+			log.Error("insert save Sign failed")
+			return db_err,false,0,"",nil
+		}
+		db_args.Push(dSign)
+		dSevenDays,db_err:=this.SevenDays.save()
+		if db_err!=nil{
+			log.Error("insert save SevenDays failed")
+			return db_err,false,0,"",nil
+		}
+		db_args.Push(dSevenDays)
 		dPayCommon,db_err:=this.PayCommon.save()
 		if db_err!=nil{
 			log.Error("insert save PayCommon failed")
@@ -13892,9 +14152,9 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 		args=db_args.GetArgs()
 		state = 1
 	} else {
-		if this.m_UniqueId_changed||this.m_Account_changed||this.m_Name_changed||this.m_Token_changed||this.m_Level_changed||this.Info.m_changed||this.Stages.m_changed||this.ChapterUnLock.m_changed||this.Items.m_changed||this.Areas.m_changed||this.BuildingCommon.m_changed||this.Buildings.m_changed||this.BuildingDepots.m_changed||this.DepotBuildingFormulas.m_changed||this.MakingFormulaBuildings.m_changed||this.Crops.m_changed||this.Cats.m_changed||this.CatHouses.m_changed||this.ShopItems.m_changed||this.ShopLimitedInfos.m_changed||this.Chests.m_changed||this.PayBacks.m_changed||this.Options.m_changed||this.TaskCommon.m_changed||this.Tasks.m_changed||this.FinishedTasks.m_changed||this.DailyTaskAllDailys.m_changed||this.SevenActivitys.m_changed||this.SignInfo.m_changed||this.FriendRelative.m_changed||this.Friends.m_changed||this.FriendRecommends.m_changed||this.FriendAsks.m_changed||this.FriendReqs.m_changed||this.FriendPoints.m_changed||this.FriendChatUnreadIds.m_changed||this.FriendChatUnreadMessages.m_changed||this.CustomData.m_changed||this.ChaterOpenRequest.m_changed||this.ExpeditionCommon.m_changed||this.Expeditions.m_changed||this.HandbookItems.m_changed||this.HeadItems.m_changed||this.Activitys.m_changed||this.SuitAwards.m_changed||this.Zans.m_changed||this.Foster.m_changed||this.FosterCats.m_changed||this.FosterCatOnFriends.m_changed||this.FosterFriendCats.m_changed||this.Chats.m_changed||this.Anouncement.m_changed||this.FirstDrawCards.m_changed||this.TalkForbid.m_changed||this.ServerRewards.m_changed||this.MailCommon.m_changed||this.Mails.m_changed||this.PayCommon.m_changed||this.Pays.m_changed||this.GuideData.m_changed||this.ActivityDatas.m_changed||this.SysMail.m_changed||this.Surface.m_changed||this.SpaceCommon.m_changed||this.FocusPlayers.m_changed||this.MyPictureDatas.m_changed||this.OtherCatPictureUnlocks.m_changed{
+		if this.m_UniqueId_changed||this.m_Account_changed||this.m_Name_changed||this.m_Token_changed||this.m_Level_changed||this.Info.m_changed||this.Stages.m_changed||this.ChapterUnLock.m_changed||this.Items.m_changed||this.Areas.m_changed||this.BuildingCommon.m_changed||this.Buildings.m_changed||this.BuildingDepots.m_changed||this.DepotBuildingFormulas.m_changed||this.MakingFormulaBuildings.m_changed||this.Crops.m_changed||this.Cats.m_changed||this.CatHouses.m_changed||this.ShopItems.m_changed||this.ShopLimitedInfos.m_changed||this.Chests.m_changed||this.PayBacks.m_changed||this.Options.m_changed||this.TaskCommon.m_changed||this.Tasks.m_changed||this.FinishedTasks.m_changed||this.DailyTaskAllDailys.m_changed||this.SevenActivitys.m_changed||this.SignInfo.m_changed||this.FriendRelative.m_changed||this.Friends.m_changed||this.FriendRecommends.m_changed||this.FriendAsks.m_changed||this.FriendReqs.m_changed||this.FriendPoints.m_changed||this.FriendChatUnreadIds.m_changed||this.FriendChatUnreadMessages.m_changed||this.CustomData.m_changed||this.ChaterOpenRequest.m_changed||this.ExpeditionCommon.m_changed||this.Expeditions.m_changed||this.HandbookItems.m_changed||this.HeadItems.m_changed||this.Activitys.m_changed||this.SuitAwards.m_changed||this.Zans.m_changed||this.Foster.m_changed||this.FosterCats.m_changed||this.FosterCatOnFriends.m_changed||this.FosterFriendCats.m_changed||this.Chats.m_changed||this.Anouncement.m_changed||this.FirstDrawCards.m_changed||this.TalkForbid.m_changed||this.ServerRewards.m_changed||this.MailCommon.m_changed||this.Mails.m_changed||this.Sign.m_changed||this.SevenDays.m_changed||this.PayCommon.m_changed||this.Pays.m_changed||this.GuideData.m_changed||this.ActivityDatas.m_changed||this.SysMail.m_changed||this.Surface.m_changed||this.SpaceCommon.m_changed||this.FocusPlayers.m_changed||this.MyPictureDatas.m_changed||this.OtherCatPictureUnlocks.m_changed{
 			update_string = "UPDATE Players SET "
-			db_args:=new_db_args(68)
+			db_args:=new_db_args(70)
 			if this.m_UniqueId_changed{
 				update_string+="UniqueId=?,"
 				db_args.Push(this.m_UniqueId)
@@ -14383,6 +14643,24 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 				}
 				db_args.Push(dMails)
 			}
+			if this.Sign.m_changed{
+				update_string+="Sign=?,"
+				dSign,err:=this.Sign.save()
+				if err!=nil{
+					log.Error("update save Sign failed")
+					return err,false,0,"",nil
+				}
+				db_args.Push(dSign)
+			}
+			if this.SevenDays.m_changed{
+				update_string+="SevenDays=?,"
+				dSevenDays,err:=this.SevenDays.save()
+				if err!=nil{
+					log.Error("update save SevenDays failed")
+					return err,false,0,"",nil
+				}
+				db_args.Push(dSevenDays)
+			}
 			if this.PayCommon.m_changed{
 				update_string+="PayCommon=?,"
 				dPayCommon,err:=this.PayCommon.save()
@@ -14538,6 +14816,8 @@ func (this *dbPlayerRow) save_data(release bool) (err error, released bool, stat
 	this.ServerRewards.m_changed = false
 	this.MailCommon.m_changed = false
 	this.Mails.m_changed = false
+	this.Sign.m_changed = false
+	this.SevenDays.m_changed = false
 	this.PayCommon.m_changed = false
 	this.Pays.m_changed = false
 	this.GuideData.m_changed = false
@@ -15103,6 +15383,22 @@ func (this *dbPlayerTable) check_create_table() (err error) {
 			return
 		}
 	}
+	_, hasSign := columns["Sign"]
+	if !hasSign {
+		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN Sign LONGBLOB")
+		if err != nil {
+			log.Error("ADD COLUMN Sign failed")
+			return
+		}
+	}
+	_, hasSevenDays := columns["SevenDays"]
+	if !hasSevenDays {
+		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN SevenDays LONGBLOB")
+		if err != nil {
+			log.Error("ADD COLUMN SevenDays failed")
+			return
+		}
+	}
 	_, hasPayCommon := columns["PayCommon"]
 	if !hasPayCommon {
 		_, err = this.m_dbc.Exec("ALTER TABLE Players ADD COLUMN PayCommon LONGBLOB")
@@ -15186,7 +15482,7 @@ func (this *dbPlayerTable) check_create_table() (err error) {
 	return
 }
 func (this *dbPlayerTable) prepare_preload_select_stmt() (err error) {
-	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,BuildingCommon,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface,SpaceCommon,FocusPlayers,MyPictureDatas,OtherCatPictureUnlocks FROM Players")
+	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,BuildingCommon,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,Sign,SevenDays,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface,SpaceCommon,FocusPlayers,MyPictureDatas,OtherCatPictureUnlocks FROM Players")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -15194,7 +15490,7 @@ func (this *dbPlayerTable) prepare_preload_select_stmt() (err error) {
 	return
 }
 func (this *dbPlayerTable) prepare_save_insert_stmt()(err error){
-	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Players (PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,BuildingCommon,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface,SpaceCommon,FocusPlayers,MyPictureDatas,OtherCatPictureUnlocks) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Players (PlayerId,UniqueId,Account,Name,Token,Level,Info,Stages,ChapterUnLock,Items,Areas,BuildingCommon,Buildings,BuildingDepots,DepotBuildingFormulas,MakingFormulaBuildings,Crops,Cats,CatHouses,ShopItems,ShopLimitedInfos,Chests,PayBacks,Options,TaskCommon,Tasks,FinishedTasks,DailyTaskAllDailys,SevenActivitys,SignInfo,FriendRelative,Friends,FriendRecommends,FriendAsks,FriendReqs,FriendPoints,FriendChatUnreadIds,FriendChatUnreadMessages,CustomData,ChaterOpenRequest,ExpeditionCommon,Expeditions,HandbookItems,HeadItems,Activitys,SuitAwards,Zans,Foster,FosterCats,FosterCatOnFriends,FosterFriendCats,Chats,Anouncement,FirstDrawCards,TalkForbid,ServerRewards,MailCommon,Mails,Sign,SevenDays,PayCommon,Pays,GuideData,ActivityDatas,SysMail,Surface,SpaceCommon,FocusPlayers,MyPictureDatas,OtherCatPictureUnlocks) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
 	if err!=nil{
 		log.Error("prepare failed")
 		return
@@ -15296,6 +15592,8 @@ func (this *dbPlayerTable) Preload() (err error) {
 	var dServerRewards []byte
 	var dMailCommon []byte
 	var dMails []byte
+	var dSign []byte
+	var dSevenDays []byte
 	var dPayCommon []byte
 	var dPays []byte
 	var dGuideData []byte
@@ -15308,7 +15606,7 @@ func (this *dbPlayerTable) Preload() (err error) {
 	var dOtherCatPictureUnlocks []byte
 		this.m_preload_max_id = 0
 	for r.Next() {
-		err = r.Scan(&PlayerId,&dUniqueId,&dAccount,&dName,&dToken,&dLevel,&dInfo,&dStages,&dChapterUnLock,&dItems,&dAreas,&dBuildingCommon,&dBuildings,&dBuildingDepots,&dDepotBuildingFormulas,&dMakingFormulaBuildings,&dCrops,&dCats,&dCatHouses,&dShopItems,&dShopLimitedInfos,&dChests,&dPayBacks,&dOptions,&dTaskCommon,&dTasks,&dFinishedTasks,&dDailyTaskAllDailys,&dSevenActivitys,&dSignInfo,&dFriendRelative,&dFriends,&dFriendRecommends,&dFriendAsks,&dFriendReqs,&dFriendPoints,&dFriendChatUnreadIds,&dFriendChatUnreadMessages,&dCustomData,&dChaterOpenRequest,&dExpeditionCommon,&dExpeditions,&dHandbookItems,&dHeadItems,&dActivitys,&dSuitAwards,&dZans,&dFoster,&dFosterCats,&dFosterCatOnFriends,&dFosterFriendCats,&dChats,&dAnouncement,&dFirstDrawCards,&dTalkForbid,&dServerRewards,&dMailCommon,&dMails,&dPayCommon,&dPays,&dGuideData,&dActivityDatas,&dSysMail,&dSurface,&dSpaceCommon,&dFocusPlayers,&dMyPictureDatas,&dOtherCatPictureUnlocks)
+		err = r.Scan(&PlayerId,&dUniqueId,&dAccount,&dName,&dToken,&dLevel,&dInfo,&dStages,&dChapterUnLock,&dItems,&dAreas,&dBuildingCommon,&dBuildings,&dBuildingDepots,&dDepotBuildingFormulas,&dMakingFormulaBuildings,&dCrops,&dCats,&dCatHouses,&dShopItems,&dShopLimitedInfos,&dChests,&dPayBacks,&dOptions,&dTaskCommon,&dTasks,&dFinishedTasks,&dDailyTaskAllDailys,&dSevenActivitys,&dSignInfo,&dFriendRelative,&dFriends,&dFriendRecommends,&dFriendAsks,&dFriendReqs,&dFriendPoints,&dFriendChatUnreadIds,&dFriendChatUnreadMessages,&dCustomData,&dChaterOpenRequest,&dExpeditionCommon,&dExpeditions,&dHandbookItems,&dHeadItems,&dActivitys,&dSuitAwards,&dZans,&dFoster,&dFosterCats,&dFosterCatOnFriends,&dFosterFriendCats,&dChats,&dAnouncement,&dFirstDrawCards,&dTalkForbid,&dServerRewards,&dMailCommon,&dMails,&dSign,&dSevenDays,&dPayCommon,&dPays,&dGuideData,&dActivityDatas,&dSysMail,&dSurface,&dSpaceCommon,&dFocusPlayers,&dMyPictureDatas,&dOtherCatPictureUnlocks)
 		if err != nil {
 			log.Error("Scan err[%v]", err.Error())
 			return
@@ -15580,6 +15878,16 @@ func (this *dbPlayerTable) Preload() (err error) {
 		err = row.Mails.load(dMails)
 		if err != nil {
 			log.Error("Mails %v", PlayerId)
+			return
+		}
+		err = row.Sign.load(dSign)
+		if err != nil {
+			log.Error("Sign %v", PlayerId)
+			return
+		}
+		err = row.SevenDays.load(dSevenDays)
+		if err != nil {
+			log.Error("SevenDays %v", PlayerId)
 			return
 		}
 		err = row.PayCommon.load(dPayCommon)
