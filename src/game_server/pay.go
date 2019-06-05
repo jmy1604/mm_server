@@ -263,10 +263,10 @@ func verify_google_purchase_data(player *Player, bundle_id string, purchase_data
 		return int32(msg_client_message.E_ERR_CHARGE_GOOGLE_PURCHASE_TOKEN_INVALID)
 	}*/
 
-	pay_item := pay_table_mgr.GetByBundle(bundle_id)
+	/*pay_item := pay_table_mgr.GetByBundle(bundle_id)
 	if pay_item != nil {
 		_post_talking_data(player.Account, "google pay", config.ServerName, config.InnerVersion, pay_channel.Partner, data.OrderId, "android", "charge", "success", player.db.GetLevel(), pay_item.RecordGold, "USD", float64(pay_item.GemReward))
-	}
+	}*/
 
 	log.Trace("Player[%v] google pay bunder_id[%v] purchase_data[%v] verify success", player.Id, bundle_id, purchase_data)
 
