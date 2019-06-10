@@ -205,3 +205,13 @@ type G2R_GetPlayersBaseInfo struct {
 type G2R_GetPlayersBaseInfoResult struct {
 	PlayersInfo []*PlayerBaseInfo
 }
+
+// 获得点赞数
+type G2R_GetZan struct {
+	PlayerId int32
+}
+
+type G2R_GetZanResult struct {
+	PlayerId int32
+	Zan      int32
+}

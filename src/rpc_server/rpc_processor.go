@@ -201,6 +201,22 @@ func (this *G2R_PlayerProc) GetFriendStageScore(args *rpc_proto.G2R_GetFriendSta
 	return nil
 }
 
+// 获取点赞数
+func (this *G2R_PlayerProc) GetZan(args *rpc_proto.G2R_GetZan, result *rpc_proto.G2R_GetZanResult) error {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error(err)
+		}
+	}()
+
+	row := dbc.PlayerBeZaneds.GetRow(args.PlayerId)
+	if row != nil {
+		result.Zan = row.GetZaned()
+	}
+
+	return nil
+}
+
 // 排行榜调用
 type G2R_RankListProc struct {
 }

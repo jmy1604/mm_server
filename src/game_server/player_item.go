@@ -1155,7 +1155,7 @@ func (this *Player) SubStar(star int32, reason, mod string) int32 {
 }
 
 // 玩家赞数
-func (this *Player) AddZan(zan int32, reason, mod string) int32 {
+/*func (this *Player) AddZan(zan int32, reason, mod string) int32 {
 	if zan < 0 {
 		log.Error("Player AddZan zan(%v) < 0  reason(%v) mod(%v)", zan, reason, mod)
 		return this.db.Info.GetZan()
@@ -1177,7 +1177,7 @@ func (this *Player) SubZan(zan int32, reason, mod string) int32 {
 	cur_zan := this.db.Info.IncbyZan(-zan)
 	this.b_base_prop_chg = true
 	return cur_zan
-}
+}*/
 
 // 玩家魅力勋章
 func (this *Player) AddCharmMedal(charm_medal int32, reason, mod string) int32 {

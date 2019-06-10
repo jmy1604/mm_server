@@ -627,7 +627,7 @@ func add_charm_medal_cmd(p *Player, args []string) int32 {
 	return p.AddCharmMedal(int32(medal), "test_add_charm_medal", "test")
 }
 
-func add_zan_cmd(p *Player, args []string) int32 {
+/*func add_zan_cmd(p *Player, args []string) int32 {
 	if len(args) < 1 {
 		log.Error("参数[%v]不够", len(args))
 		return -1
@@ -640,7 +640,7 @@ func add_zan_cmd(p *Player, args []string) int32 {
 	}
 
 	return p.AddZan(int32(zan), "test_add_charm_medal", "test")
-}
+}*/
 
 func add_star_cmd(p *Player, args []string) int32 {
 	if len(args) < 1 {
@@ -1947,7 +1947,6 @@ var test_cmd2funcs = map[string]test_cmd_func{
 	"add_soulstone":             add_soul_stone_cmd,
 	"add_charm":                 add_charm_cmd,
 	"add_charmmedal":            add_charm_medal_cmd,
-	"add_zan":                   add_zan_cmd,
 	"add_star":                  add_star_cmd,
 	"draw_card":                 draw_card_cmd,
 	"drop_items":                drop_items_cmd,

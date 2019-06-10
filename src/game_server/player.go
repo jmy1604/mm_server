@@ -361,7 +361,7 @@ func (this *Player) send_info() {
 		CurUnlockMaxStage:     this.db.Info.GetMaxUnlockStage(),
 		CharmVal:              this.db.Info.GetCharmVal(),
 		CatFood:               this.db.Info.GetCatFood(),
-		Zan:                   this.db.Info.GetZan(),
+		Zan:                   this.rpc_get_zan(),
 		FriendPoints:          this.db.Info.GetFriendPoints(),
 		SoulStone:             this.db.Info.GetSoulStone(),
 		Spirit:                stamina,
@@ -600,10 +600,10 @@ func C2SZanPlayerHandler(p *Player, msg_data []byte) int32 {
 		return -1
 	}
 
-	res := p.zan_player(req.GetPlayerId())
+	/*res := p.zan_player(req.GetPlayerId())
 	if res < 0 {
 		return res
-	}
+	}*/
 
 	// update rank list
 	p.TaskUpdate(tables.TASK_COMPLETE_TYPE_WON_PRAISE, false, 0, 1)
