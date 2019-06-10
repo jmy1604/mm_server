@@ -1346,10 +1346,14 @@ func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, pa
 				if rr == nil {
 					continue
 				}
+				var is_zaned int32
+				if this.db.Zans.HasIndex(rr.PlayerId) {
+					is_zaned = 1
+				}
 				rank_items = append(rank_items, &msg_client_message.RankItemInfo{
 					Rank:        data.StartRank + int32(i),
 					PlayerId:    rr.PlayerId,
-					PlayerValue: []int32{rr.CatId, rr.Ouqi},
+					PlayerValue: []int32{rr.CatId, rr.Ouqi, is_zaned},
 				})
 			}
 		}
@@ -1365,21 +1369,13 @@ func (this *Player) rank_list_get_data(rank_type, rank_start, rank_num int32, pa
 					continue
 				}
 				var is_zaned int32
-				if rank_type == common.RANK_LIST_TYPE_BE_ZANED {
-					if this.db.Zans.HasIndex(rr.PlayerId) {
-						is_zaned = 1
-					}
+				if this.db.Zans.HasIndex(rr.PlayerId) {
+					is_zaned = 1
 				}
 				rank_items = append(rank_items, &msg_client_message.RankItemInfo{
-					Rank:     data.StartRank + int32(i),
-					PlayerId: rr.PlayerId,
-					PlayerValue: func() []int32 {
-						if rank_type == common.RANK_LIST_TYPE_BE_ZANED {
-							return []int32{rr.Value, is_zaned}
-						} else {
-							return []int32{rr.Value}
-						}
-					}(),
+					Rank:        data.StartRank + int32(i),
+					PlayerId:    rr.PlayerId,
+					PlayerValue: []int32{rr.Value, is_zaned},
 				})
 			}
 		}
