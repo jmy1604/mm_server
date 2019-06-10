@@ -723,7 +723,6 @@ func (this *Player) get_friend_info(friend_id int32, now_time time.Time) *msg_cl
 		return nil
 	}
 
-	zan, _ := this.db.Zans.GetZanNum(friend_id)
 	last_save, _ := this.db.Friends.GetLastGivePointsTime(friend_id)
 	remain_seconds := utils.GetRemainSeconds2NextDayTime(last_save, global_config.FriendGivePointsRefreshTime)
 	friend_points, _ := this.db.FriendPoints.GetGivePoints(friend_id)
@@ -736,7 +735,7 @@ func (this *Player) get_friend_info(friend_id int32, now_time time.Time) *msg_cl
 		LastLogin:        f.db.Info.GetLastLogin(),
 		FriendPoints:     friend_points,
 		UnreadMessageNum: this.db.FriendChatUnreadIds.GetUnreadMessageNum(friend_id),
-		Zan:              zan,
+		Zan:              f.rpc_get_zan(),
 		IsZanToday:       this.is_today_zan(friend_id, now_time),
 		LeftGiveSeconds:  remain_seconds,
 	}
