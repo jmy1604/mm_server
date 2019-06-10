@@ -607,10 +607,11 @@ func C2SZanPlayerHandler(p *Player, msg_data []byte) int32 {
 
 	// update rank list
 	p.TaskUpdate(tables.TASK_COMPLETE_TYPE_WON_PRAISE, false, 0, 1)
-	p.rpc_rank_list_update_data(common.RANK_LIST_TYPE_BE_ZANED, []int32{req.GetPlayerId()})
+	result := p.rpc_rank_list_update_data(common.RANK_LIST_TYPE_BE_ZANED, []int32{req.GetPlayerId()})
 
 	response := &msg_client_message.S2CZanPlayerResult{
 		PlayerId: req.GetPlayerId(),
+		TotalZan: result.Result,
 	}
 	p.Send(uint16(msg_client_message.S2CZanPlayerResult_ProtoID), response)
 

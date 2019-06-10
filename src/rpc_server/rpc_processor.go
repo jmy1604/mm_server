@@ -296,7 +296,7 @@ func _player_cat_ouqi_ranklist_update(args *rpc_proto.G2R_RankListDataUpdate, no
 	}
 }
 
-func _player_be_zaned_ranklist_update(args *rpc_proto.G2R_RankListDataUpdate, now_time int32) {
+func _player_be_zaned_ranklist_update(args *rpc_proto.G2R_RankListDataUpdate, now_time int32) int32 {
 	to_player_id := args.RankParam[0]
 	row := dbc.PlayerBeZaneds.GetRow(to_player_id)
 	if row == nil {
@@ -313,6 +313,7 @@ func _player_be_zaned_ranklist_update(args *rpc_proto.G2R_RankListDataUpdate, no
 		row.HistoryTopData.SetRank(curr_rank)
 		row.HistoryTopData.SetZaned(zaned)
 	}
+	return zaned
 }
 
 // 更新排行榜
@@ -331,7 +332,7 @@ func (this *G2R_RankListProc) UpdateData(args *rpc_proto.G2R_RankListDataUpdate,
 	} else if args.RankType == common.RANK_LIST_TYPE_CAT_OUQI {
 		_player_cat_ouqi_ranklist_update(args, now_time)
 	} else if args.RankType == common.RANK_LIST_TYPE_BE_ZANED {
-		_player_be_zaned_ranklist_update(args, now_time)
+		result.Result = _player_be_zaned_ranklist_update(args, now_time)
 	} else {
 		log.Warn("Unknown rank type %v from player %v", args.RankType, args.PlayerId)
 	}

@@ -1491,6 +1491,7 @@ func (this *Player) is_today_zan(player_id int32, now_time time.Time) bool {
 }
 
 func (p *Player) zan_player(player_id int32) int32 {
+	var zan int32
 	now_time := time.Now()
 	o := p.db.Zans.HasIndex(player_id)
 	if o {
@@ -1498,13 +1499,14 @@ func (p *Player) zan_player(player_id int32) int32 {
 			log.Warn("Player[%v] zan player[%v] today yet", p.Id, player_id)
 			return int32(msg_client_message.E_ERR_PLAYER_ALREADY_ZAN_TODAY)
 		}
-		p.db.Zans.IncbyZanNum(player_id, 1)
+		zan = p.db.Zans.IncbyZanNum(player_id, 1)
 		p.db.Zans.SetZanTime(player_id, int32(now_time.Unix()))
 	} else {
+		zan = 1
 		d := &dbPlayerZanData{
 			PlayerId: player_id,
 			ZanTime:  int32(now_time.Unix()),
-			ZanNum:   1,
+			ZanNum:   zan,
 		}
 		p.db.Zans.Add(d)
 	}
