@@ -605,11 +605,14 @@ func C2SZanPlayerHandler(p *Player, msg_data []byte) int32 {
 		return -1
 	}
 
-	if !p.db.Zans.HasIndex(req.GetPlayerId()) {
-		p.db.Zans.Add(&dbPlayerZanData{
-			PlayerId: req.GetPlayerId(),
-		})
+	if p.db.Zans.HasIndex(req.GetPlayerId()) {
+		log.Error("Player %v already zaned player %v", p.Id, req.GetPlayerId())
+		return -1
 	}
+
+	p.db.Zans.Add(&dbPlayerZanData{
+		PlayerId: req.GetPlayerId(),
+	})
 	/*res := p.zan_player(req.GetPlayerId())
 	if res < 0 {
 		return res
