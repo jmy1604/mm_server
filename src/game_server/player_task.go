@@ -233,7 +233,7 @@ func (this *Player) IsTaskComplete(task *tables.XmlTaskItem) bool {
 }
 
 // 单个日常任务更新
-func (this *Player) SingleTaskUpdate(task *tables.XmlTaskItem, add_val int32) (updated bool, cur_val int32, cur_state int32) {
+func (this *Player) SingleTaskUpdate(task *tables.XmlTaskItem, count int32) (updated bool, cur_val int32, cur_state int32) {
 	if this.db.Tasks.HasIndex(task.Id) {
 		// 已领奖
 		state, _ := this.db.Tasks.GetState(task.Id)
@@ -243,15 +243,15 @@ func (this *Player) SingleTaskUpdate(task *tables.XmlTaskItem, add_val int32) (u
 
 		value, _ := this.db.Tasks.GetValue(task.Id)
 		if task.CompleteNum > value {
-			cur_val = this.db.Tasks.IncbyValue(task.Id, add_val)
+			cur_val = this.db.Tasks.IncbyValue(task.Id, count)
 			updated = true
 		}
 	} else {
 		this.db.Tasks.Add(&dbPlayerTaskData{
 			Id:    task.Id,
-			Value: add_val,
+			Value: count,
 		})
-		cur_val = add_val
+		cur_val = count
 		updated = true
 	}
 
@@ -281,7 +281,7 @@ func (this *Player) WholeDailyTaskUpdate(daily_task *tables.XmlTaskItem, notify_
 }
 
 // 任务更新
-func (this *Player) TaskUpdate(complete_type int32, if_not_less bool, event_param int32, value int32) {
+func (this *Player) TaskUpdate(complete_type int32, if_not_less bool, param int32, count int32) {
 	//log.Info("complete_type[%d] event_param[%v] aval[%d]", complete_type, event_param, value)
 	var idx int32
 	var cur_val, cur_state int32
@@ -309,23 +309,23 @@ func (this *Player) TaskUpdate(complete_type int32, if_not_less bool, event_para
 		// 事件参数
 		if taskcfg.EventParam > 0 {
 			if if_not_less {
-				if event_param < taskcfg.EventParam {
+				if param < taskcfg.EventParam {
 					continue
 				}
 			} else {
 				// 参数不一致
-				if event_param != taskcfg.EventParam {
+				if param != taskcfg.EventParam {
 					continue
 				}
 			}
 		}
 
 		var updated bool
-		updated, cur_val, cur_state = this.SingleTaskUpdate(taskcfg, value)
+		updated, cur_val, cur_state = this.SingleTaskUpdate(taskcfg, count)
 
 		if updated && !(taskcfg.Prev > 0 && this.db.Tasks.HasIndex(taskcfg.Prev)) {
 			this.NotifyTaskValue(&notify_task, taskcfg.Id, cur_val, cur_state)
-			log.Trace("Player[%v] Task[%v] EventParam[%v] Progress[%v/%v] FinishType(%v) Complete(%v)", this.Id, taskcfg.Id, event_param, cur_val, taskcfg.CompleteNum, complete_type, cur_state)
+			log.Trace("Player[%v] Task[%v] EventParam[%v] Progress[%v/%v] FinishType(%v) Complete(%v)", this.Id, taskcfg.Id, param, cur_val, taskcfg.CompleteNum, complete_type, cur_state)
 			if taskcfg.Type == tables.TASK_TYPE_DAILY && cur_state == TASK_STATE_COMPLETE {
 				// 所有日常任务更新
 				this.WholeDailyTaskUpdate(taskcfg, &notify_task)
