@@ -114,6 +114,11 @@ func new_player_with_db(id int32, db *dbPlayerRow) *Player {
 
 	ret_p._init()
 
+	// 玩家加入月卡管理
+	if ret_p.charge_has_month_card() {
+		charge_month_card_manager.InsertPlayer(id)
+	}
+
 	return ret_p
 }
 

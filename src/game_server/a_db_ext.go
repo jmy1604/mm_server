@@ -26,6 +26,7 @@ func (this *DBC) on_preload() (err error) {
 		player_mgr.Add2UidMap(p.UniqueId, p)
 
 		//friend_recommend_mgr.CheckAndAddPlayer(p.Id)
+		charge_month_card_manager.InsertPlayer(p.Id)
 
 		if p.db.GetLevel() == 0 {
 			p.db.SetLevel(p.db.GetLevel())
