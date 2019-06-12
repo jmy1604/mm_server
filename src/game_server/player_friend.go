@@ -850,6 +850,8 @@ func remote_friends_info_response(from_player_id int32, to_player_ids []int32, r
 			FriendPoints:     fi.FriendPoints,
 			LeftGiveSeconds:  fi.LeftGiveSeconds,
 			UnreadMessageNum: fi.UnreadMessageNum,
+			Zan:              fi.Zan,
+			IsZanToday:       fi.IsZan,
 		})
 	}
 
