@@ -736,7 +736,7 @@ func (this *Player) get_friend_info(friend_id int32, now_time time.Time) *msg_cl
 		FriendPoints:     friend_points,
 		UnreadMessageNum: this.db.FriendChatUnreadIds.GetUnreadMessageNum(friend_id),
 		Zan:              f.rpc_get_zan(),
-		IsZanToday:       this.is_today_zan(friend_id, now_time),
+		IsZan:            this.db.Zans.HasIndex(friend_id),
 		LeftGiveSeconds:  remain_seconds,
 	}
 }
