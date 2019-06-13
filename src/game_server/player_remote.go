@@ -30,7 +30,7 @@ var id2rpc_funcs = map[int32]rpc_func{
 
 var id2rpc_mfuncs = map[int32]rpc_mfunc{
 	int32(msg_rpc_message.MSGID_G2G_PLAYER_MULTI_INFO_REQUEST): remote_get_multi_player_info_response,
-	int32(msg_rpc_message.MSGID_G2G_FRIENDS_INFO_REQUEST):      remote_friends_info_response,
+	int32(msg_client_message.C2SGetFriendList_ProtoID):         remote_friends_info_response,
 }
 
 var id2rpc_broadcast_func = map[int32]rpc_broadcast_func{}

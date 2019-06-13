@@ -550,7 +550,7 @@ func (this *Player) agree_add_friend(id int32) int32 {
 	log.Debug("Player[%v] agree add friend request of player[%v][%v]", this.Id, id, data.FriendName)
 
 	if agree_player != nil {
-		friend_info := agree_player.get_friend_info(this.Id, time.Now())
+		friend_info := agree_player.get_friend_info(this)
 		agree_player.notify_friend_info(1, friend_info)
 	}
 
@@ -717,16 +717,31 @@ func (this *Player) check_friends_give_points_refresh() (remain_seconds int32) {
 	return
 }
 
-func (this *Player) get_friend_info(friend_id int32, now_time time.Time) *msg_client_message.FriendInfo {
-	f := player_mgr.GetPlayerById(friend_id)
-	if f == nil {
-		return nil
-	}
-
-	last_save, _ := this.db.Friends.GetLastGivePointsTime(friend_id)
-	remain_seconds := utils.GetRemainSeconds2NextDayTime(last_save, global_config.FriendGivePointsRefreshTime)
-	friend_points, _ := this.db.FriendPoints.GetGivePoints(friend_id)
+func (this *Player) _format_friend_info() *msg_client_message.FriendInfo {
 	return &msg_client_message.FriendInfo{
+		PlayerId:  this.Id,
+		Name:      this.db.GetName(),
+		Head:      this.db.Info.GetHead(),
+		Level:     this.db.GetLevel(),
+		VipLevel:  this.db.Info.GetVipLvl(),
+		LastLogin: this.db.Info.GetLastLogin(),
+		Zan:       this.db.Info.GetZan(),
+	}
+}
+
+func (this *Player) _get_friend_extra_info(friend_id int32, friend_info *msg_client_message.FriendInfo) {
+	last_save, _ := this.db.Friends.GetLastGivePointsTime(friend_id)
+	friend_info.LeftGiveSeconds = utils.GetRemainSeconds2NextDayTime(last_save, global_config.FriendGivePointsRefreshTime)
+	friend_info.FriendPoints, _ = this.db.FriendPoints.GetGivePoints(friend_id)
+	friend_info.UnreadMessageNum = this.db.FriendChatUnreadIds.GetUnreadMessageNum(friend_id)
+	friend_info.IsZan = this.db.Zans.HasIndex(friend_id)
+}
+
+func (this *Player) get_friend_info(friend *Player) *msg_client_message.FriendInfo {
+	friend_info := friend._format_friend_info()
+	this._get_friend_extra_info(friend.Id, friend_info)
+	return friend_info
+	/*return &msg_client_message.FriendInfo{
 		PlayerId:         friend_id,
 		Name:             f.db.GetName(),
 		Head:             f.db.Info.GetHead(),
@@ -738,17 +753,17 @@ func (this *Player) get_friend_info(friend_id int32, now_time time.Time) *msg_cl
 		Zan:              f.db.Info.GetZan(),
 		IsZan:            this.db.Zans.HasIndex(friend_id),
 		LeftGiveSeconds:  remain_seconds,
-	}
+	}*/
 }
 
 func (this *Player) get_friends_info(friend_ids []int32) []*msg_client_message.FriendInfo {
-	now_time := time.Now()
 	var friend_list []*msg_client_message.FriendInfo
 	for i := 0; i < len(friend_ids); i++ {
-		friend_info := this.get_friend_info(friend_ids[i], now_time)
-		if friend_info == nil {
+		friend := player_mgr.GetPlayerById(friend_ids[i])
+		if friend == nil {
 			continue
 		}
+		friend_info := this.get_friend_info(friend)
 		friend_list = append(friend_list, friend_info)
 	}
 	return friend_list
@@ -781,7 +796,7 @@ func (this *Player) get_friends_req_info(friend_ids []int32) []*msg_client_messa
 }
 
 func remote_friends_info(from_player_id int32, to_player_ids []int32) (friends_info []*msg_client_message.FriendInfo, err_code int32) {
-	var req msg_rpc_message.G2GFriendsInfoRequest
+	var req msg_client_message.C2SGetFriendList
 
 	req_data, err := _marshal_msg(&req)
 	if err != nil {
@@ -789,14 +804,14 @@ func remote_friends_info(from_player_id int32, to_player_ids []int32) (friends_i
 		return
 	}
 
-	datas := rpc_proto.RpcCommonMultiGet(game_server.rpc_client, "G2G_CommonProc.MultiGet", from_player_id, rpc_proto.OBJECT_TYPE_PLAYER, to_player_ids, int32(msg_rpc_message.MSGID_G2G_FRIENDS_INFO_REQUEST), req_data)
+	datas := rpc_proto.RpcCommonMultiGet(game_server.rpc_client, "G2G_CommonProc.MultiGet", from_player_id, rpc_proto.OBJECT_TYPE_PLAYER, to_player_ids, int32(msg_client_message.C2SGetFriendList_ProtoID), req_data)
 	if datas == nil || len(datas) == 0 {
 		log.Error("get multi players %v empty", to_player_ids)
 		err_code = -1
 		return
 	}
 
-	var response msg_rpc_message.G2GFriendsInfoResponse
+	var response msg_client_message.S2CRetFriendListResult
 	for i := 0; i < len(datas); i++ {
 		if datas[i].ErrorCode < 0 {
 			err_code = -1
@@ -808,51 +823,26 @@ func remote_friends_info(from_player_id int32, to_player_ids []int32) (friends_i
 			err_code = -1
 			return
 		}
-		for _, f := range response.Friends {
-			friends_info = append(friends_info, &msg_client_message.FriendInfo{
-				PlayerId:         f.PlayerId,
-				Name:             f.Name,
-				Level:            f.Level,
-				Head:             f.Head,
-				VipLevel:         f.VipLevel,
-				LastLogin:        f.LastLogin,
-				FriendPoints:     f.FriendPoints,
-				LeftGiveSeconds:  f.LeftGiveSeconds,
-				UnreadMessageNum: f.UnreadMessageNum,
-			})
-		}
+		friends_info = append(friends_info, response.FriendList...)
 	}
 	err_code = 1
 	return
 }
 
 func remote_friends_info_response(from_player_id int32, to_player_ids []int32, req_data []byte) (resp_data []byte, err_code int32) {
-	now_time := time.Now()
-	var friends_info []*msg_rpc_message.FriendInfo
+	var friends_info []*msg_client_message.FriendInfo
 	for i := 0; i < len(to_player_ids); i++ {
 		id := to_player_ids[i]
 		player := player_mgr.GetPlayerById(id)
 		if player == nil {
 			continue
 		}
-		fi := player.get_friend_info(id, now_time)
+		fi := player._format_friend_info()
 		if fi == nil {
 			log.Warn("remote request get player info by id %v from %v not found", id, to_player_ids)
 			continue
 		}
-		friends_info = append(friends_info, &msg_rpc_message.FriendInfo{
-			PlayerId:         id,
-			Name:             fi.Name,
-			Head:             fi.Head,
-			Level:            fi.Level,
-			VipLevel:         fi.VipLevel,
-			LastLogin:        fi.LastLogin,
-			FriendPoints:     fi.FriendPoints,
-			LeftGiveSeconds:  fi.LeftGiveSeconds,
-			UnreadMessageNum: fi.UnreadMessageNum,
-			Zan:              fi.Zan,
-			IsZanToday:       fi.IsZan,
-		})
+		friends_info = append(friends_info, fi)
 	}
 
 	if err_code < 0 {
@@ -860,8 +850,8 @@ func remote_friends_info_response(from_player_id int32, to_player_ids []int32, r
 	}
 
 	if err_code >= 0 {
-		var response = msg_rpc_message.G2GFriendsInfoResponse{
-			Friends: friends_info,
+		var response = msg_client_message.S2CRetFriendListResult{
+			FriendList: friends_info,
 		}
 		var err error
 		resp_data, err = _marshal_msg(&response)
@@ -890,6 +880,9 @@ func (this *Player) get_friend_list() int32 {
 		if int(idx) < len(friend_ids)-1 {
 			friends_info, err_code := remote_friends_info(this.Id, friend_ids[idx+1:])
 			if err_code >= 0 {
+				for _, fi := range friends_info {
+					this._get_friend_extra_info(fi.PlayerId, fi)
+				}
 				friend_list = append(friend_list, friends_info...)
 			}
 		}
