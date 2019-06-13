@@ -231,28 +231,3 @@ func (this *Player) rpc_get_players_base_info(player_ids []int32) (result *rpc_p
 
 	return
 }
-
-func rpc_get_zan(player_id int32) int32 {
-	rpc_client := get_rpc_client()
-	if rpc_client == nil {
-		return -1
-	}
-
-	var args = rpc_proto.G2R_GetZan{
-		PlayerId: player_id,
-	}
-
-	var result rpc_proto.G2R_GetZanResult
-	err := rpc_client.Call("G2R_PlayerProc.GetZan", &args, &result)
-	if err != nil {
-		log.Error("RPC ### Player %v get zan err %v", player_id, err.Error())
-		return -1
-	}
-
-	return result.Zan
-}
-
-// 获得点赞数
-func (this *Player) rpc_get_zan() int32 {
-	return rpc_get_zan(this.Id)
-}

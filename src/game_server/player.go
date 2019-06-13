@@ -366,7 +366,7 @@ func (this *Player) send_info() {
 		CurUnlockMaxStage:     this.db.Info.GetMaxUnlockStage(),
 		CharmVal:              this.db.Info.GetCharmVal(),
 		CatFood:               this.db.Info.GetCatFood(),
-		Zan:                   this.rpc_get_zan(),
+		Zan:                   this.db.Info.GetZan(),
 		FriendPoints:          this.db.Info.GetFriendPoints(),
 		SoulStone:             this.db.Info.GetSoulStone(),
 		Spirit:                stamina,
@@ -613,18 +613,19 @@ func C2SZanPlayerHandler(p *Player, msg_data []byte) int32 {
 	p.db.Zans.Add(&dbPlayerZanData{
 		PlayerId: req.GetPlayerId(),
 	})
-	/*res := p.zan_player(req.GetPlayerId())
-	if res < 0 {
-		return res
-	}*/
+
+	zan := p.zan_player(req.GetPlayerId())
+	if zan < 0 {
+		return zan
+	}
 
 	// update rank list
 	p.TaskUpdate(tables.TASK_COMPLETE_TYPE_WON_PRAISE, false, 0, 1)
-	result := p.rpc_rank_list_update_data(common.RANK_LIST_TYPE_BE_ZANED, []int32{req.GetPlayerId()})
+	p.rpc_rank_list_update_data(common.RANK_LIST_TYPE_BE_ZANED, []int32{req.GetPlayerId(), zan})
 
 	response := &msg_client_message.S2CZanPlayerResult{
 		PlayerId: req.GetPlayerId(),
-		TotalZan: result.Result,
+		TotalZan: zan,
 	}
 	p.Send(uint16(msg_client_message.S2CZanPlayerResult_ProtoID), response)
 

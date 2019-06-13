@@ -4,6 +4,7 @@ import (
 	"mm_server/libs/log"
 	"mm_server/proto/gen_go/client_message"
 	"mm_server/src/common"
+	"mm_server/src/rpc_proto"
 	"mm_server/src/tables"
 	"sync"
 	"time"
@@ -1490,24 +1491,55 @@ func (this *Player) is_today_zan(player_id int32, now_time time.Time) bool {
 	return true
 }
 
-/*func (p *Player) zan_player(player_id int32) int32 {
-	now_time := time.Now()
-	o := p.db.Zans.HasIndex(player_id)
+// 赞玩家
+func remote_zan_player(from_player_id, to_player_id int32) (zan, err_code int32) {
+	var req msg_client_message.C2SZanPlayer
+	var response msg_client_message.S2CZanPlayerResult
+	err_code = RemoteGetUsePB(from_player_id, rpc_proto.OBJECT_TYPE_PLAYER, to_player_id, int32(msg_client_message.C2SZanPlayer_ProtoID), &req, &response)
+	zan = response.TotalZan
+	return
+}
 
-	if !o {
-		d := &dbPlayerZanData{
-			PlayerId: player_id,
-			ZanTime:  int32(now_time.Unix()),
-			ZanNum:   zan,
-		}
-		p.db.Zans.Add(d)
-	} else {
-		if p.is_today_zan(player_id, now_time) {
-			log.Warn("Player[%v] zan player[%v] today yet", p.Id, player_id)
-			return int32(msg_client_message.E_ERR_PLAYER_ALREADY_ZAN_TODAY)
-		}
-		p.db.Zans.IncbyZanNum(player_id, 1)
-		p.db.Zans.SetZanTime(player_id, int32(now_time.Unix()))
+// 赞玩家返回
+func remote_zan_player_response(from_player_id int32, to_player_id int32, req_data []byte) (resp_data []byte, err_code int32) {
+	player := player_mgr.GetPlayerById(to_player_id)
+	if player == nil {
+		log.Error("remote request get player info by id %v not found", to_player_id)
+		err_code = int32(msg_client_message.E_ERR_PLAYER_NOT_EXIST)
+		return
 	}
-	return 1
-}*/
+
+	zan := player.db.Info.IncbyZan(1)
+
+	var response = msg_client_message.S2CZanPlayerResult{
+		TotalZan: zan,
+	}
+
+	var err error
+	resp_data, err = _marshal_msg(&response)
+	if err != nil {
+		err_code = -1
+		return
+	}
+
+	err_code = 1
+	return
+}
+
+func (this *Player) zan_player(player_id int32) int32 {
+	if this.Id == player_id {
+		return -1
+	}
+	var zan int32
+	p := player_mgr.GetPlayerById(player_id)
+	if p != nil {
+		zan = p.db.Info.IncbyZan(1)
+	} else {
+		var err int32
+		zan, err = remote_zan_player(this.Id, player_id)
+		if err < 0 {
+			return err
+		}
+	}
+	return zan
+}

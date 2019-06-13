@@ -154,7 +154,6 @@ type G2R_RankListDataUpdate struct {
 }
 
 type G2R_RankListDataUpdateResult struct {
-	Result int32
 }
 
 // 排行榜获取数据

@@ -334,7 +334,7 @@ func (this *Player) space_data(player_id int32) int32 {
 		name = p.db.GetName()
 		level = p.db.GetLevel()
 		head = p.db.Info.GetHead()
-		zan = p.rpc_get_zan()
+		zan = p.db.Info.GetZan()
 		charm = p.db.Info.GetCharmVal()
 		be_focus_num = p.db.SpaceCommon.GetBeFocusNum()
 		player_pics := p.get_my_pics()
@@ -368,7 +368,7 @@ func (this *Player) space_data(player_id int32) int32 {
 		name = resp.PlayerName
 		level = resp.PlayerLevel
 		head = resp.PlayerHead
-		zan = rpc_get_zan(player_id)
+		zan = resp.Zan
 		be_focus_num = resp.BeFocusNum
 		charm = resp.Charm
 		if resp.Cats != nil {

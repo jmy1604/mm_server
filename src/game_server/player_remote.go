@@ -25,6 +25,7 @@ var id2rpc_funcs = map[int32]rpc_func{
 	int32(msg_client_message.C2SVisitPlayer_ProtoID):                   remote_visit_player_response,
 	int32(msg_rpc_message.MSGID_G2G_GET_PLAYER_CHEST_TABLE_ID_REQUEST): remote_get_chest_table_id_response,
 	int32(msg_rpc_message.MSGID_G2G_OPEN_PLAYER_CHEST_TABLE_REQUEST):   remote_open_chest_response,
+	int32(msg_client_message.C2SZanPlayer_ProtoID):                     remote_zan_player_response,
 }
 
 var id2rpc_mfuncs = map[int32]rpc_mfunc{
