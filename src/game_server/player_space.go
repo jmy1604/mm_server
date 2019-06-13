@@ -504,6 +504,9 @@ func (this *Player) space_fashion_data() int32 {
 }
 
 func (this *Player) space_other_cat_pic_unlock(player_id, cat_id int32) int32 {
+	if this.GetGold() < global_config.SpaceCatPicUnlockGold {
+		return int32(msg_client_message.E_ERR_PLAYER_GOLD_NOT_ENOUGH)
+	}
 	player_cat_id := utils.Int64From2Int32(player_id, cat_id)
 	if !this.db.OtherCatPictureUnlocks.HasIndex(player_cat_id) {
 		this.db.OtherCatPictureUnlocks.Add(&dbPlayerOtherCatPictureUnlockData{
