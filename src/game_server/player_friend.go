@@ -951,7 +951,7 @@ func (this *Player) store_friend_points(friend_id int32) (err int32, last_save i
 		//this.db.FriendPoints.SetIsTodayGive(friend_id, 1)
 	}
 	last_save = int32(now_time.Unix())
-	remain_seconds = global_config.GiveFriendPointsOnce
+	remain_seconds = utils.GetRemainSeconds2NextDayTime(last_save, global_config.FriendGivePointsRefreshTime)
 	log.Debug("!!!!!!!! err[%v] last_save[%v] remain_seconds[%v]", err, last_save, remain_seconds)
 	return
 }
