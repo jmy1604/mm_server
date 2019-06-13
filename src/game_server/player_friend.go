@@ -735,25 +735,13 @@ func (this *Player) _get_friend_extra_info(friend_id int32, friend_info *msg_cli
 	friend_info.FriendPoints, _ = this.db.FriendPoints.GetGivePoints(friend_id)
 	friend_info.UnreadMessageNum = this.db.FriendChatUnreadIds.GetUnreadMessageNum(friend_id)
 	friend_info.IsZan = this.db.Zans.HasIndex(friend_id)
+	log.Trace("@@@@@@@@@@@ Player %v get friend %v extra info: last_save(%v) left_seconds(%v)", this.Id, friend_id, last_save, friend_info.LeftGiveSeconds)
 }
 
 func (this *Player) get_friend_info(friend *Player) *msg_client_message.FriendInfo {
 	friend_info := friend._format_friend_info()
 	this._get_friend_extra_info(friend.Id, friend_info)
 	return friend_info
-	/*return &msg_client_message.FriendInfo{
-		PlayerId:         friend_id,
-		Name:             f.db.GetName(),
-		Head:             f.db.Info.GetHead(),
-		Level:            f.db.GetLevel(),
-		VipLevel:         f.db.Info.GetVipLvl(),
-		LastLogin:        f.db.Info.GetLastLogin(),
-		FriendPoints:     friend_points,
-		UnreadMessageNum: this.db.FriendChatUnreadIds.GetUnreadMessageNum(friend_id),
-		Zan:              f.db.Info.GetZan(),
-		IsZan:            this.db.Zans.HasIndex(friend_id),
-		LeftGiveSeconds:  remain_seconds,
-	}*/
 }
 
 func (this *Player) get_friends_info(friend_ids []int32) []*msg_client_message.FriendInfo {
@@ -1029,13 +1017,12 @@ func (this *Player) give_friend_points(friend_list []int32) int32 {
 		} else {
 			today_num = this.db.FriendRelative.IncbyGiveNumToday(1)
 			this.AddFriendPoints(global_config.GiveFriendPointsOnce, "back_points", "friend")
+			this.db.Friends.SetLastGivePointsTime(id, last_save)
 		}
-		this.db.Friends.SetLastGivePointsTime(id, last_save)
 
 		points_result[n].FriendId = id
 		points_result[n].Error = err_code
 		points_result[n].RemainSeconds = remain_seconds
-		//points_result[n].IsTodayGive = proto.Bool(true)
 		if err_code >= 0 {
 			points_result[n].Points = global_config.GiveFriendPointsOnce
 			points_result[n].BackPoints = global_config.GiveFriendPointsOnce
