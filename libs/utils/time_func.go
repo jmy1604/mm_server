@@ -84,6 +84,20 @@ func GetRemainSeconds2NextDayTime(last_time_point int32, day_time_config string)
 	}
 }
 
+func GetFirstDaysTimePoint(time_config string) int32 {
+	now_time := time.Now()
+	res, today_tm := _get_today_config_time(now_time, time_config)
+	if res < 0 {
+		return res
+	}
+
+	if now_time.Unix() >= today_tm.Unix() {
+		return int32(today_tm.Unix())
+	}
+
+	return int32(today_tm.Unix()) - 24*3600
+}
+
 func GetRemainSeconds4NextRefresh(config_hour, config_minute, config_second int32, last_save_time int32) (next_refresh_remain_seconds int32) {
 	now_time := time.Now()
 	if int32(now_time.Unix()) < last_save_time {

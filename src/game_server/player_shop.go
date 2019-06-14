@@ -2,6 +2,7 @@ package main
 
 import (
 	"mm_server/libs/log"
+	"mm_server/libs/utils"
 	"mm_server/proto/gen_go/client_message"
 
 	"mm_server/src/tables"
@@ -37,26 +38,36 @@ func (this *Player) check_shop_refresh(shop_id int32, shop_data *tables.ShopData
 		return false, 0
 	}
 
+	first_point := utils.GetFirstDaysTimePoint(shop_type.AutoRefreshTime)
+	if first_point < 0 {
+		log.Error("商店%v自动刷新时间点%v配置错误", shop_id, shop_type.AutoRefreshTime)
+		return false, -1
+	}
+
 	refresh_seconds := shop_type.RefreshDays * 24 * 3600
 	now_time := time.Now()
 	if !this.db.Shops.HasIndex(shop_id) {
+		next_refresh := first_point + refresh_seconds
 		this.db.Shops.Add(&dbPlayerShopData{
 			Id:              shop_id,
-			NextRefreshTime: int32(now_time.Unix()),
+			NextRefreshTime: next_refresh,
 		})
 		this.shop_refresh(shop_data)
 		refreshed = true
+		remain_seconds = next_refresh - int32(now_time.Unix())
 	} else {
 		next_refresh, _ := this.db.Shops.GetNextRefreshTime(shop_id)
-		remain_seconds = int32(now_time.Unix()) - next_refresh
+		if next_refresh == 0 {
+			next_refresh = first_point
+		}
+		remain_seconds = next_refresh - int32(now_time.Unix())
 		if remain_seconds <= 0 {
 			this.shop_refresh(shop_data)
-			this.db.Shops.SetNextRefreshTime(shop_id, next_refresh+refresh_seconds)
+			next_refresh += refresh_seconds
+			this.db.Shops.SetNextRefreshTime(shop_id, next_refresh)
 			refreshed = true
+			remain_seconds = next_refresh - int32(now_time.Unix())
 		}
-	}
-	if refreshed {
-		remain_seconds = refresh_seconds
 	}
 	return
 }
@@ -205,17 +216,17 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 			log.Error("商品[%v]不存在", item_id)
 			return int32(msg_client_message.E_ERR_SHOP_ITEM_NOT_FOUND)
 		}
-		if item_data.LeftNum < num*item.Number {
+		if item_data.LeftNum < 1 {
 			log.Error("商品[%v]数量[%v]不足", item_id, item_data.LeftNum)
 			return int32(msg_client_message.E_ERR_SHOP_ITEM_NOT_ENOUGH)
 		}
-		this.db.ShopItems.IncbyLeftNum(item_id, -num*item.Number)
+		this.db.ShopItems.IncbyLeftNum(item_id, -1)
 	} else {
 		return int32(msg_client_message.E_ERR_SHOP_LIMITED_TYPE_INVALID)
 	}
 
 	for n := 0; n < len(item.BagItems)/2; n++ {
-		this.AddItemResource(item.BagItems[2*n], num*item.BagItems[2*n+1], "shop", "buy_shop_item")
+		this.AddItemResource(item.BagItems[2*n], num*item.Number*item.BagItems[2*n+1], "shop", "buy_shop_item")
 	}
 	this.SendItemsUpdate()
 	this.SendCatsUpdate()
@@ -245,7 +256,7 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 		response.ItemNum = num
 		response.AddItem = &msg_client_message.ItemInfo{}
 		response.AddItem.ItemCfgId = item_id
-		response.AddItem.ItemNum = item.Number
+		response.AddItem.ItemNum = num
 		response.CostRes = &msg_client_message.ResourceInfo{}
 		response.CostRes.ResourceType = item.CostResourceId
 		response.CostRes.ResourceValue = item.CostNum
