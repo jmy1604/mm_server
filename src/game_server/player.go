@@ -685,21 +685,6 @@ func C2SShopItemsHandler(p *Player, msg_data []byte) int32 {
 		log.Error("unmarshal msg failed err(%s) !", err.Error())
 		return -1
 	}
-	if req.GetShopId() == 0 {
-		var shop_type = []int32{
-			tables.SHOP_TYPE_SPECIAL,
-			tables.SHOP_TYPE_CHARM_MEDAL,
-			tables.SHOP_TYPE_FRIEND_POINTS,
-			tables.SHOP_TYPE_RMB,
-			tables.SHOP_TYPE_SOUL_STONE,
-		}
-		for i := 0; i < len(shop_type); i++ {
-			if res := p.fetch_shop_limit_items(shop_type[i], true); res < 0 {
-				return res
-			}
-		}
-		return 1
-	}
 	return p.fetch_shop_limit_items(req.GetShopId(), true)
 }
 

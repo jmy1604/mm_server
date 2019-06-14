@@ -27,19 +27,18 @@ func (this *Player) shop_refresh(shop_data *tables.ShopData) {
 	}
 }
 
-func (this *Player) check_shop_refresh(shop_id int32, shop_data *tables.ShopData) (remain_seconds int32) {
+func (this *Player) check_shop_refresh(shop_id int32, shop_data *tables.ShopData) (refreshed bool, remain_seconds int32) {
 	shop_type := shoptype_table_mgr.GetShopType(shop_id)
 	if shop_type == nil {
 		log.Error("没有ID为[%v]的商店", shop_id)
-		return -1
+		return false, -1
 	}
 	if shop_type.AutoRefreshTime == "" || shop_type.RefreshDays == 0 {
-		return 0
+		return false, 0
 	}
 
 	refresh_seconds := shop_type.RefreshDays * 24 * 3600
 	now_time := time.Now()
-	var refreshed bool
 	if !this.db.Shops.HasIndex(shop_id) {
 		this.db.Shops.Add(&dbPlayerShopData{
 			Id:              shop_id,
@@ -62,19 +61,7 @@ func (this *Player) check_shop_refresh(shop_id int32, shop_data *tables.ShopData
 	return
 }
 
-func (this *Player) fetch_shop_limit_items(shop_id int32, send_msg bool) int32 {
-	shop := shop_table_mgr.GetShop(shop_id)
-	if shop == nil {
-		log.Error("没有ID为[%v]的商店", shop_id)
-		return int32(msg_client_message.E_ERR_SHOP_NOT_FOUND)
-	}
-
-	remain_seconds := this.check_shop_refresh(shop_id, shop)
-	if remain_seconds < 0 {
-		log.Error("没有ID为[%v]的商店类型", shop_id)
-		return int32(msg_client_message.E_ERR_SHOP_NOT_FOUND)
-	}
-
+func (this *Player) shop_send_items(shop_id int32, shop *tables.ShopData, remain_seconds int32) {
 	i := int32(0)
 	response := &msg_client_message.S2CShopItemsResult{}
 	response.ShopId = shop_id
@@ -109,8 +96,25 @@ func (this *Player) fetch_shop_limit_items(shop_id int32, send_msg bool) int32 {
 		i += 1
 	}
 
+	this.Send(uint16(msg_client_message.S2CShopItemsResult_ProtoID), response)
+	log.Trace("Player %v shop %v", this.Id, response)
+}
+
+func (this *Player) fetch_shop_limit_items(shop_id int32, send_msg bool) int32 {
+	shop := shop_table_mgr.GetShop(shop_id)
+	if shop == nil {
+		log.Error("没有ID为[%v]的商店", shop_id)
+		return int32(msg_client_message.E_ERR_SHOP_NOT_FOUND)
+	}
+
+	_, remain_seconds := this.check_shop_refresh(shop_id, shop)
+	if remain_seconds < 0 {
+		log.Error("没有ID为[%v]的商店类型", shop_id)
+		return int32(msg_client_message.E_ERR_SHOP_NOT_FOUND)
+	}
+
 	if send_msg {
-		this.Send(uint16(msg_client_message.S2CShopItemsResult_ProtoID), response)
+		this.shop_send_items(shop_id, shop, remain_seconds)
 	}
 
 	return 1
@@ -125,6 +129,17 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 	if item == nil {
 		log.Error("没有商店[%v]商品[%v]", item_id)
 		return int32(msg_client_message.E_ERR_SHOP_NOT_FOUND)
+	}
+
+	shop_data := shop_table_mgr.GetShop(item.Type)
+	if shop_data == nil {
+		log.Error("没有商店[%v]商品[%v]", item_id)
+		return int32(msg_client_message.E_ERR_SHOP_NOT_FOUND)
+	}
+
+	refreshed, remain_seconds := this.check_shop_refresh(item.Type, shop_data)
+	if refreshed {
+		this.shop_send_items(item.Type, shop_data, remain_seconds)
 	}
 
 	if item.BundleId != "" {
@@ -179,7 +194,6 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 		}
 	}
 
-	//left_num := int32(0)
 	if item.LimitedType == 0 {
 		// 不限量
 	} else if item.LimitedType == 1 {
