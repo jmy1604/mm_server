@@ -974,6 +974,8 @@ func (this* dbPlayerCatHouseData)clone_to(d *dbPlayerCatHouseData){
 type dbPlayerShopData struct{
 	Id int32
 	NextRefreshTime int32
+	FirstRefreshTimePoint int32
+	LastestRefreshTimePoint int32
 }
 func (this* dbPlayerShopData)from_pb(pb *db.PlayerShop){
 	if pb == nil {
@@ -981,17 +983,23 @@ func (this* dbPlayerShopData)from_pb(pb *db.PlayerShop){
 	}
 	this.Id = pb.GetId()
 	this.NextRefreshTime = pb.GetNextRefreshTime()
+	this.FirstRefreshTimePoint = pb.GetFirstRefreshTimePoint()
+	this.LastestRefreshTimePoint = pb.GetLastestRefreshTimePoint()
 	return
 }
 func (this* dbPlayerShopData)to_pb()(pb *db.PlayerShop){
 	pb = &db.PlayerShop{}
 	pb.Id = proto.Int32(this.Id)
 	pb.NextRefreshTime = proto.Int32(this.NextRefreshTime)
+	pb.FirstRefreshTimePoint = proto.Int32(this.FirstRefreshTimePoint)
+	pb.LastestRefreshTimePoint = proto.Int32(this.LastestRefreshTimePoint)
 	return
 }
 func (this* dbPlayerShopData)clone_to(d *dbPlayerShopData){
 	d.Id = this.Id
 	d.NextRefreshTime = this.NextRefreshTime
+	d.FirstRefreshTimePoint = this.FirstRefreshTimePoint
+	d.LastestRefreshTimePoint = this.LastestRefreshTimePoint
 	return
 }
 type dbPlayerShopItemData struct{
@@ -6174,6 +6182,50 @@ func (this *dbPlayerShopColumn)SetNextRefreshTime(id int32,v int32)(has bool){
 		return
 	}
 	d.NextRefreshTime = v
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerShopColumn)GetFirstRefreshTimePoint(id int32)(v int32 ,has bool){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerShopColumn.GetFirstRefreshTimePoint")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		return
+	}
+	v = d.FirstRefreshTimePoint
+	return v,true
+}
+func (this *dbPlayerShopColumn)SetFirstRefreshTimePoint(id int32,v int32)(has bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerShopColumn.SetFirstRefreshTimePoint")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		log.Error("not exist %v %v",this.m_row.GetPlayerId(), id)
+		return
+	}
+	d.FirstRefreshTimePoint = v
+	this.m_changed = true
+	return true
+}
+func (this *dbPlayerShopColumn)GetLastestRefreshTimePoint(id int32)(v int32 ,has bool){
+	this.m_row.m_lock.UnSafeRLock("dbPlayerShopColumn.GetLastestRefreshTimePoint")
+	defer this.m_row.m_lock.UnSafeRUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		return
+	}
+	v = d.LastestRefreshTimePoint
+	return v,true
+}
+func (this *dbPlayerShopColumn)SetLastestRefreshTimePoint(id int32,v int32)(has bool){
+	this.m_row.m_lock.UnSafeLock("dbPlayerShopColumn.SetLastestRefreshTimePoint")
+	defer this.m_row.m_lock.UnSafeUnlock()
+	d := this.m_data[id]
+	if d==nil{
+		log.Error("not exist %v %v",this.m_row.GetPlayerId(), id)
+		return
+	}
+	d.LastestRefreshTimePoint = v
 	this.m_changed = true
 	return true
 }

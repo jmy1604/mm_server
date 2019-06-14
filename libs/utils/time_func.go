@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"ih_server/libs/log"
 	"time"
 )
@@ -9,6 +10,9 @@ const (
 	TIME_LAYOUT      = "15:04:05"
 	TIME_WEEK_LAYOUT = "Monday 15:04:05"
 )
+
+var ErrTimeConfig = errors.New("time config invalid")
+var ErrTimeParam = errors.New("time pararms invalid")
 
 func _get_today_config_time(now_time time.Time, day_time_config string) (res int32, today_config_time time.Time) {
 	var loc *time.Location
@@ -82,6 +86,59 @@ func GetRemainSeconds2NextDayTime(last_time_point int32, day_time_config string)
 	} else {
 		return int32(today_tm.Unix() + int64(24*3600) - now_time.Unix())
 	}
+}
+
+func GetRemainSeconds2NextDaysPoint(first_refresh, lastest_refresh int64, time_config string, days int32) (int64, error) {
+	now_time := time.Now()
+	if (lastest_refresh > 0 && first_refresh > lastest_refresh) || now_time.Unix() < first_refresh || now_time.Unix() < lastest_refresh {
+		return -1, ErrTimeParam
+	}
+
+	res, today_tm := _get_today_config_time(now_time, time_config)
+	if res < 0 {
+		return -1, ErrTimeConfig
+	}
+
+	var first_point int64
+	if first_refresh <= 0 {
+		if now_time.Unix() >= today_tm.Unix() {
+			first_point = today_tm.Unix()
+		} else {
+			first_point = today_tm.Unix() - 24*3600
+		}
+	} else {
+		first_time := time.Unix(first_refresh, 0)
+		res2, first_today_tm := _get_today_config_time(first_time, time_config)
+		if res2 < 0 {
+			return -1, ErrTimeConfig
+		}
+		if first_refresh >= first_today_tm.Unix() {
+			first_point = first_today_tm.Unix()
+		} else {
+			first_point = first_today_tm.Unix() - 2400*3600
+		}
+	}
+
+	refresh_seconds := int64(days * 24 * 3600)
+	var remain_seconds int64
+	if lastest_refresh <= 0 {
+		remain_seconds = first_point + refresh_seconds - now_time.Unix()
+	} else {
+		duration := now_time.Unix() - first_point
+		s := duration / refresh_seconds
+		y := duration % refresh_seconds
+		if lastest_refresh < first_point+refresh_seconds*s {
+			remain_seconds = 0
+		} else {
+			remain_seconds = refresh_seconds - y
+		}
+	}
+
+	if remain_seconds < 0 {
+		remain_seconds = 0
+	}
+
+	return remain_seconds, nil
 }
 
 func GetFirstDaysTimePoint(time_config string) int32 {

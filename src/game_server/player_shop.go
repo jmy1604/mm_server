@@ -28,7 +28,7 @@ func (this *Player) shop_refresh(shop_data *tables.ShopData) {
 	}
 }
 
-func (this *Player) check_shop_refresh(shop_id int32, shop_data *tables.ShopData) (refreshed bool, remain_seconds int32) {
+func (this *Player) check_shop_refresh(shop_id int32, shop_data *tables.ShopData) (refreshed bool, remain_seconds int64) {
 	shop_type := shoptype_table_mgr.GetShopType(shop_id)
 	if shop_type == nil {
 		log.Error("没有ID为[%v]的商店", shop_id)
@@ -38,35 +38,32 @@ func (this *Player) check_shop_refresh(shop_id int32, shop_data *tables.ShopData
 		return false, 0
 	}
 
-	first_point := utils.GetFirstDaysTimePoint(shop_type.AutoRefreshTime)
-	if first_point < 0 {
-		log.Error("商店%v自动刷新时间点%v配置错误", shop_id, shop_type.AutoRefreshTime)
-		return false, -1
-	}
-
-	refresh_seconds := shop_type.RefreshDays * 24 * 3600
+	var err error
 	now_time := time.Now()
 	if !this.db.Shops.HasIndex(shop_id) {
-		next_refresh := first_point + refresh_seconds
+		remain_seconds, err = utils.GetRemainSeconds2NextDaysPoint(0, 0, shop_type.AutoRefreshTime, shop_type.RefreshDays)
+		if err != nil {
+			log.Error("get remain seconds err %v", err.Error())
+			return false, -1
+		}
 		this.db.Shops.Add(&dbPlayerShopData{
-			Id:              shop_id,
-			NextRefreshTime: next_refresh,
+			Id:                    shop_id,
+			FirstRefreshTimePoint: int32(now_time.Unix()),
 		})
 		this.shop_refresh(shop_data)
 		refreshed = true
-		remain_seconds = next_refresh - int32(now_time.Unix())
 	} else {
-		next_refresh, _ := this.db.Shops.GetNextRefreshTime(shop_id)
-		if next_refresh == 0 {
-			next_refresh = first_point
+		first_refresh, _ := this.db.Shops.GetFirstRefreshTimePoint(shop_id)
+		lastest_refresh, _ := this.db.Shops.GetLastestRefreshTimePoint(shop_id)
+		remain_seconds, err = utils.GetRemainSeconds2NextDaysPoint(int64(first_refresh), int64(lastest_refresh), shop_type.AutoRefreshTime, shop_type.RefreshDays)
+		if err != nil {
+			log.Error("get remain seconds err %v", err.Error())
+			return false, -1
 		}
-		remain_seconds = next_refresh - int32(now_time.Unix())
 		if remain_seconds <= 0 {
 			this.shop_refresh(shop_data)
-			next_refresh += refresh_seconds
-			this.db.Shops.SetNextRefreshTime(shop_id, next_refresh)
+			this.db.Shops.SetLastestRefreshTimePoint(shop_id, int32(now_time.Unix()))
 			refreshed = true
-			remain_seconds = next_refresh - int32(now_time.Unix())
 		}
 	}
 	return
@@ -125,7 +122,7 @@ func (this *Player) fetch_shop_limit_items(shop_id int32, send_msg bool) int32 {
 	}
 
 	if send_msg {
-		this.shop_send_items(shop_id, shop, remain_seconds)
+		this.shop_send_items(shop_id, shop, int32(remain_seconds))
 	}
 
 	return 1
@@ -150,7 +147,7 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 
 	refreshed, remain_seconds := this.check_shop_refresh(item.Type, shop_data)
 	if refreshed {
-		this.shop_send_items(item.Type, shop_data, remain_seconds)
+		this.shop_send_items(item.Type, shop_data, int32(remain_seconds))
 	}
 
 	if item.BundleId != "" {
