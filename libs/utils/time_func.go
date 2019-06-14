@@ -84,6 +84,42 @@ func GetRemainSeconds2NextDayTime(last_time_point int32, day_time_config string)
 	}
 }
 
+func GetRemainSeconds4NextRefresh(config_hour, config_minute, config_second int32, last_save_time int32) (next_refresh_remain_seconds int32) {
+	now_time := time.Now()
+	if int32(now_time.Unix()) < last_save_time {
+		return 0
+	}
+	today_refresh_time := time.Date(now_time.Year(), now_time.Month(), now_time.Day(), int(config_hour), int(config_minute), int(config_second), 0, time.Local)
+	if now_time.Unix() < today_refresh_time.Unix() {
+		if int32(today_refresh_time.Unix())-24*3600 > last_save_time {
+			next_refresh_remain_seconds = 0
+		} else {
+			next_refresh_remain_seconds = int32(today_refresh_time.Unix() - now_time.Unix())
+		}
+	} else {
+		if int32(today_refresh_time.Unix()) > last_save_time {
+			next_refresh_remain_seconds = 0
+		} else {
+			next_refresh_remain_seconds = 24*3600 - int32(now_time.Unix()-today_refresh_time.Unix())
+		}
+	}
+	return
+}
+
+func IsDayTimeRefresh(config_hour, config_minute, config_second int32, last_unix_time int32) bool {
+	now_time := time.Now()
+	if int32(now_time.Unix()) < last_unix_time {
+		return false
+	}
+
+	today_refresh_time := time.Date(now_time.Year(), now_time.Month(), now_time.Day(), int(config_hour), int(config_minute), int(config_second), 0, time.Local)
+	if int32(today_refresh_time.Unix()) < last_unix_time {
+		return false
+	}
+
+	return true
+}
+
 func GetDaysNumToLastSaveTime(last_save int32, day_time_config string, now_time time.Time) (num int32) {
 	if last_save < 0 {
 		return -1
@@ -202,40 +238,4 @@ func (this *DaysTimeChecker) RemainSecondsToNextRefresh(last_save int32) (remain
 		remain_seconds = 0
 	}
 	return
-}
-
-func GetRemainSeconds4NextRefresh(config_hour, config_minute, config_second int32, last_save_time int32) (next_refresh_remain_seconds int32) {
-	now_time := time.Now()
-	if int32(now_time.Unix()) < last_save_time {
-		return 0
-	}
-	today_refresh_time := time.Date(now_time.Year(), now_time.Month(), now_time.Day(), int(config_hour), int(config_minute), int(config_second), 0, time.Local)
-	if now_time.Unix() < today_refresh_time.Unix() {
-		if int32(today_refresh_time.Unix())-24*3600 > last_save_time {
-			next_refresh_remain_seconds = 0
-		} else {
-			next_refresh_remain_seconds = int32(today_refresh_time.Unix() - now_time.Unix())
-		}
-	} else {
-		if int32(today_refresh_time.Unix()) > last_save_time {
-			next_refresh_remain_seconds = 0
-		} else {
-			next_refresh_remain_seconds = 24*3600 - int32(now_time.Unix()-today_refresh_time.Unix())
-		}
-	}
-	return
-}
-
-func IsDayTimeRefresh(config_hour, config_minute, config_second int32, last_unix_time int32) bool {
-	now_time := time.Now()
-	if int32(now_time.Unix()) < last_unix_time {
-		return false
-	}
-
-	today_refresh_time := time.Date(now_time.Year(), now_time.Month(), now_time.Day(), int(config_hour), int(config_minute), int(config_second), 0, time.Local)
-	if int32(today_refresh_time.Unix()) < last_unix_time {
-		return false
-	}
-
-	return true
 }

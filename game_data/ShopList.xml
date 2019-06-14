@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Config>
+	<item ID="1" AutoRefreshTime="" RefreshDays="0" />
+	<item ID="2" AutoRefreshTime="" RefreshDays="0" />
+	<item ID="3" AutoRefreshTime="" RefreshDays="0" />
+	<item ID="4" AutoRefreshTime="" RefreshDays="0" />
+	<item ID="5" AutoRefreshTime="00:00:00" RefreshDays="7" />
+	<item ID="6" AutoRefreshTime="00:00:00" RefreshDays="1" />
+	<item ID="7" AutoRefreshTime="" RefreshDays="0" />
+	<item ID="8" AutoRefreshTime="" RefreshDays="0" />
+</Config>

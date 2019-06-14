@@ -710,10 +710,6 @@ func C2SBuyShopItemHandler(p *Player, msg_data []byte) int32 {
 		log.Error("unmarshal msg failed err(%s) !", err.Error())
 		return -1
 	}
-	if p.check_shop_limited_days_items_refresh_by_shop_itemid(req.GetItemId(), true) {
-		log.Info("刷新了商店")
-		return 1
-	}
 	return p.buy_item(req.GetItemId(), req.GetItemNum(), true)
 }
 

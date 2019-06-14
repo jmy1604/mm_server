@@ -1389,12 +1389,12 @@ message C2SShopItems {
 message S2CShopItem {
 	int32 ItemId 							= 1; // 商店ID
 	int32 LeftNum 							= 2; //剩余数量
-	int32 RemainSeconds 					= 3; // 剩余时间(秒)
 	enum EProtocol { None = 0; ProtoID = 11008; }
 }
 message S2CShopItemsResult {
 	int32 ShopId 							= 1;
 	repeated S2CShopItem Items 				= 2;
+	int32 RemainSeconds 					= 3; // 剩余刷新时间(秒)
 	enum EProtocol { None = 0; ProtoID = 11009; }
 }
 

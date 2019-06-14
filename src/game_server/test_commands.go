@@ -429,10 +429,6 @@ func buy_shop_item_cmd(p *Player, args []string) int32 {
 		return -1
 	}
 
-	if p.check_shop_limited_days_items_refresh_by_shop_itemid(int32(item_id), true) {
-		log.Info("商店刷新")
-	}
-
 	return p.buy_item(int32(item_id), 1, true)
 }
 
@@ -457,13 +453,6 @@ func sell_item_cmd(p *Player, args []string) int32 {
 	}
 
 	return p.sell_item(int32(item_id), int32(item_num))
-}
-
-func refresh_shop_cmd(p *Player, args []string) int32 {
-	if p.check_all_shop_items_refresh(true) {
-		return 1
-	}
-	return -1
 }
 
 func cat_feed_cmd(p *Player, args []string) int32 {
@@ -1952,7 +1941,6 @@ var test_cmd2funcs = map[string]test_cmd_func{
 	"drop_items":                drop_items_cmd,
 	"compose_cat":               compose_cat_cmd,
 	"shop_items":                get_shop_items_cmd,
-	"refresh_shop":              refresh_shop_cmd,
 	"buy_item":                  buy_shop_item_cmd,
 	"sell_item":                 sell_item_cmd,
 	"feed_cat":                  cat_feed_cmd,

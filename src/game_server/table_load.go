@@ -46,6 +46,7 @@ var fashion_table_mgr tables.FashionTableMgr
 var activity_old_table_mgr tables.ActivityOldTableMgr
 var sign_table_mgr tables.SignTableMgr
 var seven_days_table_mgr tables.SevenDaysTableMgr
+var shoptype_table_mgr tables.ShopTypeTableManager
 
 func table_init() error {
 	if !global_config.Init("") {
@@ -128,10 +129,6 @@ func table_init() error {
 		return errors.New("map chest init failed")
 	}
 
-	/*if !other_table_mgr.Init("") {
-		return errors.New("other table init failed")
-	}*/
-
 	if !pay_table_mgr.Init("") {
 		return errors.New("pay table init failed")
 	}
@@ -198,6 +195,10 @@ func table_init() error {
 
 	if !seven_days_table_mgr.Init("") {
 		return errors.New("seven day table manager init failed")
+	}
+
+	if !shoptype_table_mgr.Init("") {
+		return errors.New("shop type table manager init failed")
 	}
 
 	if !pay_list.LoadConfig(server_config.GetConfPathFile("pay.json")) {

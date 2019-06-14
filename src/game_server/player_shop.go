@@ -2,13 +2,65 @@ package main
 
 import (
 	"mm_server/libs/log"
-	"mm_server/libs/utils"
 	"mm_server/proto/gen_go/client_message"
+
 	"mm_server/src/tables"
 	"strings"
 	"time"
-	//"github.com/golang/protobuf/proto"
 )
+
+func (this *Player) shop_refresh(shop_data *tables.ShopData) {
+	items := shop_data.GetItems()
+	if items == nil {
+		return
+	}
+
+	for _, item := range items {
+		if !this.db.ShopItems.HasIndex(item.Id) {
+			this.db.ShopItems.Add(&dbPlayerShopItemData{
+				Id:      item.Id,
+				LeftNum: item.LimitedNumber,
+			})
+		} else {
+			this.db.ShopItems.SetLeftNum(item.Id, item.LimitedNumber)
+		}
+	}
+}
+
+func (this *Player) check_shop_refresh(shop_id int32, shop_data *tables.ShopData) (remain_seconds int32) {
+	shop_type := shoptype_table_mgr.GetShopType(shop_id)
+	if shop_type == nil {
+		log.Error("没有ID为[%v]的商店", shop_id)
+		return -1
+	}
+	if shop_type.AutoRefreshTime == "" || shop_type.RefreshDays == 0 {
+		return 0
+	}
+
+	refresh_seconds := shop_type.RefreshDays * 24 * 3600
+	now_time := time.Now()
+	var refreshed bool
+	if !this.db.Shops.HasIndex(shop_id) {
+		this.db.Shops.Add(&dbPlayerShopData{
+			Id:              shop_id,
+			NextRefreshTime: int32(now_time.Unix()),
+		})
+		this.shop_refresh(shop_data)
+		refreshed = true
+	} else {
+		next_refresh, _ := this.db.Shops.GetNextRefreshTime(shop_id)
+		remain_seconds = int32(now_time.Unix()) - next_refresh
+		if remain_seconds <= 0 {
+			this.shop_refresh(shop_data)
+			this.db.Shops.SetNextRefreshTime(shop_id, next_refresh+refresh_seconds)
+			refreshed = true
+		}
+	}
+	if refreshed {
+		remain_seconds = refresh_seconds
+	}
+	return
+}
 
 func (this *Player) fetch_shop_limit_items(shop_id int32, send_msg bool) int32 {
 	shop := shop_table_mgr.GetShop(shop_id)
@@ -17,40 +69,25 @@ func (this *Player) fetch_shop_limit_items(shop_id int32, send_msg bool) int32 {
 		return int32(msg_client_message.E_ERR_SHOP_NOT_FOUND)
 	}
 
-	this.check_all_shop_items_refresh(false)
+	remain_seconds := this.check_shop_refresh(shop_id, shop)
+	if remain_seconds < 0 {
+		log.Error("没有ID为[%v]的商店类型", shop_id)
+		return int32(msg_client_message.E_ERR_SHOP_NOT_FOUND)
+	}
 
 	i := int32(0)
 	response := &msg_client_message.S2CShopItemsResult{}
 	response.ShopId = shop_id
+	response.RemainSeconds = remain_seconds
 	response.Items = make([]*msg_client_message.S2CShopItem, shop.GetLimitNum())
 	for _, v := range shop.GetItems() {
 		if int32(i) >= shop.GetLimitNum() {
 			break
 		}
 
-		var left_num, save_time int32
+		var left_num int32
 		if v.LimitedType == 1 {
-			// 全服限定
-			/*result := this.rpc_call_get_shop_limited_item(v.Id)
-			if result == nil {
-				continue
-			}
-			if result.ErrCode == 1 {
-				log.Warn("没有配置ID为[%v]的限时商品", v.Id)
-				continue
-			} else if result.ErrCode == 2 {
-				log.Warn("配置ID为[%v]的限定商品数[%v]量不足", v.Id, result.Num)
-				continue
-			} else if result.ErrCode == 3 {
-				log.Warn("限定[%v]天商品[%v]没有保存时间", v.LimitedTime, v.Id)
-				continue
-			} else if result.ErrCode != 0 {
-				log.Warn("商店不支持该错误码[%v]", result.ErrCode)
-				continue
-			}
-			left_num = result.Num
-			save_time = result.SaveTime*/
-			save_time = int32(time.Now().Unix())
+
 		} else if v.LimitedType == 2 {
 			// 个人限定
 			item := this.db.ShopItems.Get(v.Id)
@@ -62,26 +99,13 @@ func (this *Player) fetch_shop_limit_items(shop_id int32, send_msg bool) int32 {
 				item = this.db.ShopItems.Get(v.Id)
 			}
 			left_num = item.LeftNum
-			o := false
-			save_time, o = this.db.ShopLimitedInfos.GetLastSaveTime(v.LimitedTime)
-			if !o {
-				var ld dbPlayerShopLimitedInfoData
-				ld.LastSaveTime = int32(time.Now().Unix())
-				ld.LimitedDays = v.LimitedTime
-				this.db.ShopLimitedInfos.Add(&ld)
-				save_time = ld.LastSaveTime
-			}
 		} else if v.LimitedType != 0 {
 			left_num = -1
 			log.Warn("不支持的商店限定类型[%v]", v.LimitedType)
 		}
-
-		//utils.GetRemainSeconds2NextDayTime(save_time, v.LimitedTime)
-		utils.GetRemainSeconds2NextDayTime(save_time, "")
 		response.Items[i] = &msg_client_message.S2CShopItem{}
 		response.Items[i].ItemId = v.Id
 		response.Items[i].LeftNum = left_num
-		//response.Items[i].RemainSeconds = remain_seconds
 		i += 1
 	}
 
@@ -159,20 +183,7 @@ func (this *Player) buy_item(item_id int32, num int32, send_msg bool) int32 {
 	if item.LimitedType == 0 {
 		// 不限量
 	} else if item.LimitedType == 1 {
-		// 全服限定
-		/*result := this.rpc_call_buy_shop_limited_item(item_id, num)
-		if result == nil {
-			return int32(msg_client_message.E_ERR_SHOP_PURCHASED_FAILED)
-		}
-		if result.ErrCode == 1 {
-			return int32(msg_client_message.E_ERR_SHOP_ITEM_NOT_FOUND)
-		} else if result.ErrCode == 2 || result.ErrCode == 3 {
-			return int32(msg_client_message.E_ERR_SHOP_ITEM_NOT_ENOUGH)
-		} else if result.ErrCode > 0 {
-			log.Error("!!!!! 商店不存在的错误码[%v]", result.ErrCode)
-			return -4
-		}
-		left_num = result.LeftNum*/
+
 	} else if item.LimitedType == 2 {
 		// 个人限定
 		item_data := this.db.ShopItems.Get(item_id)
@@ -249,84 +260,4 @@ func (this *Player) refresh_shop() int32 {
 		item.LeftNum = citem.LimitedNumber
 	}
 	return 1
-}
-
-func (this *Player) check_limited_days_shop_items(days int32, limited_items *tables.ShopLimitedItems) bool {
-	// 刷新全服商品
-	if limited_items.GlobalItemsId != nil && len(limited_items.GlobalItemsId) > 0 {
-		/*err := this.rpc_call_check_refresh_shop_limited_item(days)
-		if err != nil {
-			log.Error("Refresh Global shop limited items failed[%v]", err.Error())
-		}*/
-	}
-
-	// 刷新个人商品
-	/*last_save_time, o := this.db.ShopLimitedInfos.GetLastSaveTime(days)
-	if !o {
-		return false
-	}
-	if ! .IsArrival(last_save_time, days) {
-		return false
-	}*/
-	for _, pv := range limited_items.PersonalItems {
-		this.db.ShopItems.SetLeftNum(pv.Id, pv.LimitedNumber)
-	}
-	this.db.ShopLimitedInfos.SetLastSaveTime(days, int32(time.Now().Unix()))
-
-	return true
-}
-
-// 检测更新所有的商店限时物品
-func (this *Player) check_all_shop_items_refresh(send_msg bool) bool {
-	all_limited_items := shop_table_mgr.GetAllLimitedItems4Days()
-	if all_limited_items == nil {
-		return false
-	}
-
-	is_refresh := false
-	for days, item_arr := range all_limited_items {
-		if this.check_limited_days_shop_items(days, item_arr) {
-			is_refresh = true
-		}
-	}
-	return is_refresh
-}
-
-func (this *Player) check_shop_limited_days_items_refresh_by_shop_itemid(shop_item_id int32, send_msg bool) bool {
-	/*if !check_week_time_arrival(this.db.Info.GetLastRefreshShopTime(), global_config.ShopRefreshTime) {
-		return false
-	}
-	// 刷新自己的商店
-	if this.refresh_shop() < 0 {
-		log.Error("刷新自己的商店失败")
-		return false
-	}
-	// 刷新全服商店
-	err := this.rpc_call_refresh_shop_limited_item()
-	if err != nil {
-		log.Error("rpc调用刷新商店失败")
-		return false
-	}
-
-	this.db.Info.SetLastRefreshShopTime(int32(time.Now().Unix()))*/
-
-	citem := shop_table_mgr.GetItem(shop_item_id)
-	if citem == nil {
-		return false
-	}
-
-	limited_items := shop_table_mgr.GetLimitedItems4Days(citem.LimitedTime)
-	if limited_items == nil {
-		return false
-	}
-
-	if !this.check_limited_days_shop_items(citem.LimitedTime, limited_items) {
-		return false
-	}
-
-	if send_msg {
-		notify := msg_client_message.S2CShopNeedRefreshNotify{}
-		this.Send(uint16(msg_client_message.S2CShopNeedRefreshNotify_ProtoID), &notify)
-	}
-	return true
 }

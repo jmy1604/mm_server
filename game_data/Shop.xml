@@ -58,11 +58,11 @@
 	<item Id="478" Tag="6" Name="58381" CommodityType="0" CommodityId="0" Number="0" Icon="0" Cost="[3,270]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[]" BundleID="0" />
 	<item Id="479" Tag="6" Name="58382" CommodityType="0" CommodityId="0" Number="0" Icon="0" Cost="[3,300]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[]" BundleID="0" />
 	<item Id="480" Tag="6" Name="58383" CommodityType="0" CommodityId="0" Number="0" Icon="0" Cost="[3,330]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[]" BundleID="0" />
-	<item Id="490" Tag="6" Name="58384" CommodityType="0" CommodityId="0" Number="0" Icon="0" Cost="[3,5]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[]" BundleID="0" />
-	<item Id="491" Tag="6" Name="58385" CommodityType="0" CommodityId="0" Number="0" Icon="0" Cost="[3,10]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[]" BundleID="0" />
-	<item Id="492" Tag="6" Name="58386" CommodityType="0" CommodityId="0" Number="0" Icon="0" Cost="[3,20]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[]" BundleID="0" />
-	<item Id="493" Tag="6" Name="58387" CommodityType="0" CommodityId="0" Number="0" Icon="0" Cost="[3,30]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[]" BundleID="0" />
-	<item Id="494" Tag="6" Name="58388" CommodityType="0" CommodityId="0" Number="0" Icon="0" Cost="[3,50]" LimitedType="0" LimitedTime="0" LimitedNumber="0" Level="0" Star="0" Show="[]" BundleID="0" />
+	<item Id="490" Tag="8" Name="58384" CommodityType="1" CommodityId="5" Number="10" Icon="0" Cost="[3,5]" LimitedType="2" LimitedTime="0" LimitedNumber="1" Level="0" Star="0" Show="[]" BundleID="0" />
+	<item Id="491" Tag="8" Name="58385" CommodityType="1" CommodityId="5" Number="10" Icon="0" Cost="[3,10]" LimitedType="2" LimitedTime="0" LimitedNumber="1" Level="0" Star="0" Show="[]" BundleID="0" />
+	<item Id="492" Tag="8" Name="58386" CommodityType="1" CommodityId="5" Number="10" Icon="0" Cost="[3,20]" LimitedType="2" LimitedTime="0" LimitedNumber="1" Level="0" Star="0" Show="[]" BundleID="0" />
+	<item Id="493" Tag="8" Name="58387" CommodityType="1" CommodityId="5" Number="10" Icon="0" Cost="[3,30]" LimitedType="2" LimitedTime="0" LimitedNumber="1" Level="0" Star="0" Show="[]" BundleID="0" />
+	<item Id="494" Tag="8" Name="58388" CommodityType="1" CommodityId="5" Number="10" Icon="0" Cost="[3,50]" LimitedType="2" LimitedTime="0" LimitedNumber="1" Level="0" Star="0" Show="[]" BundleID="0" />
 	<item Id="700" Tag="7" Name="58389" CommodityType="14" CommodityId="14000" Number="1" Icon="Icon_fh_a1300" Cost="[2,1000]" LimitedType="2" LimitedTime="0" LimitedNumber="1" Level="0" Star="0" Show="[14000,1]" BundleID="0" />
 	<item Id="701" Tag="7" Name="58389" CommodityType="14" CommodityId="14001" Number="1" Icon="Icon_fj_a1300" Cost="[2,5000]" LimitedType="2" LimitedTime="0" LimitedNumber="1" Level="0" Star="0" Show="[14001,1]" BundleID="0" />
 	<item Id="702" Tag="7" Name="58389" CommodityType="14" CommodityId="14002" Number="1" Icon="Icon_fp_a1300" Cost="[2,10000]" LimitedType="2" LimitedTime="0" LimitedNumber="1" Level="0" Star="0" Show="[14002,1]" BundleID="0" />
