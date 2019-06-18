@@ -27,11 +27,6 @@ func new_register_handler(account, password string, is_guest bool) (err_code int
 		return int32(msg_client_message.E_ERR_ACCOUNT_ALREADY_REGISTERED), nil
 	}
 
-	/*if dbc.Accounts.GetRow(account) != nil {
-		log.Error("Account[%v] already exists", account)
-		return int32(msg_client_message.E_ERR_ACCOUNT_ALREADY_REGISTERED), nil
-	}*/
-
 	if !is_guest {
 		err_code = _check_register(account, password)
 		if err_code < 0 {
@@ -44,18 +39,6 @@ func new_register_handler(account, password string, is_guest bool) (err_code int
 		err_code = -1
 		return
 	}
-
-	/*row := dbc.Accounts.AddRow(account)
-	if row == nil {
-		err_code = -1
-		return
-	}
-	row.SetUniqueId(uid)
-	row.SetPassword(password)
-	row.SetRegisterTime(int32(time.Now().Unix()))
-	if is_guest {
-		row.SetChannel("guest")
-	}*/
 
 	new_record := login_db.Create_Account()
 	new_record.Set_AccountId(account)
@@ -105,27 +88,6 @@ func new_bind_new_account_handler(server_id int32, account, password, new_accoun
 		return
 	}
 
-	/*row := dbc.Accounts.GetRow(account)
-	if row == nil {
-		err_code = int32(msg_client_message.E_ERR_ACCOUNT_NOT_REGISTERED)
-		log.Error("Account %v not registered, cant bind new account", account)
-		return
-	}
-
-	ban_row := dbc.BanPlayers.GetRow(row.GetUniqueId())
-	if ban_row != nil && ban_row.GetStartTime() > 0 {
-		err_code = int32(msg_client_message.E_ERR_ACCOUNT_BE_BANNED)
-		log.Error("Account %v has been banned, cant login", account)
-		return
-	}
-
-	channel := row.GetChannel()
-	if channel != "guest" && channel != "facebook" {
-		err_code = int32(msg_client_message.E_ERR_ACCOUNT_NOT_GUEST)
-		log.Error("Account %v not guest and not facebook user", account)
-		return
-	}*/
-
 	acc_record := account_record_mgr.Get(account)
 	if acc_record == nil {
 		err_code = int32(msg_client_message.E_ERR_ACCOUNT_NOT_REGISTERED)
@@ -153,18 +115,6 @@ func new_bind_new_account_handler(server_id int32, account, password, new_accoun
 			return
 		}
 	}
-
-	/*if channel != "facebook" && row.GetBindNewAccount() != "" {
-		err_code = int32(msg_client_message.E_ERR_ACCOUNT_ALREADY_BIND)
-		log.Error("Account %v already bind", account)
-		return
-	}
-
-	if dbc.Accounts.GetRow(new_account) != nil {
-		err_code = int32(msg_client_message.E_ERR_ACCOUNT_NEW_BIND_ALREADY_EXISTS)
-		log.Error("New Account %v to bind already exists", new_account)
-		return
-	}*/
 
 	if channel != "facebook" && acc_record.Get_BindNewAccount() != "" {
 		err_code = int32(msg_client_message.E_ERR_ACCOUNT_ALREADY_BIND)
@@ -195,29 +145,6 @@ func new_bind_new_account_handler(server_id int32, account, password, new_accoun
 			return
 		}
 	}
-
-	/*row.SetBindNewAccount(new_account)
-	register_time := row.GetRegisterTime()
-	uid := row.GetUniqueId()
-
-	last_server_id := row.GetServerId()
-
-	row = dbc.Accounts.AddRow(new_account)
-	if row == nil {
-		err_code = -1
-		log.Error("Account %v bind new account %v database error", account, new_account)
-		return
-	}
-
-	if new_channel == "" {
-		row.SetPassword(new_password)
-	}
-	row.SetRegisterTime(register_time)
-	row.SetUniqueId(uid)
-	row.SetOldAccount(account)
-	row.SetServerId(last_server_id)*/
-
-	//dbc.Accounts.RemoveRow(account) // 暂且不删除
 
 	acc_record.Set_BindNewAccount(new_account)
 	account_table.UpdateWithFieldName(acc_record, []string{"BindNewAccount"})
@@ -273,18 +200,15 @@ func new_bind_new_account_handler(server_id int32, account, password, new_accoun
 func new_login_handler(account, password, channel string) (err_code int32, resp_data []byte) {
 	now_time := time.Now()
 	var err error
-	//acc_row := dbc.Accounts.GetRow(account)
 	var is_new bool
 	acc_record := account_record_mgr.Get(account)
 	if config.VerifyAccount {
 		if channel == "" {
-			//if acc_row == nil {
 			if acc_record == nil {
 				err_code = int32(msg_client_message.E_ERR_PLAYER_ACC_OR_PASSWORD_ERROR)
 				log.Error("Account %v not exist", account)
 				return
 			}
-			//if acc_row.GetPassword() != password {
 			if acc_record.Get_Password() != password {
 				err_code = int32(msg_client_message.E_ERR_PLAYER_ACC_OR_PASSWORD_ERROR)
 				log.Error("Account %v password %v invalid", account, password)
@@ -295,16 +219,6 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 			if err_code < 0 {
 				return
 			}
-			/*if acc_row == nil {
-				acc_row = dbc.Accounts.AddRow(account)
-				if acc_row == nil {
-					log.Error("Account %v add row with channel facebook failed")
-					return -1, nil
-				}
-				acc_row.SetChannel("facebook")
-				acc_row.SetRegisterTime(int32(now_time.Unix()))
-			}
-			acc_row.SetPassword(password)*/
 			if acc_record == nil {
 				acc_record = login_db.Create_Account()
 				acc_record.Set_AccountId(account)
@@ -314,21 +228,6 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 			}
 			acc_record.Set_Password(password)
 		} else if channel == "guest" {
-			/*if acc_row == nil {
-				acc_row = dbc.Accounts.AddRow(account)
-				if acc_row == nil {
-					log.Error("Account %v add row with channel guest failed")
-					return -1, nil
-				}
-				acc_row.SetChannel("guest")
-				acc_row.SetRegisterTime(int32(now_time.Unix()))
-			} else {
-				if acc_row.GetPassword() != password {
-					err_code = int32(msg_client_message.E_ERR_PLAYER_ACC_OR_PASSWORD_ERROR)
-					log.Error("Account %v password %v invalid", account, password)
-					return
-				}
-			}*/
 			if acc_record == nil {
 				acc_record = login_db.Create_Account()
 				acc_record.Set_Channel("guest")
@@ -346,14 +245,6 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 			return -1, nil
 		}
 	} else {
-		/*if acc_row == nil {
-			acc_row = dbc.Accounts.AddRow(account)
-			if acc_row == nil {
-				log.Error("Account %v add row without verify failed")
-				return -1, nil
-			}
-			acc_row.SetRegisterTime(int32(now_time.Unix()))
-		}*/
 		if acc_record == nil {
 			acc_record = login_db.Create_Account()
 			acc_record.Set_AccountId(account)
@@ -361,20 +252,6 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 			is_new = true
 		}
 	}
-
-	/*if acc_row.GetUniqueId() == "" {
-		uid := _generate_account_uuid(account)
-		if uid != "" {
-			acc_row.SetUniqueId(uid)
-		}
-	}
-
-	ban_row := dbc.BanPlayers.GetRow(acc_row.GetUniqueId())
-	if ban_row != nil && ban_row.GetStartTime() > 0 {
-		err_code = int32(msg_client_message.E_ERR_ACCOUNT_BE_BANNED)
-		log.Error("Account %v has been banned, cant login", account)
-		return
-	}*/
 
 	if acc_record.Get_UniqueId() == "" {
 		uid := _generate_account_uuid(account)
@@ -392,7 +269,6 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 
 	// --------------------------------------------------------------------------------------------
 	// 选择默认服
-	//server_id := acc_row.GetServerId()
 	server_id := acc_record.Get_ServerId()
 	if server_id <= 0 {
 		server := server_list.RandomOneServer()
@@ -402,12 +278,11 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 			return
 		}
 		server_id = uint32(server.Id)
-		//acc_row.SetServerId(server_id)
 		acc_record.Set_ServerId(server_id)
 	}
 
 	var hall_ip, token string
-	err_code, hall_ip, token = _select_server( /*acc_row.GetUniqueId()*/ acc_record.Get_UniqueId(), account, int32(server_id))
+	err_code, hall_ip, token = _select_server(acc_record.Get_UniqueId(), account, int32(server_id))
 	if err_code < 0 {
 		return
 	}
@@ -415,7 +290,6 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 
 	account_login(account, token, "")
 
-	//acc_row.SetToken(token)
 	acc_record.Set_Token(token)
 
 	if is_new {
@@ -431,7 +305,6 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 	}
 
 	if channel == "guest" {
-		//response.BoundAccount = acc_row.GetBindNewAccount()
 		response.BoundAccount = acc_record.Get_BindNewAccount()
 	}
 
@@ -448,25 +321,6 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 }
 
 func new_set_password_handler(account, password, new_password string) (err_code int32, resp_data []byte) {
-	/*row := dbc.Accounts.GetRow(account)
-	if row == nil {
-		err_code = int32(msg_client_message.E_ERR_PLAYER_NOT_EXIST)
-		log.Error("set_password_handler account[%v] not found", account)
-		return
-	}
-	ban_row := dbc.BanPlayers.GetRow(row.GetUniqueId())
-	if ban_row != nil && ban_row.GetStartTime() > 0 {
-		err_code = int32(msg_client_message.E_ERR_ACCOUNT_BE_BANNED)
-		log.Error("Account %v has been banned, cant login", account)
-		return
-	}
-	if row.GetPassword() != password {
-		err_code = int32(msg_client_message.E_ERR_ACCOUNT_PASSWORD_INVALID)
-		log.Error("set_password_handler account[%v] password is invalid", account)
-		return
-	}
-	row.SetPassword(new_password)*/
-
 	acc_record := account_record_mgr.Get(account)
 	if acc_record == nil {
 		err_code = int32(msg_client_message.E_ERR_PLAYER_NOT_EXIST)
