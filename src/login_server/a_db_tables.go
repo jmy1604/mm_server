@@ -1,20 +1,21 @@
 package main
 
 import (
-	_ "github.com/golang/protobuf/proto"
-	_ "github.com/go-sql-driver/mysql"
 	"bytes"
 	"database/sql"
 	"errors"
 	"fmt"
-	"mm_server/libs/log"
 	"math/rand"
+	"mm_server/libs/log"
+	_ "mm_server/proto/gen_go/db_login"
 	"os"
 	"os/exec"
-	_ "mm_server/proto/gen_go/db_login"
 	"strings"
 	"sync/atomic"
 	"time"
+
+	// "github.com/go-sql-driver/mysql"
+	_ "github.com/golang/protobuf/proto"
 )
 
 type dbArgs struct {
@@ -79,7 +80,7 @@ func (this *DBC) Conn(name string, addr string, acc string, pwd string, db_copy_
 		log.Error("open db failed %v", err)
 		return
 	}
-	
+
 	this.m_db.SetConnMaxLifetime(time.Second * 5)
 
 	this.m_db_lock = NewMutex()
@@ -98,7 +99,7 @@ func (this *DBC) Conn(name string, addr string, acc string, pwd string, db_copy_
 	if os.MkdirAll(db_copy_path, os.ModePerm) == nil {
 		os.Chmod(db_copy_path, os.ModePerm)
 	}
-	
+
 	this.m_db_last_copy_time = int32(time.Now().Hour())
 	this.m_db_copy_path = db_copy_path
 	addr_list := strings.Split(addr, ":")
@@ -159,40 +160,40 @@ func (this *DBC) Loop() {
 			log.Error("save db failed %v", err)
 		}
 		log.Trace("db存数据花费时长: %v", time.Now().Sub(begin).Nanoseconds())
-		
-			now_time := time.Now()
-			if int32(now_time.Unix()) - 24*3600 >= this.m_db_last_copy_time {
-				args := []string {
-					fmt.Sprintf("-h%v", this.m_db_addr),
-					fmt.Sprintf("-u%v", this.m_db_account),
-					fmt.Sprintf("-p%v", this.m_db_password),
-					this.m_db_name,
-				}
-				cmd := exec.Command("mysqldump", args...)
-				var out bytes.Buffer
-				cmd.Stdout = &out
-				cmd_err := cmd.Run()
-				if cmd_err == nil {
-					file_name := this.check_files_exist()
-					file, file_err := os.OpenFile(file_name, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0660)
-					defer file.Close()
-					if file_err == nil {
-						_, write_err := file.Write(out.Bytes())
-						if write_err == nil {
-							log.Trace("数据库备份成功！备份文件名:%v", file_name)
-						} else {
-							log.Error("数据库备份文件写入失败！备份文件名%v", file_name)
-						}
-					} else {
-						log.Error("数据库备份文件打开失败！备份文件名%v", file_name)
-					}
-					file.Close()
-				} else {
-					log.Error("数据库备份失败！")
-				}
-				this.m_db_last_copy_time = int32(now_time.Unix())
+
+		now_time := time.Now()
+		if int32(now_time.Unix())-24*3600 >= this.m_db_last_copy_time {
+			args := []string{
+				fmt.Sprintf("-h%v", this.m_db_addr),
+				fmt.Sprintf("-u%v", this.m_db_account),
+				fmt.Sprintf("-p%v", this.m_db_password),
+				this.m_db_name,
 			}
-		
+			cmd := exec.Command("mysqldump", args...)
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			cmd_err := cmd.Run()
+			if cmd_err == nil {
+				file_name := this.check_files_exist()
+				file, file_err := os.OpenFile(file_name, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0660)
+				defer file.Close()
+				if file_err == nil {
+					_, write_err := file.Write(out.Bytes())
+					if write_err == nil {
+						log.Trace("数据库备份成功！备份文件名:%v", file_name)
+					} else {
+						log.Error("数据库备份文件写入失败！备份文件名%v", file_name)
+					}
+				} else {
+					log.Error("数据库备份文件打开失败！备份文件名%v", file_name)
+				}
+				file.Close()
+			} else {
+				log.Error("数据库备份失败！")
+			}
+			this.m_db_last_copy_time = int32(now_time.Unix())
+		}
+
 		if this.m_quit {
 			break
 		}
@@ -240,147 +241,147 @@ func (this *DBC) Shutdown() {
 	log.Trace("关闭数据库缓存耗时 %v 秒", time.Now().Sub(begin).Seconds())
 }
 
-
 const DBC_VERSION = 1
 const DBC_SUB_VERSION = 0
 
-
-func (this *dbAccountRow)GetUniqueId( )(r string ){
+func (this *dbAccountRow) GetUniqueId() (r string) {
 	this.m_lock.UnSafeRLock("dbAccountRow.GetdbAccountUniqueIdColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return string(this.m_UniqueId)
 }
-func (this *dbAccountRow)SetUniqueId(v string){
+func (this *dbAccountRow) SetUniqueId(v string) {
 	this.m_lock.UnSafeLock("dbAccountRow.SetdbAccountUniqueIdColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_UniqueId=string(v)
-	this.m_UniqueId_changed=true
+	this.m_UniqueId = string(v)
+	this.m_UniqueId_changed = true
 	return
 }
-func (this *dbAccountRow)GetPassword( )(r string ){
+func (this *dbAccountRow) GetPassword() (r string) {
 	this.m_lock.UnSafeRLock("dbAccountRow.GetdbAccountPasswordColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return string(this.m_Password)
 }
-func (this *dbAccountRow)SetPassword(v string){
+func (this *dbAccountRow) SetPassword(v string) {
 	this.m_lock.UnSafeLock("dbAccountRow.SetdbAccountPasswordColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_Password=string(v)
-	this.m_Password_changed=true
+	this.m_Password = string(v)
+	this.m_Password_changed = true
 	return
 }
-func (this *dbAccountRow)GetRegisterTime( )(r int32 ){
+func (this *dbAccountRow) GetRegisterTime() (r int32) {
 	this.m_lock.UnSafeRLock("dbAccountRow.GetdbAccountRegisterTimeColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return int32(this.m_RegisterTime)
 }
-func (this *dbAccountRow)SetRegisterTime(v int32){
+func (this *dbAccountRow) SetRegisterTime(v int32) {
 	this.m_lock.UnSafeLock("dbAccountRow.SetdbAccountRegisterTimeColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_RegisterTime=int32(v)
-	this.m_RegisterTime_changed=true
+	this.m_RegisterTime = int32(v)
+	this.m_RegisterTime_changed = true
 	return
 }
-func (this *dbAccountRow)GetChannel( )(r string ){
+func (this *dbAccountRow) GetChannel() (r string) {
 	this.m_lock.UnSafeRLock("dbAccountRow.GetdbAccountChannelColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return string(this.m_Channel)
 }
-func (this *dbAccountRow)SetChannel(v string){
+func (this *dbAccountRow) SetChannel(v string) {
 	this.m_lock.UnSafeLock("dbAccountRow.SetdbAccountChannelColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_Channel=string(v)
-	this.m_Channel_changed=true
+	this.m_Channel = string(v)
+	this.m_Channel_changed = true
 	return
 }
-func (this *dbAccountRow)GetToken( )(r string ){
+func (this *dbAccountRow) GetToken() (r string) {
 	this.m_lock.UnSafeRLock("dbAccountRow.GetdbAccountTokenColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return string(this.m_Token)
 }
-func (this *dbAccountRow)SetToken(v string){
+func (this *dbAccountRow) SetToken(v string) {
 	this.m_lock.UnSafeLock("dbAccountRow.SetdbAccountTokenColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_Token=string(v)
-	this.m_Token_changed=true
+	this.m_Token = string(v)
+	this.m_Token_changed = true
 	return
 }
-func (this *dbAccountRow)GetServerId( )(r int32 ){
+func (this *dbAccountRow) GetServerId() (r int32) {
 	this.m_lock.UnSafeRLock("dbAccountRow.GetdbAccountServerIdColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return int32(this.m_ServerId)
 }
-func (this *dbAccountRow)SetServerId(v int32){
+func (this *dbAccountRow) SetServerId(v int32) {
 	this.m_lock.UnSafeLock("dbAccountRow.SetdbAccountServerIdColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_ServerId=int32(v)
-	this.m_ServerId_changed=true
+	this.m_ServerId = int32(v)
+	this.m_ServerId_changed = true
 	return
 }
-func (this *dbAccountRow)GetBindNewAccount( )(r string ){
+func (this *dbAccountRow) GetBindNewAccount() (r string) {
 	this.m_lock.UnSafeRLock("dbAccountRow.GetdbAccountBindNewAccountColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return string(this.m_BindNewAccount)
 }
-func (this *dbAccountRow)SetBindNewAccount(v string){
+func (this *dbAccountRow) SetBindNewAccount(v string) {
 	this.m_lock.UnSafeLock("dbAccountRow.SetdbAccountBindNewAccountColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_BindNewAccount=string(v)
-	this.m_BindNewAccount_changed=true
+	this.m_BindNewAccount = string(v)
+	this.m_BindNewAccount_changed = true
 	return
 }
-func (this *dbAccountRow)GetOldAccount( )(r string ){
+func (this *dbAccountRow) GetOldAccount() (r string) {
 	this.m_lock.UnSafeRLock("dbAccountRow.GetdbAccountOldAccountColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return string(this.m_OldAccount)
 }
-func (this *dbAccountRow)SetOldAccount(v string){
+func (this *dbAccountRow) SetOldAccount(v string) {
 	this.m_lock.UnSafeLock("dbAccountRow.SetdbAccountOldAccountColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_OldAccount=string(v)
-	this.m_OldAccount_changed=true
+	this.m_OldAccount = string(v)
+	this.m_OldAccount_changed = true
 	return
 }
+
 type dbAccountRow struct {
-	m_table *dbAccountTable
-	m_lock       *RWMutex
-	m_loaded  bool
-	m_new     bool
-	m_remove  bool
-	m_touch      int32
-	m_releasable bool
-	m_valid   bool
-	m_AccountId        string
-	m_UniqueId_changed bool
-	m_UniqueId string
-	m_Password_changed bool
-	m_Password string
-	m_RegisterTime_changed bool
-	m_RegisterTime int32
-	m_Channel_changed bool
-	m_Channel string
-	m_Token_changed bool
-	m_Token string
-	m_ServerId_changed bool
-	m_ServerId int32
+	m_table                  *dbAccountTable
+	m_lock                   *RWMutex
+	m_loaded                 bool
+	m_new                    bool
+	m_remove                 bool
+	m_touch                  int32
+	m_releasable             bool
+	m_valid                  bool
+	m_AccountId              string
+	m_UniqueId_changed       bool
+	m_UniqueId               string
+	m_Password_changed       bool
+	m_Password               string
+	m_RegisterTime_changed   bool
+	m_RegisterTime           int32
+	m_Channel_changed        bool
+	m_Channel                string
+	m_Token_changed          bool
+	m_Token                  string
+	m_ServerId_changed       bool
+	m_ServerId               int32
 	m_BindNewAccount_changed bool
-	m_BindNewAccount string
-	m_OldAccount_changed bool
-	m_OldAccount string
+	m_BindNewAccount         string
+	m_OldAccount_changed     bool
+	m_OldAccount             string
 }
+
 func new_dbAccountRow(table *dbAccountTable, AccountId string) (r *dbAccountRow) {
 	this := &dbAccountRow{}
 	this.m_table = table
 	this.m_AccountId = AccountId
 	this.m_lock = NewRWMutex()
-	this.m_UniqueId_changed=true
-	this.m_Password_changed=true
-	this.m_RegisterTime_changed=true
-	this.m_Channel_changed=true
-	this.m_Token_changed=true
-	this.m_ServerId_changed=true
-	this.m_BindNewAccount_changed=true
-	this.m_OldAccount_changed=true
+	this.m_UniqueId_changed = true
+	this.m_Password_changed = true
+	this.m_RegisterTime_changed = true
+	this.m_Channel_changed = true
+	this.m_Token_changed = true
+	this.m_ServerId_changed = true
+	this.m_BindNewAccount_changed = true
+	this.m_OldAccount_changed = true
 	return this
 }
 func (this *dbAccountRow) GetAccountId() (r string) {
@@ -390,7 +391,7 @@ func (this *dbAccountRow) save_data(release bool) (err error, released bool, sta
 	this.m_lock.UnSafeLock("dbAccountRow.save_data")
 	defer this.m_lock.UnSafeUnlock()
 	if this.m_new {
-		db_args:=new_db_args(9)
+		db_args := new_db_args(9)
 		db_args.Push(this.m_AccountId)
 		db_args.Push(this.m_UniqueId)
 		db_args.Push(this.m_Password)
@@ -400,48 +401,48 @@ func (this *dbAccountRow) save_data(release bool) (err error, released bool, sta
 		db_args.Push(this.m_ServerId)
 		db_args.Push(this.m_BindNewAccount)
 		db_args.Push(this.m_OldAccount)
-		args=db_args.GetArgs()
+		args = db_args.GetArgs()
 		state = 1
 	} else {
-		if this.m_UniqueId_changed||this.m_Password_changed||this.m_RegisterTime_changed||this.m_Channel_changed||this.m_Token_changed||this.m_ServerId_changed||this.m_BindNewAccount_changed||this.m_OldAccount_changed{
+		if this.m_UniqueId_changed || this.m_Password_changed || this.m_RegisterTime_changed || this.m_Channel_changed || this.m_Token_changed || this.m_ServerId_changed || this.m_BindNewAccount_changed || this.m_OldAccount_changed {
 			update_string = "UPDATE Accounts SET "
-			db_args:=new_db_args(9)
-			if this.m_UniqueId_changed{
-				update_string+="UniqueId=?,"
+			db_args := new_db_args(9)
+			if this.m_UniqueId_changed {
+				update_string += "UniqueId=?,"
 				db_args.Push(this.m_UniqueId)
 			}
-			if this.m_Password_changed{
-				update_string+="Password=?,"
+			if this.m_Password_changed {
+				update_string += "Password=?,"
 				db_args.Push(this.m_Password)
 			}
-			if this.m_RegisterTime_changed{
-				update_string+="RegisterTime=?,"
+			if this.m_RegisterTime_changed {
+				update_string += "RegisterTime=?,"
 				db_args.Push(this.m_RegisterTime)
 			}
-			if this.m_Channel_changed{
-				update_string+="Channel=?,"
+			if this.m_Channel_changed {
+				update_string += "Channel=?,"
 				db_args.Push(this.m_Channel)
 			}
-			if this.m_Token_changed{
-				update_string+="Token=?,"
+			if this.m_Token_changed {
+				update_string += "Token=?,"
 				db_args.Push(this.m_Token)
 			}
-			if this.m_ServerId_changed{
-				update_string+="ServerId=?,"
+			if this.m_ServerId_changed {
+				update_string += "ServerId=?,"
 				db_args.Push(this.m_ServerId)
 			}
-			if this.m_BindNewAccount_changed{
-				update_string+="BindNewAccount=?,"
+			if this.m_BindNewAccount_changed {
+				update_string += "BindNewAccount=?,"
 				db_args.Push(this.m_BindNewAccount)
 			}
-			if this.m_OldAccount_changed{
-				update_string+="OldAccount=?,"
+			if this.m_OldAccount_changed {
+				update_string += "OldAccount=?,"
 				db_args.Push(this.m_OldAccount)
 			}
 			update_string = strings.TrimRight(update_string, ", ")
-			update_string+=" WHERE AccountId=?"
+			update_string += " WHERE AccountId=?"
 			db_args.Push(this.m_AccountId)
-			args=db_args.GetArgs()
+			args = db_args.GetArgs()
 			state = 2
 		}
 	}
@@ -459,10 +460,10 @@ func (this *dbAccountRow) save_data(release bool) (err error, released bool, sta
 		this.m_loaded = false
 		released = true
 	}
-	return nil,released,state,update_string,args
+	return nil, released, state, update_string, args
 }
 func (this *dbAccountRow) Save(release bool) (err error, d bool, released bool) {
-	err,released, state, update_string, args := this.save_data(release)
+	err, released, state, update_string, args := this.save_data(release)
 	if err != nil {
 		log.Error("save data failed")
 		return err, false, false
@@ -490,9 +491,11 @@ func (this *dbAccountRow) Touch(releasable bool) {
 	this.m_touch = int32(time.Now().Unix())
 	this.m_releasable = releasable
 }
+
 type dbAccountRowSort struct {
 	rows []*dbAccountRow
 }
+
 func (this *dbAccountRowSort) Len() (length int) {
 	return len(this.rows)
 }
@@ -504,20 +507,22 @@ func (this *dbAccountRowSort) Swap(i int, j int) {
 	this.rows[i] = this.rows[j]
 	this.rows[j] = temp
 }
-type dbAccountTable struct{
-	m_dbc *DBC
-	m_lock *RWMutex
-	m_rows map[string]*dbAccountRow
-	m_new_rows map[string]*dbAccountRow
-	m_removed_rows map[string]*dbAccountRow
-	m_gc_n int32
-	m_gcing int32
-	m_pool_size int32
+
+type dbAccountTable struct {
+	m_dbc                 *DBC
+	m_lock                *RWMutex
+	m_rows                map[string]*dbAccountRow
+	m_new_rows            map[string]*dbAccountRow
+	m_removed_rows        map[string]*dbAccountRow
+	m_gc_n                int32
+	m_gcing               int32
+	m_pool_size           int32
 	m_preload_select_stmt *sql.Stmt
-	m_preload_max_id int32
-	m_save_insert_stmt *sql.Stmt
-	m_delete_stmt *sql.Stmt
+	m_preload_max_id      int32
+	m_save_insert_stmt    *sql.Stmt
+	m_delete_stmt         *sql.Stmt
 }
+
 func new_dbAccountTable(dbc *DBC) (this *dbAccountTable) {
 	this = &dbAccountTable{}
 	this.m_dbc = dbc
@@ -620,47 +625,47 @@ func (this *dbAccountTable) check_create_table() (err error) {
 	return
 }
 func (this *dbAccountTable) prepare_preload_select_stmt() (err error) {
-	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT AccountId,UniqueId,Password,RegisterTime,Channel,Token,ServerId,BindNewAccount,OldAccount FROM Accounts")
-	if err!=nil{
+	this.m_preload_select_stmt, err = this.m_dbc.StmtPrepare("SELECT AccountId,UniqueId,Password,RegisterTime,Channel,Token,ServerId,BindNewAccount,OldAccount FROM Accounts")
+	if err != nil {
 		log.Error("prepare failed")
 		return
 	}
 	return
 }
-func (this *dbAccountTable) prepare_save_insert_stmt()(err error){
-	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO Accounts (AccountId,UniqueId,Password,RegisterTime,Channel,Token,ServerId,BindNewAccount,OldAccount) VALUES (?,?,?,?,?,?,?,?,?)")
-	if err!=nil{
+func (this *dbAccountTable) prepare_save_insert_stmt() (err error) {
+	this.m_save_insert_stmt, err = this.m_dbc.StmtPrepare("INSERT INTO Accounts (AccountId,UniqueId,Password,RegisterTime,Channel,Token,ServerId,BindNewAccount,OldAccount) VALUES (?,?,?,?,?,?,?,?,?)")
+	if err != nil {
 		log.Error("prepare failed")
 		return
 	}
 	return
 }
 func (this *dbAccountTable) prepare_delete_stmt() (err error) {
-	this.m_delete_stmt,err=this.m_dbc.StmtPrepare("DELETE FROM Accounts WHERE AccountId=?")
-	if err!=nil{
+	this.m_delete_stmt, err = this.m_dbc.StmtPrepare("DELETE FROM Accounts WHERE AccountId=?")
+	if err != nil {
 		log.Error("prepare failed")
 		return
 	}
 	return
 }
 func (this *dbAccountTable) Init() (err error) {
-	err=this.check_create_table()
-	if err!=nil{
+	err = this.check_create_table()
+	if err != nil {
 		log.Error("check_create_table failed")
 		return
 	}
-	err=this.prepare_preload_select_stmt()
-	if err!=nil{
+	err = this.prepare_preload_select_stmt()
+	if err != nil {
 		log.Error("prepare_preload_select_stmt failed")
 		return
 	}
-	err=this.prepare_save_insert_stmt()
-	if err!=nil{
+	err = this.prepare_save_insert_stmt()
+	if err != nil {
 		log.Error("prepare_save_insert_stmt failed")
 		return
 	}
-	err=this.prepare_delete_stmt()
-	if err!=nil{
+	err = this.prepare_delete_stmt()
+	if err != nil {
 		log.Error("prepare_save_insert_stmt failed")
 		return
 	}
@@ -682,30 +687,30 @@ func (this *dbAccountTable) Preload() (err error) {
 	var dBindNewAccount string
 	var dOldAccount string
 	for r.Next() {
-		err = r.Scan(&AccountId,&dUniqueId,&dPassword,&dRegisterTime,&dChannel,&dToken,&dServerId,&dBindNewAccount,&dOldAccount)
+		err = r.Scan(&AccountId, &dUniqueId, &dPassword, &dRegisterTime, &dChannel, &dToken, &dServerId, &dBindNewAccount, &dOldAccount)
 		if err != nil {
 			log.Error("Scan err[%v]", err.Error())
 			return
 		}
-		row := new_dbAccountRow(this,AccountId)
-		row.m_UniqueId=dUniqueId
-		row.m_Password=dPassword
-		row.m_RegisterTime=dRegisterTime
-		row.m_Channel=dChannel
-		row.m_Token=dToken
-		row.m_ServerId=dServerId
-		row.m_BindNewAccount=dBindNewAccount
-		row.m_OldAccount=dOldAccount
-		row.m_UniqueId_changed=false
-		row.m_Password_changed=false
-		row.m_RegisterTime_changed=false
-		row.m_Channel_changed=false
-		row.m_Token_changed=false
-		row.m_ServerId_changed=false
-		row.m_BindNewAccount_changed=false
-		row.m_OldAccount_changed=false
+		row := new_dbAccountRow(this, AccountId)
+		row.m_UniqueId = dUniqueId
+		row.m_Password = dPassword
+		row.m_RegisterTime = dRegisterTime
+		row.m_Channel = dChannel
+		row.m_Token = dToken
+		row.m_ServerId = dServerId
+		row.m_BindNewAccount = dBindNewAccount
+		row.m_OldAccount = dOldAccount
+		row.m_UniqueId_changed = false
+		row.m_Password_changed = false
+		row.m_RegisterTime_changed = false
+		row.m_Channel_changed = false
+		row.m_Token_changed = false
+		row.m_ServerId_changed = false
+		row.m_BindNewAccount_changed = false
+		row.m_OldAccount_changed = false
 		row.m_valid = true
-		this.m_rows[AccountId]=row
+		this.m_rows[AccountId] = row
 	}
 	return
 }
@@ -751,12 +756,12 @@ func (this *dbAccountTable) save_rows(rows map[string]*dbAccountRow, quick bool)
 		if this.m_dbc.m_quit && !quick {
 			return
 		}
-		if delay&&!quick {
+		if delay && !quick {
 			time.Sleep(time.Millisecond * 5)
 		}
 	}
 }
-func (this *dbAccountTable) Save(quick bool) (err error){
+func (this *dbAccountTable) Save(quick bool) (err error) {
 	removed_rows := this.fetch_rows(this.m_removed_rows)
 	for _, v := range removed_rows {
 		_, err := this.m_dbc.StmtExec(this.m_delete_stmt, v.GetAccountId())
@@ -778,17 +783,17 @@ func (this *dbAccountTable) Save(quick bool) (err error){
 func (this *dbAccountTable) AddRow(AccountId string) (row *dbAccountRow) {
 	this.m_lock.UnSafeLock("dbAccountTable.AddRow")
 	defer this.m_lock.UnSafeUnlock()
-	row = new_dbAccountRow(this,AccountId)
+	row = new_dbAccountRow(this, AccountId)
 	row.m_new = true
 	row.m_loaded = true
 	row.m_valid = true
 	_, has := this.m_new_rows[AccountId]
-	if has{
+	if has {
 		log.Error("已经存在 %v", AccountId)
 		return nil
 	}
 	this.m_new_rows[AccountId] = row
-	atomic.AddInt32(&this.m_gc_n,1)
+	atomic.AddInt32(&this.m_gc_n, 1)
 	return row
 }
 func (this *dbAccountTable) RemoveRow(AccountId string) {
@@ -836,97 +841,99 @@ func (this *dbAccountTable) GetRow(AccountId string) (row *dbAccountRow) {
 	}
 	return row
 }
-func (this *dbBanPlayerRow)GetAccount( )(r string ){
+func (this *dbBanPlayerRow) GetAccount() (r string) {
 	this.m_lock.UnSafeRLock("dbBanPlayerRow.GetdbBanPlayerAccountColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return string(this.m_Account)
 }
-func (this *dbBanPlayerRow)SetAccount(v string){
+func (this *dbBanPlayerRow) SetAccount(v string) {
 	this.m_lock.UnSafeLock("dbBanPlayerRow.SetdbBanPlayerAccountColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_Account=string(v)
-	this.m_Account_changed=true
+	this.m_Account = string(v)
+	this.m_Account_changed = true
 	return
 }
-func (this *dbBanPlayerRow)GetPlayerId( )(r int32 ){
+func (this *dbBanPlayerRow) GetPlayerId() (r int32) {
 	this.m_lock.UnSafeRLock("dbBanPlayerRow.GetdbBanPlayerPlayerIdColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return int32(this.m_PlayerId)
 }
-func (this *dbBanPlayerRow)SetPlayerId(v int32){
+func (this *dbBanPlayerRow) SetPlayerId(v int32) {
 	this.m_lock.UnSafeLock("dbBanPlayerRow.SetdbBanPlayerPlayerIdColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_PlayerId=int32(v)
-	this.m_PlayerId_changed=true
+	this.m_PlayerId = int32(v)
+	this.m_PlayerId_changed = true
 	return
 }
-func (this *dbBanPlayerRow)GetStartTime( )(r int32 ){
+func (this *dbBanPlayerRow) GetStartTime() (r int32) {
 	this.m_lock.UnSafeRLock("dbBanPlayerRow.GetdbBanPlayerStartTimeColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return int32(this.m_StartTime)
 }
-func (this *dbBanPlayerRow)SetStartTime(v int32){
+func (this *dbBanPlayerRow) SetStartTime(v int32) {
 	this.m_lock.UnSafeLock("dbBanPlayerRow.SetdbBanPlayerStartTimeColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_StartTime=int32(v)
-	this.m_StartTime_changed=true
+	this.m_StartTime = int32(v)
+	this.m_StartTime_changed = true
 	return
 }
-func (this *dbBanPlayerRow)GetStartTimeStr( )(r string ){
+func (this *dbBanPlayerRow) GetStartTimeStr() (r string) {
 	this.m_lock.UnSafeRLock("dbBanPlayerRow.GetdbBanPlayerStartTimeStrColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return string(this.m_StartTimeStr)
 }
-func (this *dbBanPlayerRow)SetStartTimeStr(v string){
+func (this *dbBanPlayerRow) SetStartTimeStr(v string) {
 	this.m_lock.UnSafeLock("dbBanPlayerRow.SetdbBanPlayerStartTimeStrColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_StartTimeStr=string(v)
-	this.m_StartTimeStr_changed=true
+	this.m_StartTimeStr = string(v)
+	this.m_StartTimeStr_changed = true
 	return
 }
-func (this *dbBanPlayerRow)GetDuration( )(r int32 ){
+func (this *dbBanPlayerRow) GetDuration() (r int32) {
 	this.m_lock.UnSafeRLock("dbBanPlayerRow.GetdbBanPlayerDurationColumn")
 	defer this.m_lock.UnSafeRUnlock()
 	return int32(this.m_Duration)
 }
-func (this *dbBanPlayerRow)SetDuration(v int32){
+func (this *dbBanPlayerRow) SetDuration(v int32) {
 	this.m_lock.UnSafeLock("dbBanPlayerRow.SetdbBanPlayerDurationColumn")
 	defer this.m_lock.UnSafeUnlock()
-	this.m_Duration=int32(v)
-	this.m_Duration_changed=true
+	this.m_Duration = int32(v)
+	this.m_Duration_changed = true
 	return
 }
+
 type dbBanPlayerRow struct {
-	m_table *dbBanPlayerTable
-	m_lock       *RWMutex
-	m_loaded  bool
-	m_new     bool
-	m_remove  bool
-	m_touch      int32
-	m_releasable bool
-	m_valid   bool
-	m_UniqueId        string
-	m_Account_changed bool
-	m_Account string
-	m_PlayerId_changed bool
-	m_PlayerId int32
-	m_StartTime_changed bool
-	m_StartTime int32
+	m_table                *dbBanPlayerTable
+	m_lock                 *RWMutex
+	m_loaded               bool
+	m_new                  bool
+	m_remove               bool
+	m_touch                int32
+	m_releasable           bool
+	m_valid                bool
+	m_UniqueId             string
+	m_Account_changed      bool
+	m_Account              string
+	m_PlayerId_changed     bool
+	m_PlayerId             int32
+	m_StartTime_changed    bool
+	m_StartTime            int32
 	m_StartTimeStr_changed bool
-	m_StartTimeStr string
-	m_Duration_changed bool
-	m_Duration int32
+	m_StartTimeStr         string
+	m_Duration_changed     bool
+	m_Duration             int32
 }
+
 func new_dbBanPlayerRow(table *dbBanPlayerTable, UniqueId string) (r *dbBanPlayerRow) {
 	this := &dbBanPlayerRow{}
 	this.m_table = table
 	this.m_UniqueId = UniqueId
 	this.m_lock = NewRWMutex()
-	this.m_Account_changed=true
-	this.m_PlayerId_changed=true
-	this.m_StartTime_changed=true
-	this.m_StartTimeStr_changed=true
-	this.m_Duration_changed=true
+	this.m_Account_changed = true
+	this.m_PlayerId_changed = true
+	this.m_StartTime_changed = true
+	this.m_StartTimeStr_changed = true
+	this.m_Duration_changed = true
 	return this
 }
 func (this *dbBanPlayerRow) GetUniqueId() (r string) {
@@ -936,43 +943,43 @@ func (this *dbBanPlayerRow) save_data(release bool) (err error, released bool, s
 	this.m_lock.UnSafeLock("dbBanPlayerRow.save_data")
 	defer this.m_lock.UnSafeUnlock()
 	if this.m_new {
-		db_args:=new_db_args(6)
+		db_args := new_db_args(6)
 		db_args.Push(this.m_UniqueId)
 		db_args.Push(this.m_Account)
 		db_args.Push(this.m_PlayerId)
 		db_args.Push(this.m_StartTime)
 		db_args.Push(this.m_StartTimeStr)
 		db_args.Push(this.m_Duration)
-		args=db_args.GetArgs()
+		args = db_args.GetArgs()
 		state = 1
 	} else {
-		if this.m_Account_changed||this.m_PlayerId_changed||this.m_StartTime_changed||this.m_StartTimeStr_changed||this.m_Duration_changed{
+		if this.m_Account_changed || this.m_PlayerId_changed || this.m_StartTime_changed || this.m_StartTimeStr_changed || this.m_Duration_changed {
 			update_string = "UPDATE BanPlayers SET "
-			db_args:=new_db_args(6)
-			if this.m_Account_changed{
-				update_string+="Account=?,"
+			db_args := new_db_args(6)
+			if this.m_Account_changed {
+				update_string += "Account=?,"
 				db_args.Push(this.m_Account)
 			}
-			if this.m_PlayerId_changed{
-				update_string+="PlayerId=?,"
+			if this.m_PlayerId_changed {
+				update_string += "PlayerId=?,"
 				db_args.Push(this.m_PlayerId)
 			}
-			if this.m_StartTime_changed{
-				update_string+="StartTime=?,"
+			if this.m_StartTime_changed {
+				update_string += "StartTime=?,"
 				db_args.Push(this.m_StartTime)
 			}
-			if this.m_StartTimeStr_changed{
-				update_string+="StartTimeStr=?,"
+			if this.m_StartTimeStr_changed {
+				update_string += "StartTimeStr=?,"
 				db_args.Push(this.m_StartTimeStr)
 			}
-			if this.m_Duration_changed{
-				update_string+="Duration=?,"
+			if this.m_Duration_changed {
+				update_string += "Duration=?,"
 				db_args.Push(this.m_Duration)
 			}
 			update_string = strings.TrimRight(update_string, ", ")
-			update_string+=" WHERE UniqueId=?"
+			update_string += " WHERE UniqueId=?"
 			db_args.Push(this.m_UniqueId)
-			args=db_args.GetArgs()
+			args = db_args.GetArgs()
 			state = 2
 		}
 	}
@@ -987,10 +994,10 @@ func (this *dbBanPlayerRow) save_data(release bool) (err error, released bool, s
 		this.m_loaded = false
 		released = true
 	}
-	return nil,released,state,update_string,args
+	return nil, released, state, update_string, args
 }
 func (this *dbBanPlayerRow) Save(release bool) (err error, d bool, released bool) {
-	err,released, state, update_string, args := this.save_data(release)
+	err, released, state, update_string, args := this.save_data(release)
 	if err != nil {
 		log.Error("save data failed")
 		return err, false, false
@@ -1018,9 +1025,11 @@ func (this *dbBanPlayerRow) Touch(releasable bool) {
 	this.m_touch = int32(time.Now().Unix())
 	this.m_releasable = releasable
 }
+
 type dbBanPlayerRowSort struct {
 	rows []*dbBanPlayerRow
 }
+
 func (this *dbBanPlayerRowSort) Len() (length int) {
 	return len(this.rows)
 }
@@ -1032,20 +1041,22 @@ func (this *dbBanPlayerRowSort) Swap(i int, j int) {
 	this.rows[i] = this.rows[j]
 	this.rows[j] = temp
 }
-type dbBanPlayerTable struct{
-	m_dbc *DBC
-	m_lock *RWMutex
-	m_rows map[string]*dbBanPlayerRow
-	m_new_rows map[string]*dbBanPlayerRow
-	m_removed_rows map[string]*dbBanPlayerRow
-	m_gc_n int32
-	m_gcing int32
-	m_pool_size int32
+
+type dbBanPlayerTable struct {
+	m_dbc                 *DBC
+	m_lock                *RWMutex
+	m_rows                map[string]*dbBanPlayerRow
+	m_new_rows            map[string]*dbBanPlayerRow
+	m_removed_rows        map[string]*dbBanPlayerRow
+	m_gc_n                int32
+	m_gcing               int32
+	m_pool_size           int32
 	m_preload_select_stmt *sql.Stmt
-	m_preload_max_id int32
-	m_save_insert_stmt *sql.Stmt
-	m_delete_stmt *sql.Stmt
+	m_preload_max_id      int32
+	m_save_insert_stmt    *sql.Stmt
+	m_delete_stmt         *sql.Stmt
 }
+
 func new_dbBanPlayerTable(dbc *DBC) (this *dbBanPlayerTable) {
 	this = &dbBanPlayerTable{}
 	this.m_dbc = dbc
@@ -1124,47 +1135,47 @@ func (this *dbBanPlayerTable) check_create_table() (err error) {
 	return
 }
 func (this *dbBanPlayerTable) prepare_preload_select_stmt() (err error) {
-	this.m_preload_select_stmt,err=this.m_dbc.StmtPrepare("SELECT UniqueId,Account,PlayerId,StartTime,StartTimeStr,Duration FROM BanPlayers")
-	if err!=nil{
+	this.m_preload_select_stmt, err = this.m_dbc.StmtPrepare("SELECT UniqueId,Account,PlayerId,StartTime,StartTimeStr,Duration FROM BanPlayers")
+	if err != nil {
 		log.Error("prepare failed")
 		return
 	}
 	return
 }
-func (this *dbBanPlayerTable) prepare_save_insert_stmt()(err error){
-	this.m_save_insert_stmt,err=this.m_dbc.StmtPrepare("INSERT INTO BanPlayers (UniqueId,Account,PlayerId,StartTime,StartTimeStr,Duration) VALUES (?,?,?,?,?,?)")
-	if err!=nil{
+func (this *dbBanPlayerTable) prepare_save_insert_stmt() (err error) {
+	this.m_save_insert_stmt, err = this.m_dbc.StmtPrepare("INSERT INTO BanPlayers (UniqueId,Account,PlayerId,StartTime,StartTimeStr,Duration) VALUES (?,?,?,?,?,?)")
+	if err != nil {
 		log.Error("prepare failed")
 		return
 	}
 	return
 }
 func (this *dbBanPlayerTable) prepare_delete_stmt() (err error) {
-	this.m_delete_stmt,err=this.m_dbc.StmtPrepare("DELETE FROM BanPlayers WHERE UniqueId=?")
-	if err!=nil{
+	this.m_delete_stmt, err = this.m_dbc.StmtPrepare("DELETE FROM BanPlayers WHERE UniqueId=?")
+	if err != nil {
 		log.Error("prepare failed")
 		return
 	}
 	return
 }
 func (this *dbBanPlayerTable) Init() (err error) {
-	err=this.check_create_table()
-	if err!=nil{
+	err = this.check_create_table()
+	if err != nil {
 		log.Error("check_create_table failed")
 		return
 	}
-	err=this.prepare_preload_select_stmt()
-	if err!=nil{
+	err = this.prepare_preload_select_stmt()
+	if err != nil {
 		log.Error("prepare_preload_select_stmt failed")
 		return
 	}
-	err=this.prepare_save_insert_stmt()
-	if err!=nil{
+	err = this.prepare_save_insert_stmt()
+	if err != nil {
 		log.Error("prepare_save_insert_stmt failed")
 		return
 	}
-	err=this.prepare_delete_stmt()
-	if err!=nil{
+	err = this.prepare_delete_stmt()
+	if err != nil {
 		log.Error("prepare_save_insert_stmt failed")
 		return
 	}
@@ -1183,24 +1194,24 @@ func (this *dbBanPlayerTable) Preload() (err error) {
 	var dStartTimeStr string
 	var dDuration int32
 	for r.Next() {
-		err = r.Scan(&UniqueId,&dAccount,&dPlayerId,&dStartTime,&dStartTimeStr,&dDuration)
+		err = r.Scan(&UniqueId, &dAccount, &dPlayerId, &dStartTime, &dStartTimeStr, &dDuration)
 		if err != nil {
 			log.Error("Scan err[%v]", err.Error())
 			return
 		}
-		row := new_dbBanPlayerRow(this,UniqueId)
-		row.m_Account=dAccount
-		row.m_PlayerId=dPlayerId
-		row.m_StartTime=dStartTime
-		row.m_StartTimeStr=dStartTimeStr
-		row.m_Duration=dDuration
-		row.m_Account_changed=false
-		row.m_PlayerId_changed=false
-		row.m_StartTime_changed=false
-		row.m_StartTimeStr_changed=false
-		row.m_Duration_changed=false
+		row := new_dbBanPlayerRow(this, UniqueId)
+		row.m_Account = dAccount
+		row.m_PlayerId = dPlayerId
+		row.m_StartTime = dStartTime
+		row.m_StartTimeStr = dStartTimeStr
+		row.m_Duration = dDuration
+		row.m_Account_changed = false
+		row.m_PlayerId_changed = false
+		row.m_StartTime_changed = false
+		row.m_StartTimeStr_changed = false
+		row.m_Duration_changed = false
 		row.m_valid = true
-		this.m_rows[UniqueId]=row
+		this.m_rows[UniqueId] = row
 	}
 	return
 }
@@ -1246,12 +1257,12 @@ func (this *dbBanPlayerTable) save_rows(rows map[string]*dbBanPlayerRow, quick b
 		if this.m_dbc.m_quit && !quick {
 			return
 		}
-		if delay&&!quick {
+		if delay && !quick {
 			time.Sleep(time.Millisecond * 5)
 		}
 	}
 }
-func (this *dbBanPlayerTable) Save(quick bool) (err error){
+func (this *dbBanPlayerTable) Save(quick bool) (err error) {
 	removed_rows := this.fetch_rows(this.m_removed_rows)
 	for _, v := range removed_rows {
 		_, err := this.m_dbc.StmtExec(this.m_delete_stmt, v.GetUniqueId())
@@ -1273,17 +1284,17 @@ func (this *dbBanPlayerTable) Save(quick bool) (err error){
 func (this *dbBanPlayerTable) AddRow(UniqueId string) (row *dbBanPlayerRow) {
 	this.m_lock.UnSafeLock("dbBanPlayerTable.AddRow")
 	defer this.m_lock.UnSafeUnlock()
-	row = new_dbBanPlayerRow(this,UniqueId)
+	row = new_dbBanPlayerRow(this, UniqueId)
 	row.m_new = true
 	row.m_loaded = true
 	row.m_valid = true
 	_, has := this.m_new_rows[UniqueId]
-	if has{
+	if has {
 		log.Error("已经存在 %v", UniqueId)
 		return nil
 	}
 	this.m_new_rows[UniqueId] = row
-	atomic.AddInt32(&this.m_gc_n,1)
+	atomic.AddInt32(&this.m_gc_n, 1)
 	return row
 }
 func (this *dbBanPlayerTable) RemoveRow(UniqueId string) {
@@ -1340,15 +1351,16 @@ type DBC struct {
 	m_quit               bool
 	m_shutdown_completed bool
 	m_shutdown_lock      *Mutex
-	m_db_last_copy_time	int32
-	m_db_copy_path		string
-	m_db_addr			string
-	m_db_account			string
-	m_db_password		string
-	Accounts *dbAccountTable
-	BanPlayers *dbBanPlayerTable
+	m_db_last_copy_time  int32
+	m_db_copy_path       string
+	m_db_addr            string
+	m_db_account         string
+	m_db_password        string
+	Accounts             *dbAccountTable
+	BanPlayers           *dbBanPlayerTable
 }
-func (this *DBC)init_tables()(err error){
+
+func (this *DBC) init_tables() (err error) {
 	this.Accounts = new_dbAccountTable(this)
 	err = this.Accounts.Init()
 	if err != nil {
@@ -1363,19 +1375,19 @@ func (this *DBC)init_tables()(err error){
 	}
 	return
 }
-func (this *DBC)Preload()(err error){
+func (this *DBC) Preload() (err error) {
 	err = this.Accounts.Preload()
 	if err != nil {
 		log.Error("preload Accounts table failed")
 		return
-	}else{
+	} else {
 		log.Info("preload Accounts table succeed !")
 	}
 	err = this.BanPlayers.Preload()
 	if err != nil {
 		log.Error("preload BanPlayers table failed")
 		return
-	}else{
+	} else {
 		log.Info("preload BanPlayers table succeed !")
 	}
 	err = this.on_preload()
@@ -1390,7 +1402,7 @@ func (this *DBC)Preload()(err error){
 	}
 	return
 }
-func (this *DBC)Save(quick bool)(err error){
+func (this *DBC) Save(quick bool) (err error) {
 	err = this.Accounts.Save(quick)
 	if err != nil {
 		log.Error("save Accounts table failed")

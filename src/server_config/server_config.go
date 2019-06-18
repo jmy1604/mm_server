@@ -86,6 +86,7 @@ type LoginServerConfig struct {
 	MYSQL_COPY_PATH string
 	DBCST_MIN       int
 	DBCST_MAX       int
+	DB_DEFINE       string
 }
 
 func (this *LoginServerConfig) GetType() int32 {

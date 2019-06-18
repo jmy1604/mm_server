@@ -1,0 +1,40 @@
+{
+	"db_pkg" : "login_db",
+	
+	"charset": "utf8",
+	
+	"field_structs": [
+	],
+	
+	"tables" : [
+		{
+			"name": "Account",
+			"primary_key": "AccountId",
+			"engine": "innodb",
+			"fields": [
+				{ "name":"AccountId",			"type":"char",				"length":32,	"index_type":"none",	"create_flags":"not null" },
+				{ "name":"UniqueId",			"type":"char",				"length":64,	"index_type":"normal",	"create_flags":"not null,default" },
+				{ "name":"Password",			"type":"char",				"length":32,	"index_type":"none",	"create_flags":"not null,default" },
+				{ "name":"RegisterTime",		"type":"int",				"length":0,		"index_type":"none",	"create_flags":"unsigned,not null,default" },
+				{ "name":"Channel",				"type":"char",				"length":32,	"index_type":"none",	"create_flags":"not null,default" },
+				{ "name":"Token",				"type":"char",				"length":128,	"index_type":"none",	"create_flags":"not null,default" },
+				{ "name":"ServerId",			"type":"int",				"length":0,		"index_type":"none",	"create_flags":"unsigned,not null,default" },
+				{ "name":"BindNewAccount",		"type":"char",				"length":32,	"index_type":"none",	"create_flags":"not null,default" },
+				{ "name":"OldAccount",			"type":"char",				"length":32,	"index_type":"none",	"create_flags":"not null,default" }
+			]
+		},
+		{
+			"name": "BanPlayer",
+			"primary_key": "UniqueId",
+			"engine": "innodb",
+			"fields": [
+				{ "name":"UniqueId",			"type":"char",				"length":64,	"index_type":"",		"create_flags":"not null" },
+				{ "name":"Account",				"type":"char",				"length":32,	"index_type":"",		"create_flags":"not null,default" },
+				{ "name":"PlayerId",			"type":"int",				"length":0,		"index_type":"",		"create_flags":"unsigned,not null,default" },
+				{ "name":"StartTime",			"type":"int",				"length":0,		"index_type":"",		"create_flags":"unsigned,not null,default" },
+				{ "name":"StartTimeStr",		"type":"char",				"length":64,	"index_type":"",		"create_flags":"not null,default" },
+				{ "name":"Duration",			"type":"int",				"length":0,		"index_type":"",		"create_flags":"unsigned,not null,default" }
+			]
+		}
+	]
+}

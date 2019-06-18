@@ -59,6 +59,15 @@ func (this *LoginServer) Init() (ok bool) {
 	this.redis_conn = &utils.RedisConn{}
 	account_mgr_init()
 
+	if db_use_new {
+		if !account_record_mgr.Init() {
+			return false
+		}
+		if !ban_mgr.Init() {
+			return false
+		}
+	}
+
 	this.initialized = true
 
 	return true
@@ -68,10 +77,6 @@ func (this *LoginServer) Start(use_https bool) bool {
 	if !this.redis_conn.Connect(config.RedisServerIP) {
 		return false
 	}
-
-	/*if !share_data.LoadAccountsPlayerList(this.redis_conn) {
-		return false
-	}*/
 
 	go server_list.Run()
 
@@ -162,8 +167,12 @@ func (this *LoginServer) Shutdown() {
 	center_conn.ShutDown()
 	game_agent_manager.net.Shutdown()
 
-	dbc.Save(false)
-	dbc.Shutdown()
+	if !db_use_new {
+		dbc.Save(false)
+		dbc.Shutdown()
+	} else {
+		db_new.Save()
+	}
 
 	log.Trace("关闭游戏主循环耗时 %v 秒", time.Now().Sub(begin).Seconds())
 }
@@ -258,11 +267,6 @@ var login_http_mux map[string]func(http.ResponseWriter, *http.Request)
 
 func (this *LoginServer) reg_http_mux() {
 	login_http_mux = make(map[string]func(http.ResponseWriter, *http.Request))
-	//login_http_mux["/register"] = register_http_handler
-	//login_http_mux["/bind_new_account"] = bind_new_account_http_handler
-	//login_http_mux["/login"] = login_http_handler
-	//login_http_mux["/select_server"] = select_server_http_handler
-	//login_http_mux["/set_password"] = set_password_http_handler
 	login_http_mux["/client"] = client_http_handler
 }
 
@@ -843,7 +847,11 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		msg_id = int32(msg_client_message.S2CLoginResponse_ProtoID)
-		err_code, data = login_handler(login_msg.GetAcc(), login_msg.GetPassword(), login_msg.GetChannel())
+		if db_use_new {
+			err_code, data = new_login_handler(login_msg.GetAcc(), login_msg.GetPassword(), login_msg.GetChannel())
+		} else {
+			err_code, data = login_handler(login_msg.GetAcc(), login_msg.GetPassword(), login_msg.GetChannel())
+		}
 	} else if msg.MsgCode == int32(msg_client_message.C2SRegisterRequest_ProtoID) {
 		var register_msg msg_client_message.C2SRegisterRequest
 		err = proto.Unmarshal(msg.GetData(), &register_msg)
@@ -853,7 +861,11 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		msg_id = int32(msg_client_message.S2CRegisterResponse_ProtoID)
-		err_code, data = register_handler(register_msg.GetAccount(), register_msg.GetPassword(), register_msg.GetIsGuest())
+		if db_use_new {
+			err_code, data = new_register_handler(register_msg.GetAccount(), register_msg.GetPassword(), register_msg.GetIsGuest())
+		} else {
+			err_code, data = register_handler(register_msg.GetAccount(), register_msg.GetPassword(), register_msg.GetIsGuest())
+		}
 	} else if msg.MsgCode == int32(msg_client_message.C2SSetLoginPasswordRequest_ProtoID) {
 		var pass_msg msg_client_message.C2SSetLoginPasswordRequest
 		err = proto.Unmarshal(msg.GetData(), &pass_msg)
@@ -863,7 +875,11 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		msg_id = int32(msg_client_message.S2CSetLoginPasswordResponse_ProtoID)
-		err_code, data = set_password_handler(pass_msg.GetAccount(), pass_msg.GetPassword(), pass_msg.GetNewPassword())
+		if db_use_new {
+			err_code, data = new_set_password_handler(pass_msg.GetAccount(), pass_msg.GetPassword(), pass_msg.GetNewPassword())
+		} else {
+			err_code, data = set_password_handler(pass_msg.GetAccount(), pass_msg.GetPassword(), pass_msg.GetNewPassword())
+		}
 	} else if msg.MsgCode == int32(msg_client_message.C2SGuestBindNewAccountRequest_ProtoID) {
 		var bind_msg msg_client_message.C2SGuestBindNewAccountRequest
 		err = proto.Unmarshal(msg.GetData(), &bind_msg)
@@ -873,7 +889,11 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		msg_id = int32(msg_client_message.S2CGuestBindNewAccountResponse_ProtoID)
-		err_code, data = bind_new_account_handler(bind_msg.GetServerId(), bind_msg.GetAccount(), bind_msg.GetPassword(), bind_msg.GetNewAccount(), bind_msg.GetNewPassword(), bind_msg.GetNewChannel())
+		if db_use_new {
+			err_code, data = new_bind_new_account_handler(bind_msg.GetServerId(), bind_msg.GetAccount(), bind_msg.GetPassword(), bind_msg.GetNewAccount(), bind_msg.GetNewPassword(), bind_msg.GetNewChannel())
+		} else {
+			err_code, data = bind_new_account_handler(bind_msg.GetServerId(), bind_msg.GetAccount(), bind_msg.GetPassword(), bind_msg.GetNewAccount(), bind_msg.GetNewPassword(), bind_msg.GetNewChannel())
+		}
 	} else {
 		if msg.MsgCode > 0 {
 			_send_error(w, msg.MsgCode, int32(msg_client_message.E_ERR_PLAYER_MSG_ID_NOT_FOUND))
