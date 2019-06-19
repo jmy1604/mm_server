@@ -1,5 +1,6 @@
 export GOPATH=$(pwd)/../../..
 
+cd ../db_define
 mkdir -p proto
 
 cd ../tools
