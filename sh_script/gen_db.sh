@@ -1,4 +1,7 @@
 export GOPATH=$(pwd)/../../..
+export PATH=$PATH:$GOPATH/bin
+
+go get -u -v -t github.com/golang/protobuf/protoc-gen-go
 
 cd ../db_define
 mkdir -p proto
