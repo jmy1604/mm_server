@@ -1087,7 +1087,7 @@ func (this *Player) friend_chat_add(friend_id int32, message []byte) int32 {
 	}
 
 	if !this.db.FriendChatUnreadMessages.Add(message_data) {
-		log.Error("Player[%v] add friend[%v] chat message failed", this.Id, friend_id)
+		log.Error("Player[%v] add friend[%v] chat message %v failed", this.Id, friend_id, next_id)
 		return -1
 	}
 
