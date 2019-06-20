@@ -87,7 +87,7 @@ func (this *Player) get_surface_data() []*msg_client_message.BuildingInfo {
 func (this *Player) send_surface_data() int32 {
 	data := this.get_surface_data()
 	this.Send(uint16(msg_client_message.S2CSurfaceDataResponse_ProtoID), &msg_client_message.S2CSurfaceDataResponse{
-		data,
+		Data: data,
 	})
 	log.Trace("Player %v get surface data %v", this.Id, data)
 	return 1
