@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	db_use_new = true
+	db_use_new = false
 )
 
 var config server_config.LoginServerConfig
