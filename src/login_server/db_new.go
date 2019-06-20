@@ -9,7 +9,7 @@ import (
 
 var db_new mysql_manager.DB
 var db_new_tables login_db.TablesManager
-var account_table *login_db.Account_Table
+var account_table *login_db.Accounts_Table
 var ban_player_table *login_db.BanPlayer_Table
 
 func db_new_init(db_config string) bool {
@@ -24,7 +24,7 @@ func db_new_init(db_config string) bool {
 	}
 
 	db_new_tables.Init(&db_new)
-	account_table = db_new_tables.Get_Account_Table()
+	account_table = db_new_tables.Get_Accounts_Table()
 	ban_player_table = db_new_tables.Get_BanPlayer_Table()
 
 	db_new.GoRun()

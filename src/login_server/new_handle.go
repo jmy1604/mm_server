@@ -4,7 +4,6 @@ import (
 	"mm_server/libs/log"
 	"mm_server/proto/gen_go/client_message"
 	"mm_server/proto/gen_go/server_message"
-	"mm_server/src/login_server/login_db"
 
 	"time"
 
@@ -40,8 +39,7 @@ func new_register_handler(account, password string, is_guest bool) (err_code int
 		return
 	}
 
-	new_record := login_db.Create_Account()
-	new_record.Set_AccountId(account)
+	new_record := account_record_mgr.New(account)
 	new_record.Set_UniqueId(uid)
 	new_record.Set_Password(password)
 	new_record.Set_RegisterTime(uint32(time.Now().Unix()))
@@ -153,7 +151,7 @@ func new_bind_new_account_handler(server_id int32, account, password, new_accoun
 	uid := acc_record.Get_UniqueId()
 	last_server_id := acc_record.Get_ServerId()
 	// new bind account
-	acc_record = login_db.Create_Account()
+	acc_record = account_record_mgr.New(new_account)
 	if new_channel == "" {
 		acc_record.Set_Password(new_password)
 	}
@@ -161,6 +159,7 @@ func new_bind_new_account_handler(server_id int32, account, password, new_accoun
 	acc_record.Set_UniqueId(uid)
 	acc_record.Set_OldAccount(account)
 	acc_record.Set_ServerId(last_server_id)
+
 	account_table.Insert(acc_record)
 
 	game_agent := game_agent_manager.GetAgentByID(server_id)
@@ -220,8 +219,7 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 				return
 			}
 			if acc_record == nil {
-				acc_record = login_db.Create_Account()
-				acc_record.Set_AccountId(account)
+				acc_record = account_record_mgr.New(account)
 				acc_record.Set_Channel("facebook")
 				acc_record.Set_RegisterTime(uint32(now_time.Unix()))
 				is_new = true
@@ -229,7 +227,7 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 			acc_record.Set_Password(password)
 		} else if channel == "guest" {
 			if acc_record == nil {
-				acc_record = login_db.Create_Account()
+				acc_record = account_record_mgr.New(account)
 				acc_record.Set_Channel("guest")
 				acc_record.Set_RegisterTime(uint32(now_time.Unix()))
 				is_new = true
@@ -246,8 +244,7 @@ func new_login_handler(account, password, channel string) (err_code int32, resp_
 		}
 	} else {
 		if acc_record == nil {
-			acc_record = login_db.Create_Account()
-			acc_record.Set_AccountId(account)
+			acc_record = account_record_mgr.New(account)
 			acc_record.Set_RegisterTime(uint32(now_time.Unix()))
 			is_new = true
 		}
