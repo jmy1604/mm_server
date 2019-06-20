@@ -8,8 +8,8 @@ import (
 )
 
 var db_new mysql_manager.DB
-var account_table *login_db.Accounts_Table
-var ban_player_table *login_db.BanPlayer_Table
+var account_table *login_db.AccountsTable
+var ban_player_table *login_db.BanPlayerTable
 
 func db_new_init(db_config string) bool {
 	if !db_new.LoadConfig(db_config) {
@@ -23,8 +23,8 @@ func db_new_init(db_config string) bool {
 	}
 
 	db_tables := login_db.NewTablesManager(&db_new)
-	account_table = db_tables.Get_Accounts_Table()
-	ban_player_table = db_tables.Get_BanPlayer_Table()
+	account_table = db_tables.GetAccountsTable()
+	ban_player_table = db_tables.GetBanPlayerTable()
 
 	db_new.GoRun()
 
