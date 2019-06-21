@@ -11,13 +11,13 @@
 			"Id":2,
 			"Name":"server2",
 			"IP":":30200",
-			"Weight": 100,
+			"Weight": 100
 		},
 		{
 			"Id":3,
 			"Name":"server3",
 			"IP":"30300",
-			"Weight": 100,
+			"Weight": 100
 		}
 	],
 	"CrossList" : [
