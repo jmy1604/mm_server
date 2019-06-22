@@ -12,7 +12,15 @@ type BanMgr struct {
 	locker      sync.RWMutex
 }
 
-var ban_mgr BanMgr
+var ban_mgr *login_db.BanPlayerRecordMgr = login_db.NewBanPlayerRecordMgr(1000)
+
+func ban_select_record(unique_id string) (*login_db.BanPlayer, error) {
+	return ban_player_table.SelectByPrimaryField(unique_id)
+}
+
+func ban_select_records() (map[string]*login_db.BanPlayer, error) {
+	return ban_player_table.SelectAllMapRecords()
+}
 
 func (this *BanMgr) Init() bool {
 	ban_players, err := ban_player_table.SelectAllMapRecords()

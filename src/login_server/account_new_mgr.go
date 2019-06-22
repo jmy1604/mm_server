@@ -12,7 +12,15 @@ type AccountRecordMgr struct {
 	locker   sync.RWMutex
 }
 
-var account_record_mgr AccountRecordMgr
+var account_record_mgr *login_db.AccountsRecordMgr = login_db.NewAccountsRecordMgr(1000)
+
+func select_account_record_func(key string) (*login_db.Accounts, error) {
+	return account_table.SelectByPrimaryField(key)
+}
+
+func select_account_records_func() (map[string]*login_db.Accounts, error) {
+	return account_table.SelectAllMapRecords()
+}
 
 func (this *AccountRecordMgr) Init() bool {
 	accounts, err := account_table.SelectAllMapRecords()

@@ -60,12 +60,10 @@ func (this *LoginServer) Init() (ok bool) {
 	account_mgr_init()
 
 	if db_use_new {
-		if !account_record_mgr.Init() {
-			return false
-		}
-		if !ban_mgr.Init() {
-			return false
-		}
+		account_record_mgr.Init(select_account_records_func)
+		account_record_mgr.SetSelectRecordFunc(select_account_record_func)
+		ban_mgr.Init(ban_select_records)
+		ban_mgr.SetSelectRecordFunc(ban_select_record)
 	}
 
 	this.initialized = true
