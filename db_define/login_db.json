@@ -12,15 +12,15 @@
 			"primary_key": "AccountId",
 			"engine": "innodb",
 			"fields": [
-				{ "name":"AccountId",			"type":"char",				"length":32,	"index_type":"none",	"create_flags":"not null" },
-				{ "name":"UniqueId",			"type":"char",				"length":64,	"index_type":"normal",	"create_flags":"not null,default" },
-				{ "name":"Password",			"type":"char",				"length":32,	"index_type":"none",	"create_flags":"not null,default" },
-				{ "name":"RegisterTime",		"type":"int",				"length":0,		"index_type":"none",	"create_flags":"unsigned,not null,default" },
-				{ "name":"Channel",				"type":"char",				"length":32,	"index_type":"none",	"create_flags":"not null,default" },
-				{ "name":"Token",				"type":"char",				"length":128,	"index_type":"none",	"create_flags":"not null,default" },
-				{ "name":"ServerId",			"type":"int",				"length":0,		"index_type":"none",	"create_flags":"unsigned,not null,default" },
-				{ "name":"BindNewAccount",		"type":"char",				"length":32,	"index_type":"none",	"create_flags":"not null,default" },
-				{ "name":"OldAccount",			"type":"char",				"length":32,	"index_type":"none",	"create_flags":"not null,default" }
+				{ "name":"AccountId",			"type":"char(32) not null",				"index_type":"none" },
+				{ "name":"UniqueId",			"type":"char(64) not null default",		"index_type":"normal" },
+				{ "name":"Password",			"type":"char(32) not null default",		"index_type":"none" },
+				{ "name":"RegisterTime",		"type":"int unsigned not null default",	"index_type":"none" },
+				{ "name":"Channel",				"type":"char(32) not null default",		"index_type":"none" },
+				{ "name":"Token",				"type":"char(32) not null default",		"index_type":"none" },
+				{ "name":"ServerId",			"type":"int unsigned not null default",	"index_type":"none" },
+				{ "name":"BindNewAccount",		"type":"char(32) not null default",		"index_type":"none" },
+				{ "name":"OldAccount",			"type":"char(32) not null default",		"index_type":"none" }
 			]
 		},
 		{
@@ -28,12 +28,12 @@
 			"primary_key": "UniqueId",
 			"engine": "innodb",
 			"fields": [
-				{ "name":"UniqueId",			"type":"char",				"length":64,	"index_type":"",		"create_flags":"not null" },
-				{ "name":"Account",				"type":"char",				"length":32,	"index_type":"",		"create_flags":"not null,default" },
-				{ "name":"PlayerId",			"type":"int",				"length":0,		"index_type":"",		"create_flags":"unsigned,not null,default" },
-				{ "name":"StartTime",			"type":"int",				"length":0,		"index_type":"",		"create_flags":"unsigned,not null,default" },
-				{ "name":"StartTimeStr",		"type":"char",				"length":64,	"index_type":"",		"create_flags":"not null,default" },
-				{ "name":"Duration",			"type":"int",				"length":0,		"index_type":"",		"create_flags":"unsigned,not null,default" }
+				{ "name":"UniqueId",			"type":"char(64) not null",				"index_type":"" },
+				{ "name":"Account",				"type":"char(32) not null default",		"index_type":"" },
+				{ "name":"PlayerId",			"type":"int unsigned not null default",	"index_type":"" },
+				{ "name":"StartTime",			"type":"int unsigned not null default",	"index_type":"" },
+				{ "name":"StartTimeStr",		"type":"char(64) not null default",		"index_type":"" },
+				{ "name":"Duration",			"type":"int unsigned not null default",	"index_type":"" }
 			]
 		}
 	]
