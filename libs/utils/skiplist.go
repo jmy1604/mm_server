@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"ih_server/libs/log"
+	"mm_server/libs/log"
 	"math/rand"
 	"time"
 )

@@ -3,7 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
-	"ih_server/libs/log"
+	"mm_server/libs/log"
 	"sync"
 	"sync/atomic"
 	"time"

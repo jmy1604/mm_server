@@ -3,8 +3,8 @@ package main
 import (
 	_ "encoding/json"
 	"errors"
-	"ih_server/libs/log"
-	"ih_server/libs/timer"
+	"mm_server/libs/log"
+	"mm_server/libs/timer"
 	_ "io/ioutil"
 	"sync"
 	"time"

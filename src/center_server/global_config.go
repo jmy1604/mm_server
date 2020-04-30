@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"ih_server/libs/log"
-	"ih_server/src/server_config"
+	"mm_server/libs/log"
+	"mm_server/src/server_config"
 	"io/ioutil"
 )
 

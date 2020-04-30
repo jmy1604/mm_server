@@ -1,6 +1,6 @@
-module ih_server
+module mm_server
 
-go 1.12
+go 1.14
 
 require (
 	github.com/ethereum/go-ethereum v0.0.0-20181223163132-9e9fc87e70ac

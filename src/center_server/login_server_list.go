@@ -2,7 +2,7 @@ package main
 
 import (
 	_ "encoding/json"
-	_ "ih_server/libs/log"
+	_ "mm_server/libs/log"
 	_ "io/ioutil"
 	"sync"
 	_ "time"

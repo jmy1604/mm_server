@@ -6,8 +6,8 @@ import (
 	"crypto/rand"
 	"crypto/tls"
 	"errors"
-	"ih_server/libs/log"
-	"ih_server/libs/timer"
+	"mm_server/libs/log"
+	"mm_server/libs/timer"
 	"io"
 	"net"
 	"reflect"
@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	"ih_server/third_party/code.google.com.protobuf/proto"
+	"mm_server/third_party/code.google.com.protobuf/proto"
 )
 
 type E_DISCONNECT_REASON int32

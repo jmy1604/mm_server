@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ih_server/libs/log"
+	"mm_server/libs/log"
 	"sync"
 	"time"
 )
