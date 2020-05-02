@@ -2,7 +2,7 @@ package log
 
 import (
 	"fmt"
-	"ih_server/third_party/log4go"
+	"mm_server/third_party/log4go"
 	"reflect"
 	"runtime"
 	"strconv"

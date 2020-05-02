@@ -1,4 +1,6 @@
 #!/bin/bash
+export GO111MODULE=on
+export GOPROXY=https://goproxy.io
 export GOPATH=$(pwd)/../../..
 set -x
 go build -i -o ../bin/center_server mm_server/src/center_server

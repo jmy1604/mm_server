@@ -1,9 +1,9 @@
 package main
 
 import (
-	_ "ih_server/libs/log"
-	_ "ih_server/libs/server_conn"
-	_ "ih_server/proto/gen_go/server_message"
+	_ "mm_server/libs/log"
+	_ "mm_server/libs/server_conn"
+	_ "mm_server/proto/gen_go/server_message"
 	"sync"
 )
 

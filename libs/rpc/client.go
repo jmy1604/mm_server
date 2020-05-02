@@ -3,7 +3,7 @@ package rpc
 import (
 	"encoding/gob"
 	"errors"
-	"ih_server/libs/log"
+	"mm_server/libs/log"
 	"net/rpc"
 	"sync/atomic"
 	"time"

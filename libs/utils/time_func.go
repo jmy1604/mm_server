@@ -2,7 +2,7 @@ package utils
 
 import (
 	"errors"
-	"ih_server/libs/log"
+	"mm_server/libs/log"
 	"time"
 )
 
