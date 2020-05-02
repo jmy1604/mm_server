@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	db_use_new = true
+	db_use_new = false
 )
 
 var config server_config.LoginServerConfig
@@ -64,9 +64,9 @@ func main() {
 			go dbc.Loop()
 		}
 	} else {
-		if !db_new_init(config.DB_DEFINE) {
+		/*if !db_new_init(config.DB_DEFINE) {
 			return
-		}
+		}*/
 		log.Trace("db new init success")
 	}
 

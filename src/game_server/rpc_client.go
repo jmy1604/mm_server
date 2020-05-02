@@ -40,7 +40,7 @@ func (self *GameServer) init_rpc_client() bool {
 	}
 	log.Info("连接rpc服务器[%v]成功!!!", config.RpcServerIP)
 
-	this.rpc_client.Run()
+	self.rpc_client.Run()
 
 	return true
 }
@@ -48,7 +48,7 @@ func (self *GameServer) init_rpc_client() bool {
 func (self *GameServer) uninit_rpc_client() {
 	if self.rpc_client != nil {
 		self.rpc_client.Close()
-		this.rpc_client = nil
+		self.rpc_client = nil
 	}
 }
 
@@ -108,10 +108,10 @@ func (self *Player) rpc_player_base_info_update() bool {
 
 	var args = rpc_proto.G2R_PlayerBaseInfoUpdate{
 		Info: &rpc_proto.PlayerBaseInfo{
-			Id:    this.Id,
-			Name:  this.db.GetName(),
-			Level: this.db.GetLevel(),
-			Head:  this.db.Info.GetHead(),
+			Id:    self.Id,
+			Name:  self.db.GetName(),
+			Level: self.db.GetLevel(),
+			Head:  self.db.Info.GetHead(),
 		},
 	}
 

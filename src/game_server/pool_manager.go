@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"mm_server/proto/gen_go/client_message"
 )
 
 // CatInfoPool ...
@@ -10,8 +11,8 @@ type CatInfoPool struct {
 }
 
 // Init ...
-func (pool *CatInfoPool) Init() {
-	this.pool = &sync.Pool{
+func (p *CatInfoPool) Init() {
+	p.pool = &sync.Pool{
 		New: func() interface{} {
 			return &msg_client_message.CatInfo{}
 		},
@@ -19,11 +20,11 @@ func (pool *CatInfoPool) Init() {
 }
 
 // Get ...
-func (pool *CatInfoPool) Get() *msg_client_message.CatInfo {
-	return pool.pool.Get().(*msg_client_message.CatInfo)
+func (p *CatInfoPool) Get() *msg_client_message.CatInfo {
+	return p.pool.Get().(*msg_client_message.CatInfo)
 }
 
 // Put ...
-func (pool *CatInfoPool) Put(ds *msg_client_message.CatInfo) {
-	pool.pool.Put(ds)
+func (p *CatInfoPool) Put(ds *msg_client_message.CatInfo) {
+	p.pool.Put(ds)
 }
