@@ -1,16 +1,16 @@
 package main
 
 import (
-	"mm_server/proto/gen_go/client_message"
 	"sync"
 )
 
-// DelaySkillPool
+// CatInfoPool ...
 type CatInfoPool struct {
 	pool *sync.Pool
 }
 
-func (this *CatInfoPool) Init() {
+// Init ...
+func (pool *CatInfoPool) Init() {
 	this.pool = &sync.Pool{
 		New: func() interface{} {
 			return &msg_client_message.CatInfo{}
@@ -18,10 +18,12 @@ func (this *CatInfoPool) Init() {
 	}
 }
 
-func (this *CatInfoPool) Get() *msg_client_message.CatInfo {
-	return this.pool.Get().(*msg_client_message.CatInfo)
+// Get ...
+func (pool *CatInfoPool) Get() *msg_client_message.CatInfo {
+	return pool.pool.Get().(*msg_client_message.CatInfo)
 }
 
-func (this *CatInfoPool) Put(ds *msg_client_message.CatInfo) {
-	this.pool.Put(ds)
+// Put ...
+func (pool *CatInfoPool) Put(ds *msg_client_message.CatInfo) {
+	pool.pool.Put(ds)
 }

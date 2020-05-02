@@ -15,11 +15,11 @@ func get_rpc_client() *rpc.Client {
 	return game_server.rpc_client
 }
 
-func (this *GameServer) init_rpc_client() bool {
+func (self *GameServer) init_rpc_client() bool {
 	// 注册用户自定义RPC数据类型
 	rpc_proto.RegisterRpcUserType()
 
-	this.rpc_client = rpc.NewClient()
+	self.rpc_client = rpc.NewClient()
 	var on_connect rpc.OnConnectFunc = func(args interface{}) {
 		rpc_client := args.(*rpc.Client)
 		proc_string := "G2R_ListenRPCProc.Do"
@@ -32,9 +32,9 @@ func (this *GameServer) init_rpc_client() bool {
 		}
 		log.Info("RPC调用[%v]成功", proc_string)
 	}
-	this.rpc_client.SetOnConnect(on_connect)
+	self.rpc_client.SetOnConnect(on_connect)
 
-	if !this.rpc_client.Dial(config.RpcServerIP) {
+	if !self.rpc_client.Dial(config.RpcServerIP) {
 		log.Error("连接rpc服务器[%v]失败", config.RpcServerIP)
 		return false
 	}
@@ -45,16 +45,16 @@ func (this *GameServer) init_rpc_client() bool {
 	return true
 }
 
-func (this *GameServer) uninit_rpc_client() {
-	if this.rpc_client != nil {
-		this.rpc_client.Close()
+func (self *GameServer) uninit_rpc_client() {
+	if self.rpc_client != nil {
+		self.rpc_client.Close()
 		this.rpc_client = nil
 	}
 }
 
 // 游戏服到游戏服调用
-func (this *GameServer) rpc_game2game(receive_player_id int32, method string, args interface{}, reply interface{}) error {
-	if this.rpc_client == nil {
+func (self *GameServer) rpc_game2game(receive_player_id int32, method string, args interface{}, reply interface{}) error {
+	if self.rpc_client == nil {
 		err := errors.New("!!!! rpc client is null")
 		return err
 	}
@@ -67,7 +67,7 @@ func (this *GameServer) rpc_game2game(receive_player_id int32, method string, ar
 
 	log.Debug("@@@@@ #####  transfer_args[%v]  transfer_reply[%v]", transfer_args.Args, transfer_reply.Result)
 
-	err := this.rpc_client.Call("G2G_CallProc.Do", transfer_args, transfer_reply)
+	err := self.rpc_client.Call("G2G_CallProc.Do", transfer_args, transfer_reply)
 	if err != nil {
 		log.Error("RPC @@@ G2G_CallProc.Do(%v,%v) error(%v)", transfer_args, transfer_reply, err.Error())
 	}
@@ -100,7 +100,7 @@ func (p *Player) rpc_charge_save(channel int32, order_id, bundle_id, account str
 }
 
 // 更新玩家基本信息
-func (this *Player) rpc_player_base_info_update() bool {
+func (self *Player) rpc_player_base_info_update() bool {
 	rpc_client := get_rpc_client()
 	if rpc_client == nil {
 		return false
@@ -117,7 +117,7 @@ func (this *Player) rpc_player_base_info_update() bool {
 
 	err := rpc_client.Call("G2R_PlayerProc.BaseInfoUpdate", &args, &rpc_proto.G2R_PlayerBaseInfoUpdateResult{})
 	if err != nil {
-		log.Error("RPC ### Player[%v] update base info err %v", this.Id, err.Error())
+		log.Error("RPC ### Player[%v] update base info err %v", self.Id, err.Error())
 		return false
 	}
 
@@ -125,7 +125,7 @@ func (this *Player) rpc_player_base_info_update() bool {
 }
 
 // 排行榜数据更新
-func (this *Player) rpc_rank_list_update_data(rank_type int32, rank_params []int32) (result *rpc_proto.G2R_RankListDataUpdateResult) {
+func (self *Player) rpc_rank_list_update_data(rank_type int32, rank_params []int32) (result *rpc_proto.G2R_RankListDataUpdateResult) {
 	rpc_client := get_rpc_client()
 	if rpc_client == nil {
 		return nil
@@ -133,21 +133,21 @@ func (this *Player) rpc_rank_list_update_data(rank_type int32, rank_params []int
 
 	var args = rpc_proto.G2R_RankListDataUpdate{
 		RankType:  rank_type,
-		PlayerId:  this.Id,
+		PlayerId:  self.Id,
 		RankParam: rank_params,
 	}
 
 	result = &rpc_proto.G2R_RankListDataUpdateResult{}
 	err := rpc_client.Call("G2R_RankListProc.UpdateData", &args, result)
 	if err != nil {
-		log.Error("RPC ### Player[%v] update rank type %v data by params %v, err %v", this.Id, args.RankType, args.RankParam, err.Error())
+		log.Error("RPC ### Player[%v] update rank type %v data by params %v, err %v", self.Id, args.RankType, args.RankParam, err.Error())
 	}
 
 	return
 }
 
 // 排行榜获取数据
-func (this *Player) rpc_rank_list_get_data(rank_type, start_rank, rank_num int32, rank_param int32) (result *rpc_proto.G2R_RankListGetDataResult) {
+func (self *Player) rpc_rank_list_get_data(rank_type, start_rank, rank_num int32, rank_param int32) (result *rpc_proto.G2R_RankListGetDataResult) {
 	rpc_client := get_rpc_client()
 	if rpc_client == nil {
 		return nil
@@ -155,7 +155,7 @@ func (this *Player) rpc_rank_list_get_data(rank_type, start_rank, rank_num int32
 
 	var args = rpc_proto.G2R_RankListGetData{
 		RankType:  rank_type,
-		PlayerId:  this.Id,
+		PlayerId:  self.Id,
 		StartRank: start_rank,
 		RankNum:   rank_num,
 		RankParam: rank_param,
@@ -164,20 +164,20 @@ func (this *Player) rpc_rank_list_get_data(rank_type, start_rank, rank_num int32
 	result = &rpc_proto.G2R_RankListGetDataResult{}
 	err := rpc_client.Call("G2R_RankListProc.GetRankItems", &args, result)
 	if err != nil {
-		log.Error("RPC ### Player[%v] get rank type %v items by start_rank(%v) rank_num(%v), err %v", this.Id, rank_type, start_rank, rank_num)
+		log.Error("RPC ### Player[%v] get rank type %v items by start_rank(%v) rank_num(%v), err %v", self.Id, rank_type, start_rank, rank_num)
 	}
 
 	return
 }
 
 // 获取好友关卡积分
-func (this *Player) rpc_get_friends_stage_score(stage_id int32) (result *rpc_proto.G2R_GetFriendStageScoreResult) {
+func (self *Player) rpc_get_friends_stage_score(stage_id int32) (result *rpc_proto.G2R_GetFriendStageScoreResult) {
 	rpc_client := get_rpc_client()
 	if rpc_client == nil {
 		return nil
 	}
 
-	friend_ids := this.db.Friends.GetAllIndex()
+	friend_ids := self.db.Friends.GetAllIndex()
 	var args = rpc_proto.G2R_GetFriendStageScore{
 		StageId:   stage_id,
 		FriendIds: friend_ids,
@@ -186,14 +186,14 @@ func (this *Player) rpc_get_friends_stage_score(stage_id int32) (result *rpc_pro
 	result = &rpc_proto.G2R_GetFriendStageScoreResult{}
 	err := rpc_client.Call("G2R_PlayerProc.GetFriendStageScore", &args, result)
 	if err != nil {
-		log.Error("RPC ### Player[%v] get friends %v stage %v score err %v", this.Id, friend_ids, stage_id, err.Error())
+		log.Error("RPC ### Player[%v] get friends %v stage %v score err %v", self.Id, friend_ids, stage_id, err.Error())
 	}
 
 	return
 }
 
 // 查找好友
-func (this *Player) rpc_search_friends(key string) (result *rpc_proto.G2R_SearchFriendResult) {
+func (self *Player) rpc_search_friends(key string) (result *rpc_proto.G2R_SearchFriendResult) {
 	rpc_client := get_rpc_client()
 	if rpc_client == nil {
 		return nil
@@ -206,14 +206,14 @@ func (this *Player) rpc_search_friends(key string) (result *rpc_proto.G2R_Search
 	result = &rpc_proto.G2R_SearchFriendResult{}
 	err := rpc_client.Call("G2R_FriendProc.SearchFriends", &args, result)
 	if err != nil {
-		log.Error("RPC ### Player[%v] search friends err %v", this.Id, err.Error())
+		log.Error("RPC ### Player[%v] search friends err %v", self.Id, err.Error())
 	}
 
 	return
 }
 
 // 获取多个玩家基础信息
-func (this *Player) rpc_get_players_base_info(player_ids []int32) (result *rpc_proto.G2R_GetPlayersBaseInfoResult) {
+func (self *Player) rpc_get_players_base_info(player_ids []int32) (result *rpc_proto.G2R_GetPlayersBaseInfoResult) {
 	rpc_client := get_rpc_client()
 	if rpc_client == nil {
 		return nil
@@ -226,7 +226,7 @@ func (this *Player) rpc_get_players_base_info(player_ids []int32) (result *rpc_p
 	result = &rpc_proto.G2R_GetPlayersBaseInfoResult{}
 	err := rpc_client.Call("G2R_PlayerProc.GetPlayersBaseInfo", &args, result)
 	if err != nil {
-		log.Error("RPC ### Player %v get players %v base info err %v", this.Id, player_ids, err.Error())
+		log.Error("RPC ### Player %v get players %v base info err %v", self.Id, player_ids, err.Error())
 	}
 
 	return
