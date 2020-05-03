@@ -14,7 +14,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	// "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/golang/protobuf/proto"
 )
 
