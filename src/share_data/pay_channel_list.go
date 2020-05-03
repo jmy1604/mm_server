@@ -23,8 +23,7 @@ type PayChannelConfig struct {
 }
 
 func (this *PayChannelConfig) _read_key(key_file string) *rsa.PublicKey {
-	path := server_config.GetGameDataPathFile(key_file)
-	content, err := ioutil.ReadFile(path)
+	content, err := ioutil.ReadFile(key_file)
 	if nil != err {
 		fmt.Printf("read key failed (%s)!\n", err.Error())
 		return nil
