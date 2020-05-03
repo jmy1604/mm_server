@@ -60,10 +60,10 @@ func (this *LoginServer) Init() (ok bool) {
 	account_mgr_init()
 
 	if db_use_new {
-		account_record_mgr.OnInitSelectRecords(select_account_records_func)
-		account_record_mgr.RegisterSelectRecordFunc(select_account_record_func)
-		ban_mgr.OnInitSelectRecords(ban_select_records)
-		ban_mgr.RegisterSelectRecordFunc(ban_select_record)
+		//account_record_mgr.OnInitSelectRecords(select_account_records_func)
+		//account_record_mgr.RegisterSelectRecordFunc(select_account_record_func)
+		//ban_mgr.OnInitSelectRecords(ban_select_records)
+		//ban_mgr.RegisterSelectRecordFunc(ban_select_record)
 	}
 
 	this.initialized = true
@@ -169,7 +169,7 @@ func (this *LoginServer) Shutdown() {
 		dbc.Save(false)
 		dbc.Shutdown()
 	} else {
-		db_new.Save()
+		//db_new.Save()
 	}
 
 	log.Trace("关闭游戏主循环耗时 %v 秒", time.Now().Sub(begin).Seconds())
@@ -846,7 +846,7 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 		}
 		msg_id = int32(msg_client_message.S2CLoginResponse_ProtoID)
 		if db_use_new {
-			err_code, data = new_login_handler(login_msg.GetAcc(), login_msg.GetPassword(), login_msg.GetChannel())
+			//err_code, data = new_login_handler(login_msg.GetAcc(), login_msg.GetPassword(), login_msg.GetChannel())
 		} else {
 			err_code, data = login_handler(login_msg.GetAcc(), login_msg.GetPassword(), login_msg.GetChannel())
 		}
@@ -860,7 +860,7 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 		}
 		msg_id = int32(msg_client_message.S2CRegisterResponse_ProtoID)
 		if db_use_new {
-			err_code, data = new_register_handler(register_msg.GetAccount(), register_msg.GetPassword(), register_msg.GetIsGuest())
+			//err_code, data = new_register_handler(register_msg.GetAccount(), register_msg.GetPassword(), register_msg.GetIsGuest())
 		} else {
 			err_code, data = register_handler(register_msg.GetAccount(), register_msg.GetPassword(), register_msg.GetIsGuest())
 		}
@@ -874,7 +874,7 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 		}
 		msg_id = int32(msg_client_message.S2CSetLoginPasswordResponse_ProtoID)
 		if db_use_new {
-			err_code, data = new_set_password_handler(pass_msg.GetAccount(), pass_msg.GetPassword(), pass_msg.GetNewPassword())
+			//err_code, data = new_set_password_handler(pass_msg.GetAccount(), pass_msg.GetPassword(), pass_msg.GetNewPassword())
 		} else {
 			err_code, data = set_password_handler(pass_msg.GetAccount(), pass_msg.GetPassword(), pass_msg.GetNewPassword())
 		}
@@ -888,7 +888,7 @@ func client_http_handler(w http.ResponseWriter, r *http.Request) {
 		}
 		msg_id = int32(msg_client_message.S2CGuestBindNewAccountResponse_ProtoID)
 		if db_use_new {
-			err_code, data = new_bind_new_account_handler(bind_msg.GetServerId(), bind_msg.GetAccount(), bind_msg.GetPassword(), bind_msg.GetNewAccount(), bind_msg.GetNewPassword(), bind_msg.GetNewChannel())
+			//err_code, data = new_bind_new_account_handler(bind_msg.GetServerId(), bind_msg.GetAccount(), bind_msg.GetPassword(), bind_msg.GetNewAccount(), bind_msg.GetNewPassword(), bind_msg.GetNewChannel())
 		} else {
 			err_code, data = bind_new_account_handler(bind_msg.GetServerId(), bind_msg.GetAccount(), bind_msg.GetPassword(), bind_msg.GetNewAccount(), bind_msg.GetNewPassword(), bind_msg.GetNewChannel())
 		}

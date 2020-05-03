@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "ih_server/src/table_config"
+	_ "mm_server/src/tables"
 	"mm_server/libs/log"
 	"mm_server/libs/utils"
 	"mm_server/proto/gen_go/client_message"
