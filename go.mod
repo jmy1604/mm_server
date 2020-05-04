@@ -1,4 +1,4 @@
-module mm_server
+module github.com/jmy1604/mm_server
 
 go 1.14
 
